@@ -18,6 +18,10 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // 현재 로그인한 사용자의 이메일
+            Text(
+              "이메일 : ${authVM.currenUser?.email ?? 'null'}",
+            ),
             // 로그아웃
             TextButton(
               onPressed: () => authVM.signout().then(

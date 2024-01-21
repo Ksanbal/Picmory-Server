@@ -2,11 +2,17 @@ import 'dart:developer';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:picmory/datasources/remote/auth_remote_datasources.dart';
+import 'package:picmory/datasources/local/auth_local_datasourece.dart';
+import 'package:picmory/datasources/remote/auth_remote_datasource.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
   final _authRemoteDatasource = AuthRemoteDatasource();
+  final _authLocalDatasource = AuthLocalDataSource();
+
+  /// 현재 로그인 유저
+  User? get currentUser => _authLocalDatasource.getCurrenUser();
 
   /// 구글 로그인
   Future<bool> signInWithGoogle() async {
