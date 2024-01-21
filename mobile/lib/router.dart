@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:picmory/screens/home/home.dart';
 
 import 'package:picmory/screens/signin/signin.dart';
 import 'package:picmory/services/auth_service.dart';
@@ -17,6 +18,11 @@ final router = GoRouter(
         ),
         child: const SigninScreen(),
       ),
+    ),
+    // 홈
+    GoRoute(
+      path: '/home',
+      builder: (_, state) => const HomeScreen(),
     ),
   ],
 );
