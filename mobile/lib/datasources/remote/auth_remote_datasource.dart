@@ -17,7 +17,10 @@ class AuthRemoteDatasource {
       accessToken: accessToken,
     );
 
-    log(response.user.toString());
+    log(
+      response.user.toString(),
+      name: 'signInWithGoogle',
+    );
 
     return response.user != null;
   }
@@ -33,7 +36,10 @@ class AuthRemoteDatasource {
       idToken: idToken,
     );
 
-    log(response.user.toString());
+    log(
+      response.user.toString(),
+      name: 'signInWithApple',
+    );
 
     return response.user != null;
   }
@@ -44,7 +50,10 @@ class AuthRemoteDatasource {
 
     // 현재 로그인 상태 확인 후 결과 반환
     final session = supabase.auth.currentSession;
-    log(session.toString());
+    log(
+      session.toString(),
+      name: 'signOut',
+    );
 
     return session == null;
   }
