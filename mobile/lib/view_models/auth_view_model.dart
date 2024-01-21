@@ -9,7 +9,13 @@ class AuthViewModel extends ChangeNotifier {
     required this.authService,
   });
 
-  signinWithGoogle() async {
-    return await authService.signinWithGoogle();
+  /// 구글 로그인
+  Future<bool> signinWithGoogle() async {
+    return await authService.signInWithGoogle();
+  }
+
+  /// 로그아웃
+  Future<bool> signout() async {
+    return await authService.signOut();
   }
 }

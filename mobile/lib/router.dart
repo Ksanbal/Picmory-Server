@@ -22,7 +22,12 @@ final router = GoRouter(
     // 홈
     GoRoute(
       path: '/home',
-      builder: (_, state) => const HomeScreen(),
+      builder: (_, state) => ChangeNotifierProvider(
+        create: (_) => AuthViewModel(
+          authService: AuthService(),
+        ),
+        child: const HomeScreen(),
+      ),
     ),
   ],
 );

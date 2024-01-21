@@ -8,7 +8,7 @@ class AuthService {
   final _authRemoteDatasource = AuthRemoteDatasource();
 
   /// 구글 로그인
-  Future<bool> signinWithGoogle() async {
+  Future<bool> signInWithGoogle() async {
     try {
       final webClientId = dotenv.get('GOOGLE_WEB_CLIENT_ID');
 
@@ -31,7 +31,7 @@ class AuthService {
         throw 'No ID Token found.';
       }
 
-      return _authRemoteDatasource.signinWithGoogle(
+      return _authRemoteDatasource.signInWithGoogle(
         idToken: idToken,
         accessToken: accessToken,
       );
@@ -40,5 +40,10 @@ class AuthService {
 
       return false;
     }
+  }
+
+  /// 로그아웃
+  Future<bool> signOut() async {
+    return _authRemoteDatasource.signOut();
   }
 }
