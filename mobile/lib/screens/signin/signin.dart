@@ -29,7 +29,13 @@ class SigninScreen extends StatelessWidget {
               child: const Text("구글 로그인"),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () => authVM.signinWithApple().then(
+                (result) {
+                  if (result) {
+                    context.go('/home');
+                  }
+                },
+              ),
               child: const Text("애플 로그인"),
             ),
           ],

@@ -16,6 +16,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // 로그아웃
             TextButton(

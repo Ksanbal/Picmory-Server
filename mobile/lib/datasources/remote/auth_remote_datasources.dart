@@ -22,6 +22,22 @@ class AuthRemoteDatasource {
     return response.user != null;
   }
 
+  /// 애플 로그인
+  /// - [idToken] : 애플 로그인 시 발급되는 토큰
+  /// - [nonce] : 애플 로그인 시 발급되는 토큰
+  Future<bool> signInWithApple({
+    required String idToken,
+  }) async {
+    final response = await supabase.auth.signInWithIdToken(
+      provider: OAuthProvider.apple,
+      idToken: idToken,
+    );
+
+    log(response.user.toString());
+
+    return response.user != null;
+  }
+
   /// 로그아웃
   Future<bool> signOut() async {
     await supabase.auth.signOut();

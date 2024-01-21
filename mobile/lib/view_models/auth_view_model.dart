@@ -14,6 +14,11 @@ class AuthViewModel extends ChangeNotifier {
     return await authService.signInWithGoogle();
   }
 
+  /// 애플 로그인
+  Future<bool> signinWithApple() async {
+    return await authService.signInWithApple();
+  }
+
   /// 로그아웃
   Future<bool> signout() async {
     return await authService.signOut();
