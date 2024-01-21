@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:picmory/view_models/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
-class SigninScreen extends StatelessWidget {
-  const SigninScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,31 +12,26 @@ class SigninScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('로그인'),
+        title: const Text('홈'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextButton(
-              onPressed: () => authVM.signinWithGoogle().then(
-                (result) {
-                  if (result) {
-                    context.go('/home');
-                  }
-                },
-              ),
-              child: const Text("구글 로그인"),
+            // 현재 로그인한 사용자의 이메일
+            Text(
+              "이메일 : ${authVM.currenUser?.email ?? 'null'}",
             ),
+            // 로그아웃
             TextButton(
-              onPressed: () => authVM.signinWithApple().then(
+              onPressed: () => authVM.signout().then(
                 (result) {
                   if (result) {
-                    context.go('/home');
+                    context.go('/signin');
                   }
                 },
               ),
-              child: const Text("애플 로그인"),
+              child: const Text("로그아웃"),
             ),
           ],
         ),

@@ -43,5 +43,30 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<!-- For Google sign in -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<!-- TODO Replace this value: -->
+				<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+				<string>com.googleusercontent.apps.1020948043600-o8s55ior4tucspk8as2m8n9tmipnaql4</string>
+			</array>
+		</dict>
+		<!-- For Google sign in -->
+		<!-- Supabase Auth -->
+		<dict>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+			<string>io.supabase.flutterquickstart</string>
+		</array>
+		</dict>
+		<!-- Supabase Auth -->
+	</array>
 </dict>
 </plist>
