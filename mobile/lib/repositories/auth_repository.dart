@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:picmory/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class AuthRemoteDatasource {
+class AuthRepository {
   /// 구글 로그인
   /// - [idToken] : 구글 로그인 시 발급되는 토큰
   /// - [accessToken] : 구글 로그인 시 발급되는 토큰
@@ -15,11 +13,6 @@ class AuthRemoteDatasource {
       provider: OAuthProvider.google,
       idToken: idToken,
       accessToken: accessToken,
-    );
-
-    log(
-      response.user.toString(),
-      name: 'signInWithGoogle',
     );
 
     return response.user != null;
@@ -36,11 +29,6 @@ class AuthRemoteDatasource {
       idToken: idToken,
     );
 
-    log(
-      response.user.toString(),
-      name: 'signInWithApple',
-    );
-
     return response.user != null;
   }
 
@@ -50,10 +38,6 @@ class AuthRemoteDatasource {
 
     // 현재 로그인 상태 확인 후 결과 반환
     final session = supabase.auth.currentSession;
-    log(
-      session.toString(),
-      name: 'signOut',
-    );
 
     return session == null;
   }

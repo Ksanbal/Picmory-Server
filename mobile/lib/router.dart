@@ -1,43 +1,55 @@
 import 'package:go_router/go_router.dart';
-import 'package:picmory/screens/home/home.dart';
-
-import 'package:picmory/screens/signin/signin.dart';
-import 'package:picmory/screens/splash/splash.dart';
-import 'package:picmory/services/auth_service.dart';
-import 'package:picmory/view_models/auth_view_model.dart';
+import 'package:picmory/viewmodels/auth/signin/signin_viewmodel.dart';
+import 'package:picmory/viewmodels/home/home_viewmodel.dart';
+import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
+import 'package:picmory/viewmodels/splash/splash_viewmodel.dart';
+import 'package:picmory/views/auth/signin_view.dart';
+import 'package:picmory/views/home/home_view.dart';
+import 'package:picmory/views/memory/create/memory_create_view.dart';
+import 'package:picmory/views/splash/splash_view.dart';
 import 'package:provider/provider.dart';
 
 final router = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
   routes: [
-    // 스플래시 스크린
+    /**
+     * 스플래시 스크린
+     */
     GoRoute(
-      path: '/',
+      path: '/splash',
       builder: (_, state) => ChangeNotifierProvider(
-        create: (_) => AuthViewModel(
-          authService: AuthService(),
-        ),
-        child: const SplashScreen(),
+        create: (_) => SplashViewmodel(),
+        child: const SplashView(),
       ),
     ),
-    // 로그인
+    /**
+     * 인증
+     */
     GoRoute(
-      path: '/signin',
+      path: '/auth/signin',
       builder: (_, state) => ChangeNotifierProvider(
-        create: (_) => AuthViewModel(
-          authService: AuthService(),
-        ),
-        child: const SigninScreen(),
+        create: (_) => SigninViewmodel(),
+        child: const SigninView(),
       ),
     ),
-    // 홈
+    /**
+     * 홈
+     */
     GoRoute(
       path: '/home',
       builder: (_, state) => ChangeNotifierProvider(
-        create: (_) => AuthViewModel(
-          authService: AuthService(),
-        ),
-        child: const HomeScreen(),
+        create: (_) => HomeViewmodel(),
+        child: const HomeView(),
+      ),
+    ),
+    /**
+     * memrory
+     */
+    GoRoute(
+      path: '/memory/create',
+      builder: (_, state) => ChangeNotifierProvider(
+        create: (_) => MemoryCreateViewmodel(),
+        child: const MemoryCreateView(),
       ),
     ),
   ],

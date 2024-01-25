@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:image_picker/image_picker.dart';
+import 'package:picmory/main.dart';
 
 /// 기억 관련 서버 통신을 담당하는 클래스
-class MemoryRemoteDatasourece {
+class MemoryRepository {
   /// 기억 생성
   /// - [userID] : 사용자 ID
   /// - [photo] : 사진
@@ -24,6 +27,11 @@ class MemoryRemoteDatasourece {
      * - [ ] hashtags 목록에서 DB에 없는 해시태그는 생성
      * - [ ] memory_hashtag 생성
      */
+    // supabase.from('memeory').insert({}).select('id');
+    // final photoUrl = await supabase.storage.from('picmory').upload('path', File(photo.path));
+    // final videoUrl = video != null
+    //     ? await supabase.storage.from('picmory').upload('path', File(photo.path))
+    //     : null;
     return false;
   }
 
