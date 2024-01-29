@@ -1,10 +1,25 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:picmory/main.dart';
+import 'package:picmory/models/hashtag/hashtag_create_model.dart';
+import 'package:picmory/models/memory/memory_create_model.dart';
 
 /// 기억 관련 서버 통신을 담당하는 클래스
 class MemoryRepository {
+  Future<String> _uploadFile(String path, String bucket, XFile file) async {
+    final supabaseUrl = dotenv.get("SUPABASE_URL");
+
+    final uri = await supabase.storage.from(bucket).upload(
+          '$path/${file.name}',
+          File(file.path),
+        );
+
+    return "$supabaseUrl/storage/v1/object/public/$uri";
+  }
+
   /// 기억 생성
   /// - [userID] : 사용자 ID
   /// - [photo] : 사진
@@ -13,7 +28,7 @@ class MemoryRepository {
   /// - [date] : 날짜
   /// - [brand] : 브랜드
   Future<bool> create({
-    required String userID,
+    required String userId,
     required XFile photo,
     required XFile? video,
     required List<String> hashtags,
@@ -22,17 +37,69 @@ class MemoryRepository {
   }) async {
     /** 
      * TODO: 기억 생성 기능 작성
-     * - [ ] photo, video 업로드 & URI 획득
-     * - [ ] memory 생성
-     * - [ ] hashtags 목록에서 DB에 없는 해시태그는 생성
-     * - [ ] memory_hashtag 생성
+     * - [x] photo, video 업로드 & URI 획득
+     * - [x] memory 생성
+     * - [x] hashtags 목록에서 DB에 없는 해시태그는 생성
+     * - [x] memory_hashtag 생성
      */
-    // supabase.from('memeory').insert({}).select('id');
-    // final photoUrl = await supabase.storage.from('picmory').upload('path', File(photo.path));
-    // final videoUrl = video != null
-    //     ? await supabase.storage.from('picmory').upload('path', File(photo.path))
-    //     : null;
-    return false;
+    final now = DateTime.now();
+    final path = 'users/$userId/memories/${now.millisecondsSinceEpoch}';
+
+    try {
+      final photoUri = await _uploadFile(
+        path,
+        'picmory',
+        photo,
+      );
+      final videoUri = video != null
+          ? await _uploadFile(
+              path,
+              'picmory',
+              video,
+            )
+          : null;
+
+      final newMemory = MemoryCreateModel(
+        userId: userId,
+        photoUri: photoUri,
+        videoUri: videoUri,
+        date: date,
+        brand: brand,
+      );
+
+      final data = await supabase
+          .from('memory')
+          .insert(
+            newMemory.toJson(),
+          )
+          .select('id');
+      final newMemoryId = data.first['id'];
+
+      final hashtagIdList = [];
+      for (final hashtag in hashtags) {
+        final newHashtag = HashtagCreateModel(name: hashtag);
+        final data = await supabase
+            .from('hashtag')
+            .upsert(
+              newHashtag.toJson(),
+              onConflict: "name",
+            )
+            .select('id');
+        hashtagIdList.add(data.first['id']);
+      }
+
+      for (final hashtagId in hashtagIdList) {
+        await supabase.from('memory_hashtag').insert({
+          "memory_id": newMemoryId,
+          "hashtag_id": hashtagId,
+        });
+      }
+
+      return true;
+    } catch (e) {
+      log(e.toString(), name: 'MemoryRepository.create');
+      return false;
+    }
   }
 
   /// 목록 조회
