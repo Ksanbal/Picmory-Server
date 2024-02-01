@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -5,7 +6,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/hashtag/hashtag_create_model.dart';
+import 'package:picmory/models/memory/crawled_qr_model.dart';
 import 'package:picmory/models/memory/memory_create_model.dart';
+
+import 'package:http/http.dart' as http;
 
 /// 기억 관련 서버 통신을 담당하는 클래스
 class MemoryRepository {
@@ -205,5 +209,33 @@ class MemoryRepository {
      * - [ ] memoryID & albumID로 memory_album 조회
      * - [ ] memory_album 삭제
      */
+  }
+
+  /// QR로 스캔한 URL 크롤링 API
+  /// - [url] : URL
+  /// - [jwt] : asdf
+  Future<CrawledQrModel?> crawlUrl(String url, String jwt) async {
+    /**
+     * TODO: 크롤링 API 호출 기능 작성
+     */
+    final response = await http.post(
+      Uri.https(
+        dotenv.get("API_HOST"),
+        '/functions/v1/qr-crawler',
+        {
+          'url': url,
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> json = jsonDecode(
+        utf8.decode(response.bodyBytes),
+      );
+
+      return CrawledQrModel.fromJson(json);
+    } else {
+      return null;
+    }
   }
 }

@@ -14,6 +14,13 @@ class MemoryCreateView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("메모리 생성"),
+        actions: [
+          // 생성 버튼
+          TextButton(
+            onPressed: () => vm.createMemory(context),
+            child: const Text("생성 버튼"),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -94,11 +101,6 @@ class MemoryCreateView extends StatelessWidget {
                     ),
                   );
                 },
-              ),
-              // 생성 버튼
-              TextButton(
-                onPressed: () => vm.createMemory(context),
-                child: const Text("생성 버튼"),
               ),
             ],
           ),
