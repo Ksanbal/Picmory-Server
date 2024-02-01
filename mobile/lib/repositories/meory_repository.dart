@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -9,16 +8,21 @@ import 'package:picmory/models/hashtag/hashtag_create_model.dart';
 import 'package:picmory/models/memory/crawled_qr_model.dart';
 import 'package:picmory/models/memory/memory_create_model.dart';
 
-import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// 기억 관련 서버 통신을 담당하는 클래스
 class MemoryRepository {
-  Future<String> _uploadFile(String path, String bucket, XFile file) async {
+  Future<String> _uploadFile(
+    String path,
+    String bucket,
+    String filename,
+    File file,
+  ) async {
     final supabaseUrl = dotenv.get("SUPABASE_URL");
 
     final uri = await supabase.storage.from(bucket).upload(
-          '$path/${file.name}',
-          File(file.path),
+          '$path/$filename',
+          file,
         );
 
     return "$supabaseUrl/storage/v1/object/public/$uri";
@@ -33,8 +37,10 @@ class MemoryRepository {
   /// - [brand] : 브랜드
   Future<bool> create({
     required String userId,
-    required XFile photo,
-    required XFile? video,
+    required File photo,
+    required String photoName,
+    required File? video,
+    required String? videoName,
     required List<String> hashtags,
     required DateTime date,
     required String? brand,
@@ -53,12 +59,14 @@ class MemoryRepository {
       final photoUri = await _uploadFile(
         path,
         'picmory',
+        photoName,
         photo,
       );
-      final videoUri = video != null
+      final videoUri = video != null && videoName != null
           ? await _uploadFile(
               path,
               'picmory',
+              videoName,
               video,
             )
           : null;
@@ -214,27 +222,21 @@ class MemoryRepository {
   /// QR로 스캔한 URL 크롤링 API
   /// - [url] : URL
   /// - [jwt] : asdf
-  Future<CrawledQrModel?> crawlUrl(String url, String jwt) async {
+  Future<CrawledQrModel?> crawlUrl(String url) async {
     /**
      * TODO: 크롤링 API 호출 기능 작성
      */
-    final response = await http.post(
-      Uri.https(
-        dotenv.get("API_HOST"),
-        '/functions/v1/qr-crawler',
-        {
+    try {
+      final res = await supabase.functions.invoke(
+        'qr-crawler',
+        body: {
           'url': url,
         },
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> json = jsonDecode(
-        utf8.decode(response.bodyBytes),
       );
 
-      return CrawledQrModel.fromJson(json);
-    } else {
+      return CrawledQrModel.fromJson(res.data);
+    } on FunctionException catch (e) {
+      log('${e.status.toString()} ${e.reasonPhrase}', name: 'MemoryRepository.crawlUrl');
       return null;
     }
   }

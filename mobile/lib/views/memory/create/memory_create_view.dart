@@ -34,12 +34,21 @@ class MemoryCreateView extends StatelessWidget {
               // 로드한 사진
               Consumer<MemoryCreateViewmodel>(
                 builder: (_, vm, __) {
-                  if (vm.selectedImage == null) {
-                    return Container();
+                  if (vm.isFromQR) {
+                    if (vm.crawledImageUrl == null) {
+                      return Container();
+                    }
+                    return Image.network(
+                      vm.crawledImageUrl!,
+                    );
+                  } else {
+                    if (vm.selectedImage == null) {
+                      return Container();
+                    }
+                    return Image.file(
+                      File(vm.selectedImage!.path),
+                    );
                   }
-                  return Image.file(
-                    File(vm.selectedImage!.path),
-                  );
                 },
               ),
               // 갤러리에서 영상 불러오기 버튼
@@ -50,16 +59,23 @@ class MemoryCreateView extends StatelessWidget {
               // 로드한 동영상
               Consumer<MemoryCreateViewmodel>(
                 builder: (_, vm, __) {
-                  if (vm.selectedVideo == null) {
-                    return Container();
+                  if (vm.isFromQR) {
+                    if (vm.crawledVideoUrl == null) {
+                      return Container();
+                    }
+                    return Text(vm.crawledVideoUrl!);
+                  } else {
+                    if (vm.selectedVideo == null) {
+                      return Container();
+                    }
+                    return Text(vm.selectedVideo!.path);
                   }
-                  return Text(vm.selectedVideo!.path);
                 },
               ),
               // qr 스캔 버튼
               TextButton(
-                onPressed: null,
-                child: Text("qr 스캔 버튼"),
+                onPressed: () => vm.scanQR(context),
+                child: const Text("qr 스캔 버튼"),
               ),
               // date 입력
               TextButton(

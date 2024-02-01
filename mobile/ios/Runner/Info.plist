@@ -76,5 +76,9 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Used to demonstrate image picker plugin</string>
 	<!-- ImagePicker -->
+	<!-- ImageGallerySaver -->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Used to save image to album</string>
+	<!-- ImageGallerySaver -->
 </dict>
 </plist>
