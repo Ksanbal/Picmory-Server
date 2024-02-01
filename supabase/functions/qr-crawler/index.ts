@@ -64,12 +64,10 @@ console.log("Hello from Functions!")
 
 Deno.serve(async (req: Request) => {
   try {
-    const url = new URL(req.url)
-    const queryParams = new URLSearchParams(url.search)
-    const qrUrl = queryParams.get('url')
+    const { url } = await req.json()
 
     // url 파라미터가 없을 경우
-    if (qrUrl === null) {
+    if (url === null) {
       return new Response(
         JSON.stringify({
           "message": "url 파라미터가 없습니다"
@@ -82,7 +80,7 @@ Deno.serve(async (req: Request) => {
     }
     
     // 호스트로 브랜드 구분 및 브랜드별 함수 호출
-    const reqHost = qrUrl?.split('/')[2]
+    const reqHost = url?.split('/')[2]
     const brand = brands[reqHost]
     const brandFunc = hosts[reqHost];
 
@@ -99,17 +97,23 @@ Deno.serve(async (req: Request) => {
     } 
 
     // html 요청
-    const res = await fetch(qrUrl)
+    const res = await fetch(url)
     const html = await res.text()
     const document: any = new DOMParser().parseFromString(html, 'text/html')
 
     const [photo, video] = hosts[reqHost](document);
 
     return new Response(
+      // JSON.stringify({
+      //   brand,
+      //   photo,
+      //   video,
+      // }),
+      // 테스트용으로 고정으로 반환
       JSON.stringify({
-        brand,
-        photo,
-        video,
+        brand: "테스트",
+        photo: "https://krrnuzfgncscifoykcsf.supabase.co/storage/v1/object/public/picmory/users/ed2e9572-f9af-4fb6-acdd-d453becf227d/memories/1706758953576/image_picker_82907A66-282F-4F54-8C8C-EF1688530243-6432-0000017E655E41AE.jpg?t=2024-02-01T10%3A37%3A46.604Z",
+        video: "https://krrnuzfgncscifoykcsf.supabase.co/storage/v1/object/public/picmory/users/ed2e9572-f9af-4fb6-acdd-d453becf227d/memories/1706758953576/image_picker_CDB523B5-C060-409F-AA5A-5260EB9C19C7-6432-0000017E6D3B8F5Ftrim.F52BBABE-B66F-4A94-B02B-FF9A4E65E516.MOV?t=2024-02-01T10%3A37%3A54.591Z",        
       }),
       { headers: { "Content-Type": "application/json" } },
     )
