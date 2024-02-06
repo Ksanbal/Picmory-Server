@@ -12,7 +12,7 @@ class SplashViewmodel extends ChangeNotifier {
       if (user == null) {
         context.go('/auth/signin');
       } else {
-        context.go('/home');
+        context.go('/');
       }
     });
   }

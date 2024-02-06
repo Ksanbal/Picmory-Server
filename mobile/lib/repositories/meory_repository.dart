@@ -7,6 +7,7 @@ import 'package:picmory/main.dart';
 import 'package:picmory/models/hashtag/hashtag_create_model.dart';
 import 'package:picmory/models/memory/crawled_qr_model.dart';
 import 'package:picmory/models/memory/memory_create_model.dart';
+import 'package:picmory/models/memory/memory_model.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -89,7 +90,7 @@ class MemoryRepository {
 
       final hashtagIdList = [];
       for (final hashtag in hashtags) {
-        final newHashtag = HashtagCreateModel(name: hashtag);
+        final newHashtag = HashtagModel(name: hashtag);
         final data = await supabase
             .from('hashtag')
             .upsert(
@@ -115,21 +116,41 @@ class MemoryRepository {
   }
 
   /// 목록 조회
-  /// - [userID] : 사용자 ID
+  /// - [userId] : 사용자 ID
   /// - [albumID] : 앨범 ID
   /// - [hashtag] : 해시태그
-  list({
-    required String userID,
+  Future<List<MemoryModel>> list({
+    required String userId,
     required int? albumID,
     required String? hashtag,
-  }) {
+  }) async {
     /**
      * TODO: 기억 목록 조회 기능 작성
-     * - [ ] albumID, hashtag가 모두 null이 아니면 에러
-     * - [ ] albumID, hashtag가 모두 null이면 전체 기억 목록 조회
+     * - [x] albumID, hashtag가 모두 null이 아니면 에러
+     * - [x] albumID, hashtag가 모두 null이면 전체 기억 목록 조회
      * - [ ] albumID가 null이 아니면 해당 앨범의 기억 목록 조회
      * - [ ] hashtag가 null이 아니면 해당 해시태그가 포함된 기억 목록 조회
      */
+    if (albumID != null && hashtag != null) {
+      throw Exception('albumID, hashtag 둘 중 하나만 입력해주세요');
+    }
+
+    final result = [];
+    if (albumID == null && hashtag == null) {
+      final items = await supabase
+          .from('memory')
+          .select(
+            'id, created_at, photo_uri, video_uri, date, hashtag(name)',
+          )
+          .eq('user_id', userId);
+      result.addAll(items);
+    } else if (albumID != null) {
+      //
+    } else if (hashtag != null) {
+      //
+    }
+
+    return result.map((e) => MemoryModel.fromJson(e)).toList();
   }
 
   /// 단일 조회

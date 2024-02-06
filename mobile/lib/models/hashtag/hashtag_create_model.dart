@@ -1,7 +1,7 @@
-class HashtagCreateModel {
+class HashtagModel {
   String name;
 
-  HashtagCreateModel({
+  HashtagModel({
     required this.name,
   });
 
@@ -10,4 +10,6 @@ class HashtagCreateModel {
       'name': name,
     };
   }
+
+  HashtagModel.fromJson(Map<String, dynamic> json) : name = json['name'];
 }

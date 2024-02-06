@@ -35,7 +35,7 @@ class SigninViewmodel extends ChangeNotifier {
             accessToken: accessToken,
           )
           .then(
-            (value) => value ? context.go('/home') : null,
+            (value) => value ? context.go('/') : null,
           );
     } catch (error) {
       log(
@@ -66,7 +66,7 @@ class SigninViewmodel extends ChangeNotifier {
             idToken: idToken,
           )
           .then(
-            (value) => value ? context.go('/home') : null,
+            (value) => value ? context.go('/') : null,
           );
     } catch (error) {
       log(
