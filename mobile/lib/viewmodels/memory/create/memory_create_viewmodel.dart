@@ -16,6 +16,27 @@ import 'package:picmory/repositories/meory_repository.dart';
 class MemoryCreateViewmodel extends ChangeNotifier {
   final MemoryRepository _memoryRepository = MemoryRepository();
 
+  /// 소스 선택 페이지에서 가져온 데이터 처리
+  getDataFromExtra(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
+
+      if (extra == null) return;
+
+      if (extra['from'] == 'gallery') {
+        _selectedImage = XFile(extra['image']);
+        _selectedVideo = XFile(extra['video']);
+      } else if (extra['from'] == 'qr') {
+        _isFromQR = true;
+        _crawledImageUrl = extra['image'];
+        _crawledVideoUrl = extra['video'];
+        _crawledBrand = extra['brand'];
+      }
+
+      notifyListeners();
+    });
+  }
+
   // QR 스캔 여부
   bool _isFromQR = false;
   bool get isFromQR => _isFromQR;
@@ -37,10 +58,14 @@ class MemoryCreateViewmodel extends ChangeNotifier {
   XFile? get selectedImage => _selectedImage;
 
   /// 갤러리에서 사진 불러오기
-  getImageFromGallery() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    _selectedImage = image;
-    notifyListeners();
+  getImageFromGallery(BuildContext context) async {
+    ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
+      if (value == null) return;
+      _selectedImage = value;
+
+      context.pop();
+      context.push('/memory/create');
+    });
   }
 
   // 선택한 동영상

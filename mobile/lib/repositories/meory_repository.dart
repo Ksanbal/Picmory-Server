@@ -242,7 +242,6 @@ class MemoryRepository {
 
   /// QR로 스캔한 URL 크롤링 API
   /// - [url] : URL
-  /// - [jwt] : asdf
   Future<CrawledQrModel?> crawlUrl(String url) async {
     /**
      * TODO: 크롤링 API 호출 기능 작성

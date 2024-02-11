@@ -9,7 +9,9 @@ class MemoryCreateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<MemoryCreateViewmodel>(context);
+    final vm = Provider.of<MemoryCreateViewmodel>(context, listen: false);
+
+    vm.getDataFromExtra(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -27,10 +29,7 @@ class MemoryCreateView extends StatelessWidget {
           child: Column(
             children: [
               // 갤러리에서 사진 불러오기 버튼
-              TextButton(
-                onPressed: vm.getImageFromGallery,
-                child: const Text("갤러리에서 사진 불러오기"),
-              ),
+              const Text("사진"),
               // 로드한 사진
               Consumer<MemoryCreateViewmodel>(
                 builder: (_, vm, __) {
@@ -52,10 +51,7 @@ class MemoryCreateView extends StatelessWidget {
                 },
               ),
               // 갤러리에서 영상 불러오기 버튼
-              TextButton(
-                onPressed: vm.getVideoFromGallery,
-                child: const Text("갤러리에서 영상 불러오기 버튼"),
-              ),
+              const Text("영상"),
               // 로드한 동영상
               Consumer<MemoryCreateViewmodel>(
                 builder: (_, vm, __) {
@@ -71,11 +67,6 @@ class MemoryCreateView extends StatelessWidget {
                     return Text(vm.selectedVideo!.path);
                   }
                 },
-              ),
-              // qr 스캔 버튼
-              TextButton(
-                onPressed: () => vm.scanQR(context),
-                child: const Text("qr 스캔 버튼"),
               ),
               // date 입력
               TextButton(
