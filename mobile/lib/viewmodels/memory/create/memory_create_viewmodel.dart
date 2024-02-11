@@ -8,34 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
 class MemoryCreateViewmodel extends ChangeNotifier {
   final MemoryRepository _memoryRepository = MemoryRepository();
-
-  /// 소스 선택 페이지에서 가져온 데이터 처리
-  getDataFromExtra(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
-
-      if (extra == null) return;
-
-      if (extra['from'] == 'gallery') {
-        _selectedImage = XFile(extra['image']);
-        _selectedVideo = XFile(extra['video']);
-      } else if (extra['from'] == 'qr') {
-        _isFromQR = true;
-        _crawledImageUrl = extra['image'];
-        _crawledVideoUrl = extra['video'];
-        _crawledBrand = extra['brand'];
-      }
-
-      notifyListeners();
-    });
-  }
 
   // QR 스캔 여부
   bool _isFromQR = false;
@@ -57,27 +35,9 @@ class MemoryCreateViewmodel extends ChangeNotifier {
   XFile? _selectedImage;
   XFile? get selectedImage => _selectedImage;
 
-  /// 갤러리에서 사진 불러오기
-  getImageFromGallery(BuildContext context) async {
-    ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
-      if (value == null) return;
-      _selectedImage = value;
-
-      context.pop();
-      context.push('/memory/create');
-    });
-  }
-
   // 선택한 동영상
   XFile? _selectedVideo;
   XFile? get selectedVideo => _selectedVideo;
-
-  /// 갤러리에서 동영상 불러오기
-  getVideoFromGallery() async {
-    final video = await ImagePicker().pickVideo(source: ImageSource.gallery);
-    _selectedVideo = video;
-    notifyListeners();
-  }
 
   /// 날짜
   DateTime date = DateTime.now();
@@ -102,6 +62,28 @@ class MemoryCreateViewmodel extends ChangeNotifier {
   // 해시태그
   TextEditingController hashtagController = TextEditingController();
   List<String> hashtags = [];
+
+  /// 소스 선택 페이지에서 가져온 데이터 처리
+  getDataFromExtra(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
+
+      if (extra == null) return;
+
+      if (extra['from'] == 'gallery') {
+        _selectedImage = XFile(extra['image']);
+        _selectedVideo = XFile(extra['video']);
+      } else if (extra['from'] == 'qr') {
+        _isFromQR = true;
+        _crawledImageUrl = extra['image'];
+        _crawledVideoUrl = extra['video'];
+        _crawledBrand = extra['brand'];
+      }
+
+      notifyListeners();
+    });
+  }
+
   hastagOnCSumbitted(String value) {
     if (!hashtags.contains(value)) {
       hashtags.add(value);
@@ -220,45 +202,5 @@ class MemoryCreateViewmodel extends ChangeNotifier {
         ),
       );
     }
-  }
-
-  // QR 스캔
-  Future<void> scanQR(BuildContext context) async {
-    String? url;
-
-    await showCupertinoModalPopup(
-      context: context,
-      builder: (BuildContext context) => Container(
-        height: 500,
-        color: Colors.white,
-        child: MobileScanner(
-          controller: MobileScannerController(
-            detectionSpeed: DetectionSpeed.normal,
-            facing: CameraFacing.back,
-          ),
-          onDetect: (capture) {
-            final List<Barcode> barcodes = capture.barcodes;
-            for (final barcode in barcodes) {
-              log('Barcode found! ${barcode.rawValue}');
-              url = barcode.rawValue;
-              context.pop();
-            }
-          },
-        ),
-      ),
-    );
-
-    if (url == null) return;
-
-    final result = await _memoryRepository.crawlUrl(url!);
-
-    if (result == null) return;
-
-    _isFromQR = true;
-    _crawledImageUrl = result.photo;
-    _crawledVideoUrl = result.video;
-    _crawledBrand = result.brand;
-
-    notifyListeners();
   }
 }
