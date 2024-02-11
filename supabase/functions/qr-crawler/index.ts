@@ -96,12 +96,12 @@ Deno.serve(async (req: Request) => {
       )
     } 
 
-    // html 요청
-    const res = await fetch(url)
-    const html = await res.text()
-    const document: any = new DOMParser().parseFromString(html, 'text/html')
+    // // html 요청
+    // const res = await fetch(url)
+    // const html = await res.text()
+    // const document: any = new DOMParser().parseFromString(html, 'text/html')
 
-    const [photo, video] = hosts[reqHost](document);
+    // const [photo, video] = hosts[reqHost](document);
 
     return new Response(
       // JSON.stringify({
