@@ -122,7 +122,7 @@ class MemoryRepository {
   Future<List<MemoryModel>> list({
     required String userId,
     required int? albumID,
-    required String? hashtag,
+    List<String> hashtags = const [],
   }) async {
     /**
      * TODO: 기억 목록 조회 기능 작성
@@ -131,12 +131,12 @@ class MemoryRepository {
      * - [ ] albumID가 null이 아니면 해당 앨범의 기억 목록 조회
      * - [ ] hashtag가 null이 아니면 해당 해시태그가 포함된 기억 목록 조회
      */
-    if (albumID != null && hashtag != null) {
-      throw Exception('albumID, hashtag 둘 중 하나만 입력해주세요');
+    if (albumID != null && hashtags.isEmpty) {
+      throw Exception('albumID, hashtags 둘 중 하나만 입력해주세요');
     }
 
     final result = [];
-    if (albumID == null && hashtag == null) {
+    if (albumID == null && hashtags.isEmpty) {
       final items = await supabase
           .from('memory')
           .select(
@@ -146,8 +146,26 @@ class MemoryRepository {
       result.addAll(items);
     } else if (albumID != null) {
       //
-    } else if (hashtag != null) {
-      //
+    } else if (hashtags.isNotEmpty) {
+      final items = await supabase
+          .from('memory')
+          .select(
+            'id, created_at, photo_uri, video_uri, date, hashtag(name)',
+          )
+          .eq('user_id', userId);
+
+      for (final item in items) {
+        if (item['hashtag'].isEmpty) {
+          continue;
+        }
+
+        for (final hashtag in item['hashtag']) {
+          if (hashtags.contains(hashtag['name'])) {
+            result.add(item);
+            break;
+          }
+        }
+      }
     }
 
     return result.map((e) => MemoryModel.fromJson(e)).toList();
@@ -259,5 +277,32 @@ class MemoryRepository {
       log('${e.status.toString()} ${e.reasonPhrase}', name: 'MemoryRepository.crawlUrl');
       return null;
     }
+  }
+
+  /// 해시태그 목록 조회
+  Future<List<String>> getHashtags({
+    required String userId,
+  }) async {
+    final items = await supabase
+        .from('memory')
+        .select(
+          'id, hashtag(name)',
+        )
+        .eq('user_id', userId);
+
+    List<String> hashtags = [];
+    for (final item in items) {
+      if (item['hashtag'].isEmpty) {
+        continue;
+      }
+
+      for (final hashtag in item['hashtag']) {
+        if (!hashtags.contains(hashtag['name'])) {
+          hashtags.add(hashtag['name']);
+        }
+      }
+    }
+
+    return hashtags;
   }
 }
