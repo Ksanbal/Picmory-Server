@@ -1,3 +1,4 @@
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
@@ -47,38 +48,85 @@ class HomeView extends StatelessWidget {
           // 기억 모록
           Expanded(
             child: Consumer<HomeViewmodel>(builder: (_, vm, __) {
-              return MasonryGridView.count(
-                crossAxisCount: 2,
-                itemCount: vm.memories.length,
-                itemBuilder: (context, index) {
-                  final memory = vm.memories[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 사진
-                        Card(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              memory.photoUri,
-                              fit: BoxFit.cover,
+              return CustomRefreshIndicator(
+                onRefresh: () async {
+                  vm.changeCrossAxisCount();
+                },
+                builder: (BuildContext context, Widget child, IndicatorController controller) {
+                  return Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      child,
+                      AnimatedBuilder(
+                        animation: controller,
+                        builder: (BuildContext context, _) {
+                          if (controller.isIdle) return Container();
+
+                          return Positioned(
+                            top: controller.value * 50.0, // Adjust this value as needed
+                            child: const Text(
+                              "당겨서 뷰 바꾸기",
+                              style: TextStyle(fontSize: 18.0),
                             ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: InkWell(
-                            onTap: () {},
-                            child: const Icon(Icons.more_horiz),
-                          ),
-                        )
-                      ],
-                    ),
+                          );
+                        },
+                      ),
+                    ],
                   );
                 },
+                child: MasonryGridView.count(
+                  crossAxisCount: vm.crossAxisCount,
+                  itemCount: vm.memories.length,
+                  itemBuilder: (context, index) {
+                    final memory = vm.memories[index];
+
+                    // 사진
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      child: Card(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            memory.photoUri,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               );
+              // return EasyRefresh(
+              //   onRefresh: () => Future.delayed(const Duration(seconds: 3)),
+              //   header: ClassicHeader(
+              //     processedDuration: Duration.zero,
+              //     showMessage: false,
+              //     textBuilder: (context, state, text) {
+              //       return Text('당겨서 뷰 바꾸기');
+              //     },
+              //   ),
+              //   child: MasonryGridView.count(
+              //     crossAxisCount: 2,
+              //     itemCount: vm.memories.length,
+              //     itemBuilder: (context, index) {
+              //       final memory = vm.memories[index];
+
+              //       // 사진
+              //       return Padding(
+              //         padding: const EdgeInsets.symmetric(horizontal: 0),
+              //         child: Card(
+              //           child: ClipRRect(
+              //             borderRadius: BorderRadius.circular(10),
+              //             child: Image.network(
+              //               memory.photoUri,
+              //               fit: BoxFit.cover,
+              //             ),
+              //           ),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // );
             }),
           ),
         ],

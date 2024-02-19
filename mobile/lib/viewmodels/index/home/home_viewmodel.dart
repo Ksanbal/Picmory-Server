@@ -17,6 +17,19 @@ class HomeViewmodel extends ChangeNotifier {
   final List<String> _selectedHashtags = [];
   List<String> get selectedHashtags => _selectedHashtags;
 
+  // 그리드 crossAxisCount (1~3)
+  int _crossAxisCount = 2;
+  int get crossAxisCount => _crossAxisCount;
+
+  /// 그리드 crossAxisCount 변경 (1~3)
+  changeCrossAxisCount() {
+    _crossAxisCount++;
+    if (_crossAxisCount > 3) {
+      _crossAxisCount = 1;
+    }
+    notifyListeners();
+  }
+
   loadMemories({
     List<String> hashtags = const [],
   }) async {
