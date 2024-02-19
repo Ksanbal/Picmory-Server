@@ -72,7 +72,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
 
       if (extra['from'] == 'gallery') {
         _selectedImage = XFile(extra['image']);
-        _selectedVideo = XFile(extra['video']);
+        if (extra['video'] != null) _selectedVideo = XFile(extra['video']);
       } else if (extra['from'] == 'qr') {
         _isFromQR = true;
         _crawledImageUrl = extra['image'];
