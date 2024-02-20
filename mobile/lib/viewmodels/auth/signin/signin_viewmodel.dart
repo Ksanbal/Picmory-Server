@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:picmory/repositories/auth_repository.dart';
@@ -9,6 +10,14 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SigninViewmodel extends ChangeNotifier {
   final _authRepository = AuthRepository();
+
+  final storage = const FlutterSecureStorage();
+
+  String? _latestSigninProvider;
+  String? get latestSigninProvider => _latestSigninProvider;
+
+  bool _loadProvider = false;
+  bool get loadProvider => _loadProvider;
 
   /// 구글 로그인
   signinWithGoogle(BuildContext context) async {
@@ -31,12 +40,17 @@ class SigninViewmodel extends ChangeNotifier {
 
       await _authRepository
           .signInWithGoogle(
-            idToken: idToken,
-            accessToken: accessToken,
-          )
+        idToken: idToken,
+        accessToken: accessToken,
+      )
           .then(
-            (value) => value ? context.go('/') : null,
-          );
+        (value) {
+          if (value) {
+            storage.write(key: 'latestSigninProvider', value: 'google');
+            context.go('/');
+          }
+        },
+      );
     } catch (error) {
       log(
         error.toString(),
@@ -63,11 +77,16 @@ class SigninViewmodel extends ChangeNotifier {
 
       _authRepository
           .signInWithApple(
-            idToken: idToken,
-          )
+        idToken: idToken,
+      )
           .then(
-            (value) => value ? context.go('/') : null,
-          );
+        (value) {
+          if (value) {
+            storage.write(key: 'latestSigninProvider', value: 'apple');
+            context.go('/');
+          }
+        },
+      );
     } catch (error) {
       log(
         error.toString(),
@@ -75,5 +94,13 @@ class SigninViewmodel extends ChangeNotifier {
         error: error,
       );
     }
+  }
+
+  /// 최근 로그인한 로그인 방식 표시
+  loadLatestSigninProvider() async {
+    _latestSigninProvider = await storage.read(key: 'latestSigninProvider');
+    _loadProvider = true;
+
+    notifyListeners();
   }
 }
