@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/models/hashtag/hashtag_create_model.dart';
 import 'package:picmory/models/memory/crawled_qr_model.dart';
 import 'package:picmory/models/memory/memory_create_model.dart';
 import 'package:picmory/models/memory/memory_model.dart';
@@ -42,7 +41,6 @@ class MemoryRepository {
     required String photoName,
     required File? video,
     required String? videoName,
-    required List<String> hashtags,
     required DateTime date,
     required String? brand,
   }) async {
@@ -80,33 +78,12 @@ class MemoryRepository {
         brand: brand,
       );
 
-      final data = await supabase
+      await supabase
           .from('memory')
           .insert(
             newMemory.toJson(),
           )
           .select('id');
-      final newMemoryId = data.first['id'];
-
-      final hashtagIdList = [];
-      for (final hashtag in hashtags) {
-        final newHashtag = HashtagModel(name: hashtag);
-        final data = await supabase
-            .from('hashtag')
-            .upsert(
-              newHashtag.toJson(),
-              onConflict: "name",
-            )
-            .select('id');
-        hashtagIdList.add(data.first['id']);
-      }
-
-      for (final hashtagId in hashtagIdList) {
-        await supabase.from('memory_hashtag').insert({
-          "memory_id": newMemoryId,
-          "hashtag_id": hashtagId,
-        });
-      }
 
       return true;
     } catch (e) {

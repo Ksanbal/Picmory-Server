@@ -77,38 +77,6 @@ class MemoryCreateView extends StatelessWidget {
                   },
                 ),
               ),
-              // hashtag 입력
-              TextField(
-                controller: vm.hashtagController,
-                decoration: const InputDecoration(
-                  hintText: "해시태그 입력",
-                ),
-                onSubmitted: vm.hastagOnCSumbitted,
-              ),
-              // 입력한 해시태그 목록
-              Consumer<MemoryCreateViewmodel>(
-                builder: (_, vm, __) {
-                  return SizedBox(
-                    height: 50,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: vm.hashtags.length,
-                      itemBuilder: (context, index) {
-                        final tag = vm.hashtags[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 5),
-                          child: InkWell(
-                            onTap: () => vm.removeFromHashtags(tag),
-                            child: Chip(
-                              label: Text(tag),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
             ],
           ),
         ),

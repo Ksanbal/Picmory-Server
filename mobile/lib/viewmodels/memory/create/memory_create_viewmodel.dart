@@ -164,7 +164,6 @@ class MemoryCreateViewmodel extends ChangeNotifier {
           photoName: photoResult['filePath'].split("/").last,
           video: File(savedVideoPath),
           videoName: videoFilename,
-          hashtags: hashtags,
           date: date,
           brand: null,
         );
@@ -179,7 +178,6 @@ class MemoryCreateViewmodel extends ChangeNotifier {
         photoName: _selectedImage!.name,
         video: _selectedVideo != null ? File(_selectedVideo!.path) : null,
         videoName: _selectedVideo?.name,
-        hashtags: hashtags,
         date: date,
         brand: null,
       );
