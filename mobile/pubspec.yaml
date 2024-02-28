@@ -10,6 +10,7 @@ dependencies:
   animate_do: ^3.3.3
   custom_refresh_indicator: ^3.0.0
   dio: ^5.4.0
+  extended_image: ^8.2.0
   firebase_core: ^2.24.2
   flutter:
     sdk: flutter
@@ -43,7 +44,5 @@ flutter:
   assets:
     # 환경변수
     - .env
-    # gifs
-    - assets/gifs/
     # Icons
     - assets/icons/

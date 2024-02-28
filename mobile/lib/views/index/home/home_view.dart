@@ -81,14 +81,17 @@ class HomeView extends StatelessWidget {
                     final memory = vm.memories[index];
 
                     // 사진
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0),
-                      child: Card(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            memory.photoUri,
-                            fit: BoxFit.cover,
+                    return InkWell(
+                      onTap: () => vm.goToMemoryRetrieve(context, memory),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        child: Card(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              memory.photoUri,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/memory_model.dart';
 import 'package:picmory/repositories/meory_repository.dart';
@@ -70,5 +71,10 @@ class HomeViewmodel extends ChangeNotifier {
     loadMemories(hashtags: _selectedHashtags);
 
     notifyListeners();
+  }
+
+  /// 기억 상세 페이지로 이동
+  goToMemoryRetrieve(BuildContext context, MemoryModel memory) {
+    context.push('/memory/${memory.id}');
   }
 }

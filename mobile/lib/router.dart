@@ -1,14 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/viewmodels/auth/signin/signin_viewmodel.dart';
 import 'package:picmory/viewmodels/index/for_you/for_you_viewmodel.dart';
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
 import 'package:picmory/viewmodels/index/index_viewmodel.dart';
 import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
+import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:picmory/viewmodels/menu/menu_viewmodel.dart';
 import 'package:picmory/viewmodels/splash/splash_viewmodel.dart';
 import 'package:picmory/views/auth/signin_view.dart';
 import 'package:picmory/views/index/index_view.dart';
 import 'package:picmory/views/memory/create/memory_create_view.dart';
+import 'package:picmory/views/memory/retrieve/memory_retrieve_view.dart';
 import 'package:picmory/views/menu/menu_view.dart';
 import 'package:picmory/views/splash/splash_view.dart';
 import 'package:provider/provider.dart';
@@ -40,41 +43,57 @@ final router = GoRouter(
      * Index
      */
     GoRoute(
-      path: '/',
-      builder: (_, state) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => IndexViewmodel(),
+        path: '/',
+        builder: (_, state) => MultiProvider(
+              providers: [
+                ChangeNotifierProvider(
+                  create: (_) => IndexViewmodel(),
+                ),
+                ChangeNotifierProvider(
+                  create: (_) => HomeViewmodel(),
+                ),
+                ChangeNotifierProvider(
+                  create: (_) => ForYouViewmodel(),
+                ),
+              ],
+              child: IndexView(),
+            ),
+        routes: [
+          /**
+          * memrory
+          */
+          GoRoute(
+            path: 'memory',
+            builder: (_, state) => Container(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                builder: (_, state) => ChangeNotifierProvider(
+                  create: (_) => MemoryCreateViewmodel(),
+                  child: const MemoryCreateView(),
+                ),
+              ),
+              GoRoute(
+                path: ':memoryId',
+                builder: (_, state) => ChangeNotifierProvider(
+                  create: (_) => MemoryRetrieveViewmodel(),
+                  child: MemoryRetrieveView(
+                    memoryId: state.pathParameters['memoryId']!,
+                  ),
+                ),
+              ),
+            ],
           ),
-          ChangeNotifierProvider(
-            create: (_) => HomeViewmodel(),
+          /**
+          * 메뉴 목록
+          */
+          GoRoute(
+            path: 'menu',
+            builder: (_, state) => ChangeNotifierProvider(
+              create: (_) => MenuViewmodel(),
+              child: const MenuView(),
+            ),
           ),
-          ChangeNotifierProvider(
-            create: (_) => ForYouViewmodel(),
-          ),
-        ],
-        child: IndexView(),
-      ),
-    ),
-    /**
-     * memrory
-     */
-    GoRoute(
-      path: '/memory/create',
-      builder: (_, state) => ChangeNotifierProvider(
-        create: (_) => MemoryCreateViewmodel(),
-        child: const MemoryCreateView(),
-      ),
-    ),
-    /**
-     * 메뉴 목록
-     */
-    GoRoute(
-      path: '/menu',
-      builder: (_, state) => ChangeNotifierProvider(
-        create: (_) => MenuViewmodel(),
-        child: const MenuView(),
-      ),
-    ),
+        ]),
   ],
 );

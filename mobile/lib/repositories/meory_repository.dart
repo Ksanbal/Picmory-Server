@@ -149,17 +149,30 @@ class MemoryRepository {
   }
 
   /// 단일 조회
-  /// - [userID] : 사용자 ID
-  /// - [memoryID] : 기억 ID
-  retrieve({
-    required String userID,
-    required int memoryID,
-  }) {
+  /// - [userId] : 사용자 ID
+  /// - [memoryId] : 기억 ID
+  Future<MemoryModel?> retrieve({
+    required String userId,
+    required int memoryId,
+  }) async {
     /**
      * TODO: 기억 단일 조회 기능 작성
-     * - [ ] memoryID로 기억 조회
+     * - [x] memoryID로 기억 조회
      * - [ ] memory_hashtag에서 memoryID로 해시태그 목록 조회
      */
+    final items = await supabase
+        .from('memory')
+        .select(
+          'id, created_at, photo_uri, video_uri, date, hashtag(name)',
+        )
+        .eq('user_id', userId)
+        .eq('id', memoryId);
+
+    if (items.isNotEmpty) {
+      return MemoryModel.fromJson(items.first);
+    }
+
+    return null;
   }
 
   /// 수정
