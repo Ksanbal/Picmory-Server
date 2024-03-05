@@ -14,126 +14,114 @@ class IndexBottomNavibationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 94,
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => onTap(0),
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.home_outlined,
-                              color:
-                                  currentIndex == 0 ? ColorFamily.primary : ColorFamily.textGrey700,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              "홈",
-                              style: CaptionSmStyle(
-                                color: currentIndex == 0
-                                    ? ColorFamily.primary
-                                    : ColorFamily.textGrey900,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  ClipPath(
-                    clipper: _CustomShape(),
-                    child: Container(
-                      height: 39,
-                      width: 69,
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16),
+      child: SizedBox(
+        height: 96,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: CustomPaint(
+                painter: _ShadowPainter(),
+                child: ClipPath(
+                  clipper: _CustomShape(),
+                  child: Container(
+                    height: 76,
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                    decoration: BoxDecoration(
                       color: Colors.white,
-                    ),
-                  ),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () => onTap(2),
                       borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => onTap(0),
+                            highlightColor: Colors.red,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.home_outlined,
+                                  color: currentIndex == 0
+                                      ? ColorFamily.primary
+                                      : ColorFamily.textGrey700,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "메인",
+                                  style: CaptionSmStyle(
+                                    color: currentIndex == 0
+                                        ? ColorFamily.primary
+                                        : ColorFamily.textGrey900,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.note_outlined,
-                              color:
-                                  currentIndex == 2 ? ColorFamily.primary : ColorFamily.textGrey700,
+                        const Spacer(),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => onTap(2),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.note_outlined,
+                                  color: currentIndex == 2
+                                      ? ColorFamily.primary
+                                      : ColorFamily.textGrey700,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "추억함",
+                                  style: CaptionSmStyle(
+                                    color: currentIndex == 2
+                                        ? ColorFamily.primary
+                                        : ColorFamily.textGrey900,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              "추억함",
-                              style: CaptionSmStyle(
-                                color: currentIndex == 2
-                                    ? ColorFamily.primary
-                                    : ColorFamily.textGrey900,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-          // qr 버튼
-          InkWell(
-            onTap: () => onTap(1),
-            child: Container(
-              height: 56,
-              width: 56,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: ColorFamily.primary,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x663D34F1),
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                    spreadRadius: 0,
-                  )
-                ],
-              ),
-              child: const Icon(
-                Icons.qr_code,
-                color: Colors.white,
+            // qr 버튼
+            InkWell(
+              onTap: () => onTap(1),
+              child: Container(
+                height: 56,
+                width: 56,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: ColorFamily.primary,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x663D34F1),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                      spreadRadius: 0,
+                    )
+                  ],
+                ),
+                child: const Icon(
+                  Icons.qr_code,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -147,9 +135,58 @@ class _CustomShape extends CustomClipper<Path> {
 
     final path = Path();
 
-    path.conicTo(0, h / 1.65, w / 3, h / 1.65, 1);
-    path.lineTo(w / 3 * 2, h / 1.65);
-    path.conicTo(w, h / 1.65, w, 0, 1);
+    final point1 = (w - 112) / 2;
+
+    double x = point1;
+    double y = 0;
+
+    path.lineTo(point1, 0);
+    x = point1;
+    y = 0;
+
+    path.conicTo(
+      x + 18,
+      0,
+      x + 18,
+      18,
+      1,
+    );
+    x += 18;
+    y += 18;
+
+    path.conicTo(
+      x,
+      y + 30,
+      x + 30,
+      y + 30,
+      1,
+    );
+    x += 30;
+    y += 30;
+
+    path.lineTo(x + 16, y);
+    x += 16;
+    y += 0;
+
+    path.conicTo(
+      x + 30,
+      y,
+      x + 30,
+      18,
+      1,
+    );
+    x += 30;
+    y -= 30;
+
+    path.conicTo(
+      x,
+      0,
+      x + 18,
+      0,
+      1,
+    );
+
+    path.lineTo(w, 0);
     path.lineTo(w, h);
     path.lineTo(0, h);
 
@@ -159,4 +196,17 @@ class _CustomShape extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper oldClipper) => true;
+}
+
+class _ShadowPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    Path path = _CustomShape().getClip(size);
+    canvas.drawShadow(path, Colors.black.withOpacity(0.25), 10.0, false);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
 }
