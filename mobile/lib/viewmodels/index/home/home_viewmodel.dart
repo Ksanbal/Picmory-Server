@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/models/memory/memory_model.dart';
+import 'package:picmory/models/memory/memory_list_model.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
 class HomeViewmodel extends ChangeNotifier {
   final _memoryRepository = MemoryRepository();
 
   /// 저장된 기억 목록
-  final List<MemoryModel> _memories = [];
-  List<MemoryModel> get memories => _memories;
+  final List<MemoryListModel> _memories = [];
+  List<MemoryListModel> get memories => _memories;
 
   /// 해시태그 목록
   final List<String> _hashtags = [];
@@ -21,6 +21,12 @@ class HomeViewmodel extends ChangeNotifier {
   // 그리드 crossAxisCount (1~3)
   int _crossAxisCount = 2;
   int get crossAxisCount => _crossAxisCount;
+
+  init() {
+    clearDatas();
+    loadMemories();
+    loadHashtags();
+  }
 
   /// 그리드 crossAxisCount 변경 (1~3)
   changeCrossAxisCount() {
@@ -74,7 +80,7 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   /// 기억 상세 페이지로 이동
-  goToMemoryRetrieve(BuildContext context, MemoryModel memory) {
+  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
     context.push('/memory/${memory.id}');
   }
 }

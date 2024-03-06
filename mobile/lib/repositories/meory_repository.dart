@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/crawled_qr_model.dart';
 import 'package:picmory/models/memory/memory_create_model.dart';
+import 'package:picmory/models/memory/memory_list_model.dart';
 import 'package:picmory/models/memory/memory_model.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -96,7 +97,7 @@ class MemoryRepository {
   /// - [userId] : 사용자 ID
   /// - [albumID] : 앨범 ID
   /// - [hashtag] : 해시태그
-  Future<List<MemoryModel>> list({
+  Future<List<MemoryListModel>> list({
     required String userId,
     required int? albumID,
     List<String> hashtags = const [],
@@ -145,7 +146,7 @@ class MemoryRepository {
       }
     }
 
-    return result.map((e) => MemoryModel.fromJson(e)).toList();
+    return result.map((e) => MemoryListModel.fromJson(e)).toList();
   }
 
   /// 단일 조회
