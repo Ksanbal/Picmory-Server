@@ -10,6 +10,7 @@ import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/families/text_styles/title_lg_style.dart';
 import 'package:picmory/viewmodels/auth/signin/signin_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 class SigninView extends StatelessWidget {
   const SigninView({super.key});
@@ -115,7 +116,7 @@ class SigninView extends StatelessWidget {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Icon(
-                                          Icons.dangerous,
+                                          SolarIconsBold.dangerCircle,
                                           color: ColorFamily.primaryDark,
                                         ),
                                         SizedBox(width: 4),
@@ -146,7 +147,7 @@ class SigninView extends StatelessWidget {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Icon(
-                                                Icons.dangerous,
+                                                SolarIconsBold.dangerCircle,
                                                 color: ColorFamily.primaryDark,
                                               ),
                                               SizedBox(width: 4),

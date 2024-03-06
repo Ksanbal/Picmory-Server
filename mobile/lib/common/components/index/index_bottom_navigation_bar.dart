@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 class IndexBottomNavibationBar extends StatelessWidget {
   const IndexBottomNavibationBar({
@@ -45,7 +46,7 @@ class IndexBottomNavibationBar extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.home_outlined,
+                                  SolarIconsOutline.home1,
                                   color: currentIndex == 0
                                       ? ColorFamily.primary
                                       : ColorFamily.textGrey700,
@@ -71,7 +72,7 @@ class IndexBottomNavibationBar extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.note_outlined,
+                                  SolarIconsOutline.notes,
                                   color: currentIndex == 2
                                       ? ColorFamily.primary
                                       : ColorFamily.textGrey700,
@@ -115,7 +116,7 @@ class IndexBottomNavibationBar extends StatelessWidget {
                   ],
                 ),
                 child: const Icon(
-                  Icons.qr_code,
+                  SolarIconsBold.galleryAdd,
                   color: Colors.white,
                 ),
               ),

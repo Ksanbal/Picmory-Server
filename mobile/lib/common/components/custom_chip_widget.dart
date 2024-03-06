@@ -43,10 +43,10 @@ class CustomChipWidget extends StatelessWidget {
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.close,
                 size: 16,
-                color: Colors.white,
+                color: Colors.white.withOpacity(0.5),
               ),
           ],
         ),
