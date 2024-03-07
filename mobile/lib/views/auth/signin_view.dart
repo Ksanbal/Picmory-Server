@@ -10,7 +10,6 @@ import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/families/text_styles/title_lg_style.dart';
 import 'package:picmory/viewmodels/auth/signin/signin_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
 class SigninView extends StatelessWidget {
   const SigninView({super.key});
@@ -111,16 +110,17 @@ class SigninView extends StatelessWidget {
                                       horizontal: 16,
                                       vertical: 8,
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
-                                          SolarIconsBold.dangerCircle,
-                                          color: ColorFamily.primaryDark,
+                                        SvgPicture.asset(
+                                          AssetIconFamily.dangerCircleBold,
+                                          width: 20,
+                                          height: 20,
                                         ),
-                                        SizedBox(width: 4),
-                                        Text(
+                                        const SizedBox(width: 4),
+                                        const Text(
                                           "3초안에 회원가입을 해보세요!",
                                           style: CaptionSmStyle(
                                             color: ColorFamily.primaryDark,
@@ -142,16 +142,17 @@ class SigninView extends StatelessWidget {
                                             horizontal: 14,
                                             vertical: 6,
                                           ),
-                                          child: const Row(
+                                          child: Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Icon(
-                                                SolarIconsBold.dangerCircle,
-                                                color: ColorFamily.primaryDark,
+                                              SvgPicture.asset(
+                                                AssetIconFamily.dangerCircleBold,
+                                                width: 20,
+                                                height: 20,
                                               ),
-                                              SizedBox(width: 4),
-                                              Text(
+                                              const SizedBox(width: 4),
+                                              const Text(
                                                 "가장 최근에 로그인한 계정입니다",
                                                 style: CaptionSmStyle(
                                                   color: ColorFamily.primaryDark,
