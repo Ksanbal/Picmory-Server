@@ -1,5 +1,4 @@
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
@@ -55,11 +54,11 @@ class MemoryRetrieveView extends StatelessWidget {
                   child: IconButton(
                     icon: Consumer<MemoryRetrieveViewmodel>(
                       builder: (_, vm, __) {
-                        if (vm.memory == null) return Container();
+                        final isLiked = vm.memory?.isLiked ?? false;
 
                         return Icon(
-                          vm.memory!.isLiked ? Icons.favorite : Icons.favorite_outline,
-                          color: vm.memory!.isLiked ? ColorFamily.error : null,
+                          isLiked ? Icons.favorite : Icons.favorite_outline,
+                          color: isLiked ? ColorFamily.error : null,
                         );
                       },
                     ),
