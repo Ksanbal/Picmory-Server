@@ -164,13 +164,15 @@ class MemoryRepository {
     final items = await supabase
         .from('memory')
         .select(
-          'id, created_at, photo_uri, video_uri, date, hashtag(name)',
+          'id, created_at, photo_uri, video_uri, date, hashtag(name), memory_like(id)',
         )
         .eq('user_id', userId)
         .eq('id', memoryId);
 
     if (items.isNotEmpty) {
-      return MemoryModel.fromJson(items.first);
+      final item = items.first;
+      item['is_liked'] = item['memory_like'].isNotEmpty;
+      return MemoryModel.fromJson(item);
     }
 
     return null;
@@ -295,5 +297,30 @@ class MemoryRepository {
     }
 
     return hashtags;
+  }
+
+  /// 좋아요 상태 변경
+  /// - [userID] : 사용자 ID
+  /// - [memoryID] : 기억 ID
+  Future<bool> changeLikeStatus({
+    required String userId,
+    required int memoryId,
+    required bool isLiked,
+  }) async {
+    try {
+      if (isLiked) {
+        await supabase.from('memory_like').delete().eq('user_id', userId).eq('memory_id', memoryId);
+      } else {
+        await supabase.from('memory_like').insert({
+          'user_id': userId,
+          'memory_id': memoryId,
+        });
+      }
+    } catch (e) {
+      log(e.toString(), name: 'MemoryRepository.changeLikeStatus');
+      return false;
+    }
+
+    return true;
   }
 }

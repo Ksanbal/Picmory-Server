@@ -20,5 +20,18 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     }
   }
 
-  // TextEditingController _
+  // 좋아요 기록
+  likeMemory() async {
+    final result = await _memoryRepository.changeLikeStatus(
+      userId: supabase.auth.currentUser!.id,
+      memoryId: _memory!.id,
+      isLiked: _memory!.isLiked,
+    );
+
+    if (result) {
+      _memory!.isLiked = !_memory!.isLiked;
+    }
+
+    notifyListeners();
+  }
 }

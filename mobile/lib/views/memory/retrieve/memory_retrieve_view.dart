@@ -1,18 +1,17 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class MemoryRetrieveView extends StatelessWidget {
-  MemoryRetrieveView({
+  const MemoryRetrieveView({
     super.key,
     required this.memoryId,
   });
 
   final String memoryId;
-
-  double _scale = 1.0;
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +19,7 @@ class MemoryRetrieveView extends StatelessWidget {
     vm.getMemory(int.parse(memoryId));
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.folder_open_outlined),
-            onPressed: () {},
-          )
-        ],
-      ),
+      appBar: AppBar(),
       body: Column(
         children: [
           Expanded(
@@ -45,39 +37,48 @@ class MemoryRetrieveView extends StatelessWidget {
             ),
           ),
           // 하단 선택바
-          Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-            child: Container(
-              color: Colors.white,
-              height: 50,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.info_outline),
-                      onPressed: () {},
-                    ),
+          Container(
+            height: 50 + MediaQuery.of(context).padding.bottom,
+            color: Colors.white,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    onPressed: () {},
                   ),
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.favorite_outline),
-                      onPressed: () {},
+                ),
+                Expanded(
+                  child: IconButton(
+                    icon: Consumer<MemoryRetrieveViewmodel>(
+                      builder: (_, vm, __) {
+                        if (vm.memory == null) return Container();
+
+                        return Icon(
+                          vm.memory!.isLiked ? Icons.favorite : Icons.favorite_outline,
+                          color: vm.memory!.isLiked ? ColorFamily.error : null,
+                        );
+                      },
                     ),
+                    onPressed: vm.likeMemory,
                   ),
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.tag_outlined),
-                      onPressed: () {},
-                    ),
+                ),
+                Expanded(
+                  child: IconButton(
+                    icon: const Icon(Icons.folder_open_outlined),
+                    onPressed: () {},
                   ),
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      onPressed: () {},
-                    ),
+                ),
+                Expanded(
+                  child: IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    onPressed: () {},
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           )
         ],
