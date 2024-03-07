@@ -37,7 +37,7 @@ class IndexViewmodel extends ChangeNotifier {
       isScrollControlled: true,
       useSafeArea: true,
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.9,
+        maxHeight: MediaQuery.of(context).size.height / 6 * 5,
       ),
     );
   }
