@@ -13,7 +13,33 @@ import 'package:picmory/main.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
 class MemoryCreateViewmodel extends ChangeNotifier {
+  // Singleton instance
+  static final MemoryCreateViewmodel _singleton = MemoryCreateViewmodel._internal();
+
+  // Factory method to return the same instance
+  factory MemoryCreateViewmodel() {
+    return _singleton;
+  }
+
+  // Named constructor
+  MemoryCreateViewmodel._internal();
+
+  bool _disposed = false;
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
+
   final MemoryRepository _memoryRepository = MemoryRepository();
+
+  bool _createComplete = false;
+  bool get createComplete => _createComplete;
 
   // QR 스캔 여부
   bool _isFromQR = false;
@@ -184,16 +210,19 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     }
 
     if (result) {
-      // ignore: use_build_context_synchronously
+      // final homeViewmodel = Provider.of<HomeViewmodel>(context, listen: false);
+      // homeViewmodel.clearDatas();
+      // homeViewmodel.loadMemories();
+
+      _createComplete = true;
+
       context.pop();
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("기억이 생성되었습니다 🎉"),
         ),
       );
     } else {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("생성에 실패했습니다 😢"),

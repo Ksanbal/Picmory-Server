@@ -3,9 +3,31 @@ import 'package:go_router/go_router.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/memory_list_model.dart';
 import 'package:picmory/repositories/meory_repository.dart';
+import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
+import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 
 class HomeViewmodel extends ChangeNotifier {
   final _memoryRepository = MemoryRepository();
+  final MemoryCreateViewmodel _memoryCreateViewmodel;
+  final MemoryRetrieveViewmodel _memoryRetrieveViewmodel;
+
+  HomeViewmodel(this._memoryCreateViewmodel, this._memoryRetrieveViewmodel) {
+    // 생성 리스너
+    _memoryCreateViewmodel.addListener(() {
+      if (_memoryCreateViewmodel.createComplete) {
+        clearDatas();
+        loadMemories();
+      }
+    });
+
+    // 삭제 리스너
+    _memoryRetrieveViewmodel.addListener(() {
+      if (_memoryRetrieveViewmodel.deleteComplete) {
+        _memories.removeWhere((element) => element.id == _memoryRetrieveViewmodel.memory!.id);
+        notifyListeners();
+      }
+    });
+  }
 
   /// 저장된 기억 목록
   final List<MemoryListModel> _memories = [];
@@ -56,6 +78,11 @@ class HomeViewmodel extends ChangeNotifier {
     _hashtags.clear();
   }
 
+  deleteMemoryFromList(int memoryId) {
+    _memories.removeWhere((element) => element.id == memoryId);
+    notifyListeners();
+  }
+
   /// 해시태그 목록 불러오기
   loadHashtags() async {
     final userId = supabase.auth.currentUser!.id;
@@ -80,10 +107,7 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   /// 기억 상세 페이지로 이동
-  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) async {
-    await context.push('/memory/${memory.id}');
-
-    clearDatas();
-    loadMemories();
+  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
+    context.push('/memory/${memory.id}');
   }
 }

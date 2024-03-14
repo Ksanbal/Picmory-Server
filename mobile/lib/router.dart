@@ -50,7 +50,10 @@ final router = GoRouter(
                   create: (_) => IndexViewmodel(),
                 ),
                 ChangeNotifierProvider(
-                  create: (_) => HomeViewmodel(),
+                  create: (_) => HomeViewmodel(
+                    MemoryCreateViewmodel(),
+                    MemoryRetrieveViewmodel(),
+                  ),
                 ),
                 ChangeNotifierProvider(
                   create: (_) => ForYouViewmodel(),

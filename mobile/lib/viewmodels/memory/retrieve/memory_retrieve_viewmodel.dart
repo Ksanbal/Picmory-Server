@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
@@ -8,6 +6,17 @@ import 'package:picmory/models/memory/memory_model.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
 class MemoryRetrieveViewmodel extends ChangeNotifier {
+  // Singleton instance
+  static final MemoryRetrieveViewmodel _singleton = MemoryRetrieveViewmodel._internal();
+
+  // Factory method to return the same instance
+  factory MemoryRetrieveViewmodel() {
+    return _singleton;
+  }
+
+  // Named constructor
+  MemoryRetrieveViewmodel._internal();
+
   bool _disposed = false;
   @override
   void dispose() {
@@ -24,6 +33,9 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;
+
+  bool _deleteComplete = false;
+  bool get deleteComplete => _deleteComplete;
 
   bool _isFullScreen = false;
   bool get isFullScreen => _isFullScreen;
@@ -58,7 +70,7 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
   /// 삭제
   delete(BuildContext context) async {
-    // [ ] 삭제 확인 다이얼로그
+    // [x] 삭제 확인 다이얼로그
     final result = await showDialog(
       context: context,
       builder: (context) {
@@ -90,6 +102,8 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
         showSnackBar(context, error);
       } else {
         showSnackBar(context, '삭제되었습니다.');
+
+        _deleteComplete = true;
 
         // [x] 뒤로가기
         context.pop();
