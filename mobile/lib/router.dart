@@ -71,15 +71,15 @@ final router = GoRouter(
             routes: [
               GoRoute(
                 path: 'create',
-                builder: (_, state) => ChangeNotifierProvider(
-                  create: (_) => MemoryCreateViewmodel(),
+                builder: (_, state) => ChangeNotifierProvider.value(
+                  value: MemoryCreateViewmodel(),
                   child: const MemoryCreateView(),
                 ),
               ),
               GoRoute(
                 path: ':memoryId',
-                builder: (_, state) => ChangeNotifierProvider(
-                  create: (_) => MemoryRetrieveViewmodel(),
+                builder: (_, state) => ChangeNotifierProvider.value(
+                  value: MemoryRetrieveViewmodel(),
                   child: MemoryRetrieveView(
                     memoryId: state.pathParameters['memoryId']!,
                   ),

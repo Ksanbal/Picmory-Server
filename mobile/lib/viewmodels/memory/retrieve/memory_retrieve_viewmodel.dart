@@ -17,18 +17,6 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
   // Named constructor
   MemoryRetrieveViewmodel._internal();
 
-  bool _disposed = false;
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  @override
-  void notifyListeners() {
-    if (!_disposed) super.notifyListeners();
-  }
-
   final MemoryRepository _memoryRepository = MemoryRepository();
 
   MemoryModel? _memory;

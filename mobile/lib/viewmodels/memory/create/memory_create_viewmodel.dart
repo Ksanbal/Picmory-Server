@@ -24,18 +24,6 @@ class MemoryCreateViewmodel extends ChangeNotifier {
   // Named constructor
   MemoryCreateViewmodel._internal();
 
-  bool _disposed = false;
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  @override
-  void notifyListeners() {
-    if (!_disposed) super.notifyListeners();
-  }
-
   final MemoryRepository _memoryRepository = MemoryRepository();
 
   bool _createComplete = false;
