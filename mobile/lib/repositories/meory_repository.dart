@@ -204,18 +204,50 @@ class MemoryRepository {
   }
 
   /// 삭제
-  /// - [userID] : 사용자 ID
-  /// - [memoryID] : 기억 ID
-  delete({
-    required String userID,
-    required int memoryID,
-  }) {
+  /// - [userId] : 사용자 ID
+  /// - [memoryId] : 기억 ID
+  Future<String?> delete({
+    required String userId,
+    required int memoryId,
+  }) async {
     /**
      * TODO: 기억 삭제 기능 작성
-     * - [ ] memoryID로 기억 조회
-     * - [ ] memory 삭제
-     * - [ ] photo, video 삭제
+     * - [x] memoryID로 기억 조회
+     * - [x] memory 삭제
+     * - [x] photo, video 삭제
      */
+    final items = await supabase
+        .from('memory')
+        .select(
+          'photo_uri, video_uri',
+        )
+        .eq('user_id', userId)
+        .eq('id', memoryId);
+    if (items.isEmpty) {
+      return '기억을 찾을 수 없어요';
+    }
+
+    try {
+      await supabase.from('memory').delete().eq('id', memoryId);
+
+      final item = items.first;
+      final photoUri = item['photo_uri'];
+      final videoUri = item['video_uri'];
+
+      final List<String> removeList = [];
+      removeList.add('users/${photoUri.split('users/').last}');
+
+      if (videoUri != null) {
+        removeList.add('users/${videoUri.split('users/').last}');
+      }
+
+      await supabase.storage.from('picmory').remove(removeList);
+
+      return null;
+    } catch (error) {
+      log(error.toString(), name: 'MemoryRepository.delete');
+      return '기억을 삭제할 수 없어요';
+    }
   }
 
   /// 앨범에 추가

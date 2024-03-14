@@ -78,7 +78,7 @@ class MemoryRetrieveView extends StatelessWidget {
                           Expanded(
                             child: IconButton(
                               icon: const Icon(SolarIconsOutline.trashBinMinimalistic),
-                              onPressed: () {},
+                              onPressed: () => vm.delete(context),
                             ),
                           ),
                         ],

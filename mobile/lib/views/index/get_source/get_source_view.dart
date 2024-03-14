@@ -8,7 +8,6 @@ import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
 import 'package:picmory/viewmodels/index/index_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
 class GetSourceView extends StatelessWidget {
   const GetSourceView({

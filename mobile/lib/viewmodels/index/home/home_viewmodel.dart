@@ -80,7 +80,10 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   /// 기억 상세 페이지로 이동
-  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
-    context.push('/memory/${memory.id}');
+  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) async {
+    await context.push('/memory/${memory.id}');
+
+    clearDatas();
+    loadMemories();
   }
 }

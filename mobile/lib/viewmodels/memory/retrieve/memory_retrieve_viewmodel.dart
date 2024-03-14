@@ -1,9 +1,25 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/memory_model.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
 class MemoryRetrieveViewmodel extends ChangeNotifier {
+  bool _disposed = false;
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
+
   final MemoryRepository _memoryRepository = MemoryRepository();
 
   MemoryModel? _memory;
@@ -43,8 +59,42 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
   /// 삭제
   delete(BuildContext context) async {
     // [ ] 삭제 확인 다이얼로그
+    final result = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('삭제'),
+          content: const Text('삭제하시겠습니까?'),
+          actions: [
+            TextButton(
+              onPressed: () => context.pop(false),
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () => context.pop(true),
+              child: const Text('삭제'),
+            ),
+          ],
+        );
+      },
+    );
 
-    // [ ] 삭제 요청
+    // [x] 삭제 요청
+    if (result == true) {
+      final error = await _memoryRepository.delete(
+        userId: supabase.auth.currentUser!.id,
+        memoryId: _memory!.id,
+      );
+
+      if (error != null) {
+        showSnackBar(context, error);
+      } else {
+        showSnackBar(context, '삭제되었습니다.');
+
+        // [x] 뒤로가기
+        context.pop();
+      }
+    }
   }
 
   toggleFullScreen() {
