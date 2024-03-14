@@ -1,8 +1,10 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 class MemoryRetrieveView extends StatelessWidget {
   const MemoryRetrieveView({
@@ -14,72 +16,94 @@ class MemoryRetrieveView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<MemoryRetrieveViewmodel>(context, listen: false);
+    final vm = Provider.of<MemoryRetrieveViewmodel>(context, listen: true);
     vm.getMemory(int.parse(memoryId));
 
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
+      backgroundColor: vm.isFullScreen ? Colors.black : ColorFamily.disabledGrey400,
+      body: Stack(
         children: [
-          Expanded(
-            child: Consumer<MemoryRetrieveViewmodel>(
-              builder: (_, vm, __) {
-                final memory = vm.memory;
+          Column(
+            children: [
+              Expanded(
+                child: vm.memory == null
+                    ? Container()
+                    : InkWell(
+                        onTap: vm.toggleFullScreen,
+                        splashColor: Colors.transparent,
+                        child: ExtendedImage.network(
+                          vm.memory!.photoUri,
+                          mode: ExtendedImageMode.gesture,
+                        ),
+                      ),
+              ),
+              // 하단 선택바
+              vm.isFullScreen
+                  ? Container()
+                  : Container(
+                      height: 50 + MediaQuery.of(context).padding.bottom,
+                      color: Colors.white,
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).padding.bottom,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: IconButton(
+                              icon: const Icon(SolarIconsOutline.infoCircle),
+                              onPressed: () {},
+                            ),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                              icon: Consumer<MemoryRetrieveViewmodel>(
+                                builder: (_, vm, __) {
+                                  final isLiked = vm.memory?.isLiked ?? false;
 
-                if (memory == null) return Container();
-
-                return ExtendedImage.network(
-                  memory.photoUri,
-                  mode: ExtendedImageMode.gesture,
-                );
-              },
-            ),
-          ),
-          // 하단 선택바
-          Container(
-            height: 50 + MediaQuery.of(context).padding.bottom,
-            color: Colors.white,
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(Icons.info_outline),
-                    onPressed: () {},
-                  ),
-                ),
-                Expanded(
-                  child: IconButton(
-                    icon: Consumer<MemoryRetrieveViewmodel>(
-                      builder: (_, vm, __) {
-                        final isLiked = vm.memory?.isLiked ?? false;
-
-                        return Icon(
-                          isLiked ? Icons.favorite : Icons.favorite_outline,
-                          color: isLiked ? ColorFamily.error : null,
-                        );
-                      },
+                                  return Icon(
+                                    isLiked ? SolarIconsBold.heart : SolarIconsOutline.heart,
+                                    color: isLiked ? ColorFamily.error : null,
+                                  );
+                                },
+                              ),
+                              onPressed: vm.likeMemory,
+                            ),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                              icon: const Icon(SolarIconsOutline.addFolder),
+                              onPressed: () {},
+                            ),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                              icon: const Icon(SolarIconsOutline.trashBinMinimalistic),
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    onPressed: vm.likeMemory,
+            ],
+          ),
+          // 뒤로가기 버튼
+          vm.isFullScreen
+              ? Container()
+              : Positioned(
+                  top: MediaQuery.of(context).padding.top,
+                  left: 16,
+                  child: InkWell(
+                    onTap: context.pop,
+                    child: const CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        SolarIconsOutline.altArrowLeft,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
                 ),
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(Icons.folder_open_outlined),
-                    onPressed: () {},
-                  ),
-                ),
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () {},
-                  ),
-                ),
-              ],
-            ),
-          )
         ],
       ),
     );

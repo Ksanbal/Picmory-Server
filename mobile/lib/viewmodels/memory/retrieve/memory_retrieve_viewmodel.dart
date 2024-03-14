@@ -8,6 +8,11 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;
+
+  bool _isFullScreen = false;
+  bool get isFullScreen => _isFullScreen;
+
+  /// 메모리 상세정보 호출
   getMemory(int memoryId) async {
     final data = await _memoryRepository.retrieve(
       userId: supabase.auth.currentUser!.id,
@@ -20,7 +25,7 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     }
   }
 
-  // 좋아요 기록
+  /// 좋아요 기록
   likeMemory() async {
     final result = await _memoryRepository.changeLikeStatus(
       userId: supabase.auth.currentUser!.id,
@@ -32,6 +37,18 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
       _memory!.isLiked = !_memory!.isLiked;
     }
 
+    notifyListeners();
+  }
+
+  /// 삭제
+  delete(BuildContext context) async {
+    // [ ] 삭제 확인 다이얼로그
+
+    // [ ] 삭제 요청
+  }
+
+  toggleFullScreen() {
+    _isFullScreen = !_isFullScreen;
     notifyListeners();
   }
 }
