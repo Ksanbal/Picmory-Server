@@ -78,8 +78,21 @@ final router = GoRouter(
               ),
               GoRoute(
                 path: ':memoryId',
-                builder: (_, state) => ChangeNotifierProvider.value(
-                  value: MemoryRetrieveViewmodel(),
+                // builder: (_, state) => ChangeNotifierProvider.value(
+                //   value: MemoryRetrieveViewmodel(),
+                //   child: MemoryRetrieveView(
+                //     memoryId: state.pathParameters['memoryId']!,
+                //   ),
+                // ),
+                builder: (_, state) => MultiProvider(
+                  providers: [
+                    ChangeNotifierProvider.value(
+                      value: MemoryRetrieveViewmodel(),
+                    ),
+                    ChangeNotifierProvider(
+                      create: (_) => ForYouViewmodel(),
+                    ),
+                  ],
                   child: MemoryRetrieveView(
                     memoryId: state.pathParameters['memoryId']!,
                   ),

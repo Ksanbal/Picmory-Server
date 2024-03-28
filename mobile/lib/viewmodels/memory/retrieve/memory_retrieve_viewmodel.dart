@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:picmory/common/components/album/add_album_bottomsheet.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/memory_model.dart';
+import 'package:picmory/repositories/album_repository.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
 class MemoryRetrieveViewmodel extends ChangeNotifier {
@@ -18,6 +20,7 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
   MemoryRetrieveViewmodel._internal();
 
   final MemoryRepository _memoryRepository = MemoryRepository();
+  final AlbumRepository _albumRepository = AlbumRepository();
 
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;
@@ -99,8 +102,33 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     }
   }
 
+  /// 전체화면 토글
   toggleFullScreen() {
     _isFullScreen = !_isFullScreen;
     notifyListeners();
+  }
+
+  /// 추억함에 추가 dialog 노출
+  showAddAlbumDialog(BuildContext context) async {
+    final albums = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
+
+    showModalBottomSheet(
+      context: context,
+      builder: (myContext) {
+        return AddAlbumBottomsheet(
+          albums: albums,
+        );
+      },
+    );
+  }
+
+  pop(BuildContext context) {
+    // 변수 초기화
+    _memory = null;
+    _deleteComplete = false;
+    _isFullScreen = false;
+    _averageColor = Colors.black;
+
+    context.pop();
   }
 }

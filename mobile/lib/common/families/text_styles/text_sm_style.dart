@@ -6,5 +6,6 @@ class TextSmStyle extends TextStyle {
   }) : super(
           fontSize: 16,
           color: color,
+          overflow: TextOverflow.ellipsis,
         );
 }

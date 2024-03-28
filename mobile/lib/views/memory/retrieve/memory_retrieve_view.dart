@@ -40,72 +40,76 @@ class MemoryRetrieveView extends StatelessWidget {
               // 하단 선택바
               vm.isFullScreen
                   ? Container()
-                  : Container(
-                      height: 50 + MediaQuery.of(context).padding.bottom,
-                      color: Colors.white,
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).padding.bottom,
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: IconButton(
-                              icon: const Icon(SolarIconsOutline.infoCircle),
-                              onPressed: () {},
-                            ),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                              icon: Consumer<MemoryRetrieveViewmodel>(
-                                builder: (_, vm, __) {
-                                  final isLiked = vm.memory?.isLiked ?? false;
-
-                                  return Icon(
-                                    isLiked ? SolarIconsBold.heart : SolarIconsOutline.heart,
-                                    color: isLiked ? ColorFamily.error : null,
-                                  );
-                                },
+                  : Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        height: 50 + MediaQuery.of(context).padding.bottom,
+                        color: Colors.white,
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).padding.bottom,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: IconButton(
+                                icon: const Icon(SolarIconsOutline.infoCircle),
+                                onPressed: () {},
                               ),
-                              onPressed: vm.likeMemory,
                             ),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                              icon: const Icon(SolarIconsOutline.addFolder),
-                              onPressed: () {},
+                            Expanded(
+                              child: IconButton(
+                                icon: Consumer<MemoryRetrieveViewmodel>(
+                                  builder: (_, vm, __) {
+                                    final isLiked = vm.memory?.isLiked ?? false;
+
+                                    return Icon(
+                                      isLiked ? SolarIconsBold.heart : SolarIconsOutline.heart,
+                                      color: isLiked ? ColorFamily.error : null,
+                                    );
+                                  },
+                                ),
+                                onPressed: vm.likeMemory,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                              icon: const Icon(SolarIconsOutline.trashBinMinimalistic),
-                              onPressed: () => vm.delete(context),
+                            Expanded(
+                              child: IconButton(
+                                icon: const Icon(SolarIconsOutline.addFolder),
+                                onPressed: () => vm.showAddAlbumDialog(context),
+                              ),
                             ),
+                            Expanded(
+                              child: IconButton(
+                                icon: const Icon(SolarIconsOutline.trashBinMinimalistic),
+                                onPressed: () => vm.delete(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+              // 뒤로가기 버튼
+              vm.isFullScreen
+                  ? Container()
+                  : Positioned(
+                      top: MediaQuery.of(context).padding.top,
+                      left: 16,
+                      child: InkWell(
+                        // onTap: context.pop,
+                        onTap: () => vm.pop(context),
+                        child: const CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.white,
+                          child: Icon(
+                            SolarIconsOutline.altArrowLeft,
+                            color: Colors.black,
                           ),
-                        ],
+                        ),
                       ),
                     ),
             ],
           ),
-          // 뒤로가기 버튼
-          vm.isFullScreen
-              ? Container()
-              : Positioned(
-                  top: MediaQuery.of(context).padding.top,
-                  left: 16,
-                  child: InkWell(
-                    onTap: context.pop,
-                    child: const CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        SolarIconsOutline.altArrowLeft,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
