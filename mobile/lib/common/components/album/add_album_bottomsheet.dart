@@ -53,7 +53,7 @@ class AddAlbumBottomsheet extends StatelessWidget {
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return InkWell(
-                    onTap: () {},
+                    onTap: () => vm.createAlbumAndAdd(context),
                     child: SizedBox(
                       width: 95,
                       child: Column(

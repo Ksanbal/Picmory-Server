@@ -137,6 +137,52 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     }
   }
 
+  createAlbumAndAdd(BuildContext context) async {
+    // 앨범 이름 입력 dialog 노출
+    final TextEditingController controller = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('새 앨범'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              hintText: '앨범 이름',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => context.pop(),
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () => context.pop(),
+              child: const Text('생성'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (controller.text.isEmpty) {
+      return;
+    }
+
+    final int? albumId = await _albumRepository.create(
+      userId: supabase.auth.currentUser!.id,
+      name: controller.text,
+    );
+
+    if (albumId == null) {
+      showSnackBar(context, '앨범 생성에 실패했습니다');
+      return;
+    }
+
+    addAlbum(context, albumId);
+  }
+
   pop(BuildContext context) {
     // 변수 초기화
     _memory = null;
