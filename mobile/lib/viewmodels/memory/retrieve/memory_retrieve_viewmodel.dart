@@ -114,12 +114,27 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
     showModalBottomSheet(
       context: context,
-      builder: (myContext) {
+      builder: (context) {
         return AddAlbumBottomsheet(
           albums: albums,
+          vm: this,
         );
       },
     );
+  }
+
+  /// 추억함에 추가
+  addAlbum(BuildContext context, int albumId) async {
+    final result = await _memoryRepository.addToAlbum(
+      userId: supabase.auth.currentUser!.id,
+      memoryId: _memory!.id,
+      albumId: albumId,
+    );
+
+    if (result) {
+      context.pop();
+      showSnackBar(context, '앨범에 추가되었습니다');
+    }
   }
 
   pop(BuildContext context) {

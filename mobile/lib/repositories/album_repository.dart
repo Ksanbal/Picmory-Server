@@ -13,11 +13,18 @@ class AlbumRepository {
     try {
       final data = await supabase
           .from('album')
-          .select('id, name, memory_album(memory(photo_uri))')
+          .select('id, name, memory_album(id, memory(photo_uri))')
           .eq('user_id', userId);
 
       if (data.isNotEmpty) {
-        return data.map<AlbumModel>((e) => AlbumModel.fromJson(e)).toList();
+        return data.map<AlbumModel>((e) {
+          // memroy_album의 id를 역순으로 정렬
+          (e['memory_album'] as List<dynamic>).sort((a, b) {
+            return a['id'] < b['id'] ? 1 : -1;
+          });
+
+          return AlbumModel.fromJson(e);
+        }).toList();
       }
     } catch (e) {
       log(e.toString(), name: 'MemoryRepository.changeLikeStatus');

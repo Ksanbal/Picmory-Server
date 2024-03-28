@@ -251,20 +251,29 @@ class MemoryRepository {
   }
 
   /// 앨범에 추가
-  /// - [userID] : 사용자 ID
-  /// - [memoryID] : 기억 ID
-  /// - [albumID] : 앨범 ID
-  addToAlbum({
-    required String userID,
-    required int memoryID,
-    required int albumID,
-  }) {
+  /// - [userId] : 사용자 Id
+  /// - [memoryId] : 기억 Id
+  /// - [albumId] : 앨범 Id
+  Future<bool> addToAlbum({
+    required String userId,
+    required int memoryId,
+    required int albumId,
+  }) async {
     /**
      * TODO: 앨범에 기억 추가 기능 작성
-     * - [ ] memoryID로 기억 조회
-     * - [ ] albumID로 앨범 조회
-     * - [ ] memory_album 생성
+     * - [x] memory_album 생성
      */
+    try {
+      await supabase.from('memory_album').insert({
+        'memory_id': memoryId,
+        'album_id': albumId,
+      });
+
+      return true;
+    } catch (e) {
+      log(e.toString(), name: 'MemoryRepository.addToAlbum');
+      return false;
+    }
   }
 
   /// 앨범에서 삭제

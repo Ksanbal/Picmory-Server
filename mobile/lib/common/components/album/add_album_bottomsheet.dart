@@ -4,15 +4,18 @@ import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
 import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:solar_icons/solar_icons.dart';
 
 class AddAlbumBottomsheet extends StatelessWidget {
   const AddAlbumBottomsheet({
     super.key,
     required this.albums,
+    required this.vm,
   });
 
   final List<AlbumModel> albums;
+  final MemoryRetrieveViewmodel vm;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +89,7 @@ class AddAlbumBottomsheet extends StatelessWidget {
                 final album = albums[index - 1];
 
                 return InkWell(
-                  onTap: () {},
+                  onTap: () => vm.addAlbum(context, album.id),
                   child: SizedBox(
                     width: 95,
                     child: Column(
@@ -137,7 +140,7 @@ class AddAlbumBottomsheet extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: ExtendedImage.network(
-                  imageUrls[0],
+                  imageUrls[1],
                   fit: BoxFit.cover,
                 ),
               ),
@@ -159,7 +162,7 @@ class AddAlbumBottomsheet extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: ExtendedImage.network(
-                imageUrls[1],
+                imageUrls[0],
                 fit: BoxFit.cover,
               ),
             ),
