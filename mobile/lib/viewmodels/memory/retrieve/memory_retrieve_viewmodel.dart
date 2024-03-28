@@ -127,7 +127,6 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     _memory = null;
     _deleteComplete = false;
     _isFullScreen = false;
-    _averageColor = Colors.black;
 
     context.pop();
   }
