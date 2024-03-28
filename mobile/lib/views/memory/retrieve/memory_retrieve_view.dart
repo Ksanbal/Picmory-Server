@@ -1,6 +1,5 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -49,12 +48,14 @@ class MemoryRetrieveView extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
+                        // 정보 토글
                         Expanded(
                           child: IconButton(
                             icon: const Icon(SolarIconsOutline.infoCircle),
                             onPressed: () {},
                           ),
                         ),
+                        // 좋아요
                         Expanded(
                           child: IconButton(
                             icon: Consumer<MemoryRetrieveViewmodel>(
@@ -70,12 +71,14 @@ class MemoryRetrieveView extends StatelessWidget {
                             onPressed: vm.likeMemory,
                           ),
                         ),
+                        // 앨범 추가
                         Expanded(
                           child: IconButton(
                             icon: const Icon(SolarIconsOutline.addFolder),
                             onPressed: () => vm.showAddAlbumDialog(context),
                           ),
                         ),
+                        // 삭제
                         Expanded(
                           child: IconButton(
                             icon: const Icon(SolarIconsOutline.trashBinMinimalistic),
