@@ -1,20 +1,32 @@
-import { DOMParser } from 'https://deno.land/x/deno_dom/deno-dom-wasm.ts';
+import { DOMParser } from "https://deno.land/x/deno_dom/deno-dom-wasm.ts";
 
 /// 모노맨션 다운로드 링크
 function monomansion(document: any) {
-  const aList = document.querySelectorAll('a')
-  
+  const aList = document.querySelectorAll("a");
+
   // https://monomansion.net/api/download.php?qrcode=Y8X3FY21ePx9NvE2fC&type=P
   // ./download.php?qrcode=Y8X3FY21ePx9NvE2fC&type=P
   // 사진 다운로드 링크
-  const photoHref = aList[0].getAttribute('href')
-  const photo = `https://monomansion.net/api/${photoHref.split('./')[1]}`
-  
-  // 영상 다운로드 링크
-  const videoHref = aList[1].getAttribute('href')
-  const video = `https://monomansion.net/api/${videoHref.split('./')[1]}`
+  const photoHref = aList[0].getAttribute("href");
+  const photo = `https://monomansion.net/api/${photoHref.split("./")[1]}`;
 
-  return [ photo, video ];
+  // 영상 다운로드 링크
+  const videoHref = aList[1].getAttribute("href");
+  const video = `https://monomansion.net/api/${videoHref.split("./")[1]}`;
+
+  return [photo, video];
+}
+
+/// 포토 시그니처 다운로드 링크
+function photoqr2(document: any, url: string) {
+  const path = url.split("index.html")[0];
+  // 사진 다운로드 링크
+  const photo = path + "a.jpg";
+
+  // 영상 다운로드 링크
+  const video = path + "output.mp4";
+
+  return [photo, video];
 }
 
 /// 호스트 목록
@@ -26,7 +38,7 @@ const hosts = {
   /// 하루필름
   "haru8.mx2.co.kr": null,
   /// 포토 시그니처
-  "photoqr2.kr": null,
+  "photoqr2.kr": photoqr2,
   /// 플랜비 스튜디오
   "15.165.73.8": null,
   /// 플레이 인 더 박스
@@ -37,7 +49,7 @@ const hosts = {
   "vividmuseum.co.kr": null,
   /// 인생네컷
   "l4c01.lifejuin.biz": null,
-}
+};
 
 const brands = {
   /// 모노맨션
@@ -58,75 +70,77 @@ const brands = {
   "vividmuseum.co.kr": "vivid_museum",
   /// 인생네컷
   "l4c01.lifejuin.biz": "life_four_cut",
-}
+};
 
-console.log("Hello from Functions!")
+console.log("Hello from Functions!");
 
 Deno.serve(async (req: Request) => {
   try {
-    const { url } = await req.json()
+    const { url } = await req.json();
 
     // url 파라미터가 없을 경우
     if (url === null) {
       return new Response(
         JSON.stringify({
-          "message": "url 파라미터가 없습니다"
-        }), 
-        { 
-          status: 400, 
-          headers: { "Content-Type": "application/json" }, 
+          message: "url 파라미터가 없습니다",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
         }
-      )
+      );
     }
-    
+
     // 호스트로 브랜드 구분 및 브랜드별 함수 호출
-    const reqHost = url?.split('/')[2]
-    const brand = brands[reqHost]
+    const reqHost = url?.split("/")[2];
+    const brand = brands[reqHost];
     const brandFunc = hosts[reqHost];
 
     if (brandFunc === undefined || brandFunc === null) {
       return new Response(
         JSON.stringify({
-          "message": "아직 지원하지 않는 브랜드입니다."
+          message: "아직 지원하지 않는 브랜드입니다.",
         }),
-        { 
-          status: 400, 
-          headers: { "Content-Type": "application/json" }, 
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
         }
-      )
-    } 
+      );
+    }
 
-    // // html 요청
-    // const res = await fetch(url)
-    // const html = await res.text()
-    // const document: any = new DOMParser().parseFromString(html, 'text/html')
+    // html 요청
+    const res = await fetch(url);
+    const html = await res.text();
+    const document: any = new DOMParser().parseFromString(html, "text/html");
 
-    // const [photo, video] = hosts[reqHost](document);
+    const [photo, video] = hosts[reqHost](document, url);
 
     return new Response(
-      // JSON.stringify({
-      //   brand,
-      //   photo,
-      //   video,
-      // }),
-      // 테스트용으로 고정으로 반환
       JSON.stringify({
-        brand: "테스트",
-        photo: "https://krrnuzfgncscifoykcsf.supabase.co/storage/v1/object/public/picmory/users/ed2e9572-f9af-4fb6-acdd-d453becf227d/memories/1706758953576/image_picker_82907A66-282F-4F54-8C8C-EF1688530243-6432-0000017E655E41AE.jpg?t=2024-02-01T10%3A37%3A46.604Z",
-        video: "https://krrnuzfgncscifoykcsf.supabase.co/storage/v1/object/public/picmory/users/ed2e9572-f9af-4fb6-acdd-d453becf227d/memories/1706758953576/image_picker_CDB523B5-C060-409F-AA5A-5260EB9C19C7-6432-0000017E6D3B8F5Ftrim.F52BBABE-B66F-4A94-B02B-FF9A4E65E516.MOV?t=2024-02-01T10%3A37%3A54.591Z",        
+        brand,
+        photo,
+        video,
       }),
-      { headers: { "Content-Type": "application/json" } },
-    )
+      // 테스트용으로 고정으로 반환
+      // JSON.stringify({
+      //   brand: "테스트",
+      //   photo:
+      //     "https://krrnuzfgncscifoykcsf.supabase.co/storage/v1/object/public/picmory/users/ed2e9572-f9af-4fb6-acdd-d453becf227d/memories/1706758953576/image_picker_82907A66-282F-4F54-8C8C-EF1688530243-6432-0000017E655E41AE.jpg?t=2024-02-01T10%3A37%3A46.604Z",
+      //   video:
+      //     "https://krrnuzfgncscifoykcsf.supabase.co/storage/v1/object/public/picmory/users/ed2e9572-f9af-4fb6-acdd-d453becf227d/memories/1706758953576/image_picker_CDB523B5-C060-409F-AA5A-5260EB9C19C7-6432-0000017E6D3B8F5Ftrim.F52BBABE-B66F-4A94-B02B-FF9A4E65E516.MOV?t=2024-02-01T10%3A37%3A54.591Z",
+      // }),
+      { headers: { "Content-Type": "application/json" } }
+    );
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return new Response(
       JSON.stringify({
-        "message": "오류가 발생하였습니다. 다시 시도해주세요."
-      }), 
+        message: "오류가 발생하였습니다. 다시 시도해주세요.",
+      }),
       { status: 400 }
-    )
+    );
   }
-})
+});
 
 /* To invoke locally:
 
