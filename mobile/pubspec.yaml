@@ -26,6 +26,7 @@ dependencies:
   mobile_scanner: ^4.0.0
   path_provider: ^2.1.2
   provider: ^6.1.1
+  shimmer: ^3.0.0
   sign_in_with_apple: ^5.0.0
   solar_icons: ^0.0.5
   supabase_flutter: ^2.2.0

@@ -12,6 +12,10 @@ class HomeViewmodel extends ChangeNotifier {
   final MemoryRetrieveViewmodel _memoryRetrieveViewmodel;
 
   HomeViewmodel(this._memoryCreateViewmodel, this._memoryRetrieveViewmodel) {
+    clearDatas();
+    loadMemories();
+    // loadHashtags();
+
     // 생성 리스너
     _memoryCreateViewmodel.addListener(() {
       if (_memoryCreateViewmodel.createComplete) {
@@ -43,12 +47,6 @@ class HomeViewmodel extends ChangeNotifier {
   // 그리드 crossAxisCount (1~3)
   int _crossAxisCount = 2;
   int get crossAxisCount => _crossAxisCount;
-
-  init() {
-    clearDatas();
-    loadMemories();
-    loadHashtags();
-  }
 
   /// 그리드 crossAxisCount 변경 (1~3)
   changeCrossAxisCount() {
@@ -83,28 +81,29 @@ class HomeViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 해시태그 목록 불러오기
-  loadHashtags() async {
-    final userId = supabase.auth.currentUser!.id;
-    final items = await _memoryRepository.getHashtags(userId: userId);
+  // 2024.04.16 - 해시태그 기능은 추후 추가 예정
+  // /// 해시태그 목록 불러오기
+  // loadHashtags() async {
+  //   final userId = supabase.auth.currentUser!.id;
+  //   final items = await _memoryRepository.getHashtags(userId: userId);
 
-    _hashtags.addAll(items);
-    notifyListeners();
-  }
+  //   _hashtags.addAll(items);
+  //   notifyListeners();
+  // }
 
-  /// 해시태그 선택
-  onTapHashtags(String hashtag) async {
-    if (_selectedHashtags.contains(hashtag)) {
-      _selectedHashtags.remove(hashtag);
-    } else {
-      _selectedHashtags.add(hashtag);
-    }
+  // /// 해시태그 선택
+  // onTapHashtags(String hashtag) async {
+  //   if (_selectedHashtags.contains(hashtag)) {
+  //     _selectedHashtags.remove(hashtag);
+  //   } else {
+  //     _selectedHashtags.add(hashtag);
+  //   }
 
-    _memories.clear();
-    loadMemories(hashtags: _selectedHashtags);
+  //   _memories.clear();
+  //   loadMemories(hashtags: _selectedHashtags);
 
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 
   /// 기억 상세 페이지로 이동
   goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
