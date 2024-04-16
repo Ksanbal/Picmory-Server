@@ -1,13 +1,14 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/families/color_family.dart';
+import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
-import 'package:picmory/common/families/text_styles/title_sm_style.dart';
 import 'package:picmory/models/album/album_model.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:solar_icons/solar_icons.dart';
 
-class AddAlbumBottomsheet extends StatelessWidget {
+class AddAlbumBottomsheet extends StatefulWidget {
   const AddAlbumBottomsheet({
     super.key,
     required this.albums,
@@ -18,105 +19,179 @@ class AddAlbumBottomsheet extends StatelessWidget {
   final MemoryRetrieveViewmodel vm;
 
   @override
+  State<AddAlbumBottomsheet> createState() => _AddAlbumBottomsheetState();
+}
+
+class _AddAlbumBottomsheetState extends State<AddAlbumBottomsheet> {
+  // 선택한 추억함 id 목록
+  final List<int> _selectedAlbumIds = [];
+  List<int> get selectedAlbumIds => _selectedAlbumIds;
+  toggleSelectedAlbumIds(int id) {
+    if (_selectedAlbumIds.contains(id)) {
+      _selectedAlbumIds.remove(id);
+    } else {
+      _selectedAlbumIds.add(id);
+    }
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-        top: 14,
-        bottom: MediaQuery.of(context).padding.bottom + 30,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: 4,
-            width: 70,
-            decoration: BoxDecoration(
-              color: ColorFamily.disabledGrey400,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 36),
-            child: Text(
-              "추억함에 추가하기",
-              style: TitleSmStyle(),
-            ),
-          ),
-          SizedBox(
-            // height: 130,
-            height: 160,
-            child: ListView.separated(
-              itemCount: albums.length + 1,
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              separatorBuilder: (context, index) => const SizedBox(width: 10),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return InkWell(
-                    onTap: () => vm.createAlbumAndAdd(context),
-                    child: SizedBox(
-                      width: 95,
-                      child: Column(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 1 / 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: ColorFamily.disabledGrey300,
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  SolarIconsOutline.addFolder,
-                                  color: ColorFamily.textGrey600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(top: 12),
-                            child: Text(
-                              "새 추억함",
-                              style: TextSmStyle(),
-                            ),
-                          ),
-                        ],
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.5,
+          minChildSize: 0.5,
+          maxChildSize: 0.9,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+              child: Center(
+                child: Column(
+                  children: [
+                    // 안내바
+                    Container(
+                      width: 70,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: ColorFamily.disabledGrey400,
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                  );
-                }
-
-                final album = albums[index - 1];
-
-                return InkWell(
-                  onTap: () => vm.addAlbum(context, album.id),
-                  child: SizedBox(
-                    width: 95,
-                    child: Column(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 1 / 1,
-                          child: 1 < album.imageUrls.length
-                              ? multipleImageAlbum(album.imageUrls)
-                              : singleImageAlbum(album.imageUrls),
+                    // title
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Text(
+                        "추억함에 추가하기",
+                        style: TextSmStyle(),
+                      ),
+                    ),
+                    // 추가 아이템
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: InkWell(
+                        onTap: () => widget.vm.createAlbumAndAdd(context),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: ColorFamily.disabledGrey400,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: const Icon(
+                                SolarIconsOutline.addFolder,
+                                color: ColorFamily.disabledGrey500,
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 12),
+                              child: Text(
+                                "새 추억함",
+                                style: TextSmStyle(),
+                              ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: Text(
-                            album.name,
-                            maxLines: 2,
-                            style: const TextSmStyle(),
+                      ),
+                    ),
+                    // 앨범 아이템
+                    ...widget.albums.map((e) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: InkWell(
+                          onTap: () => toggleSelectedAlbumIds(e.id),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: 1 < e.imageUrls.length
+                                    ? multipleImageAlbum(e.imageUrls)
+                                    : singleImageAlbum(e.imageUrls),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 12),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        e.name,
+                                        style: const TextSmStyle(),
+                                      ),
+                                      Text(
+                                        '${e.imageUrls.length}장',
+                                        style: const CaptionSmStyle(
+                                          color: ColorFamily.textGrey600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              selectedAlbumIds.contains(e.id)
+                                  ? const Icon(
+                                      SolarIconsBold.checkCircle,
+                                      color: ColorFamily.positive,
+                                    )
+                                  : Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: ColorFamily.disabledGrey400,
+                                          width: 1,
+                                        ),
+                                      ),
+                                    )
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        // 투명 gradient
+        Container(
+          height: 100,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.white.withOpacity(0),
+                Colors.white,
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+        // 완료버튼
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: RoundedButton(
+            onPressed: () {},
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                "완료",
+                style: TextSmStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

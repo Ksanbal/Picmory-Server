@@ -114,6 +114,7 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return AddAlbumBottomsheet(
           albums: albums,
@@ -138,10 +139,12 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
   }
 
   createAlbumAndAdd(BuildContext context) async {
+    context.pop();
+
     // 앨범 이름 입력 dialog 노출
     final TextEditingController controller = TextEditingController();
 
-    await showDialog(
+    await showModalBottomSheet(
       context: context,
       builder: (context) {
         return AlertDialog(
