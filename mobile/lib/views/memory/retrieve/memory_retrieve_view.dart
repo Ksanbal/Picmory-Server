@@ -41,7 +41,7 @@ class MemoryRetrieveView extends StatelessWidget {
               : Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
-                    height: 50 + MediaQuery.of(context).padding.bottom,
+                    height: 76 + MediaQuery.of(context).padding.bottom,
                     color: Colors.white,
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).padding.bottom,
