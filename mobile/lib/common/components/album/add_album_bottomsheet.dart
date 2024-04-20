@@ -5,18 +5,19 @@ import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/models/album/album_model.dart';
-import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:solar_icons/solar_icons.dart';
 
 class AddAlbumBottomsheet extends StatefulWidget {
   const AddAlbumBottomsheet({
     super.key,
     required this.albums,
-    required this.vm,
+    required this.onCreateAlbum,
+    required this.onCompleted,
   });
 
   final List<AlbumModel> albums;
-  final MemoryRetrieveViewmodel vm;
+  final Function() onCreateAlbum;
+  final Function(List<int> ids) onCompleted;
 
   @override
   State<AddAlbumBottomsheet> createState() => _AddAlbumBottomsheetState();
@@ -24,13 +25,12 @@ class AddAlbumBottomsheet extends StatefulWidget {
 
 class _AddAlbumBottomsheetState extends State<AddAlbumBottomsheet> {
   // 선택한 추억함 id 목록
-  final List<int> _selectedAlbumIds = [];
-  List<int> get selectedAlbumIds => _selectedAlbumIds;
+  final List<int> selectedAlbumIds = [];
   toggleSelectedAlbumIds(int id) {
-    if (_selectedAlbumIds.contains(id)) {
-      _selectedAlbumIds.remove(id);
+    if (selectedAlbumIds.contains(id)) {
+      selectedAlbumIds.remove(id);
     } else {
-      _selectedAlbumIds.add(id);
+      selectedAlbumIds.add(id);
     }
     setState(() {});
   }
@@ -80,7 +80,7 @@ class _AddAlbumBottomsheetState extends State<AddAlbumBottomsheet> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: InkWell(
-                          onTap: () => widget.vm.createAlbumAndAdd(context),
+                          onTap: widget.onCreateAlbum,
                           child: Row(
                             children: [
                               Container(
@@ -187,7 +187,7 @@ class _AddAlbumBottomsheetState extends State<AddAlbumBottomsheet> {
         Padding(
           padding: const EdgeInsets.only(bottom: 20),
           child: RoundedButton(
-            onPressed: () {},
+            onPressed: () => widget.onCompleted(selectedAlbumIds),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text(

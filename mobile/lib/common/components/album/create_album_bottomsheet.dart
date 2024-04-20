@@ -8,7 +8,14 @@ import 'package:picmory/common/families/text_styles/title_md_style.dart';
 import 'package:solar_icons/solar_icons.dart';
 
 class CreateAlbumBottomsheet extends StatelessWidget {
-  const CreateAlbumBottomsheet({super.key});
+  const CreateAlbumBottomsheet({
+    super.key,
+    required this.controller,
+    required this.hintText,
+  });
+
+  final TextEditingController controller;
+  final String hintText;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +62,7 @@ class CreateAlbumBottomsheet extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(39, 0, 39, 20),
               child: TextFormField(
+                controller: controller,
                 style: const TitleMdStyle(),
                 textAlign: TextAlign.center,
                 maxLength: 20,
@@ -73,14 +81,14 @@ class CreateAlbumBottomsheet extends StatelessWidget {
                 },
                 cursorColor: ColorFamily.disabledGrey400,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: "placeholder",
-                  enabledBorder: UnderlineInputBorder(
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  enabledBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: ColorFamily.disabledGrey400,
                     ),
                   ),
-                  focusedBorder: UnderlineInputBorder(
+                  focusedBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: ColorFamily.disabledGrey400,
                     ),
@@ -89,7 +97,12 @@ class CreateAlbumBottomsheet extends StatelessWidget {
               ),
             ),
             RoundedButton(
-              onPressed: () {},
+              onPressed: () {
+                if (controller.text.isEmpty) {
+                  controller.text = hintText;
+                }
+                context.pop();
+              },
               child: const Text(
                 "완료",
                 style: TextSmStyle(

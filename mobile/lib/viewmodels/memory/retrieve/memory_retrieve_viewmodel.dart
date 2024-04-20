@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:picmory/common/components/album/add_album_bottomsheet.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
+import 'package:picmory/models/album/album_model.dart';
 import 'package:picmory/models/memory/memory_model.dart';
 import 'package:picmory/repositories/album_repository.dart';
 import 'package:picmory/repositories/meory_repository.dart';
@@ -25,6 +27,8 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;
+
+  List<AlbumModel> _albums = [];
 
   bool _deleteComplete = false;
   bool get deleteComplete => _deleteComplete;
@@ -111,31 +115,37 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
   /// 추억함에 추가 dialog 노출
   showAddAlbumDialog(BuildContext context) async {
-    final albums = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
+    _albums = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) {
+      builder: (_) {
         return AddAlbumBottomsheet(
-          albums: albums,
-          vm: this,
+          albums: _albums,
+          onCompleted: (ids) => addAlbum(context, ids),
+          onCreateAlbum: () => createAlbumAndAdd(context),
         );
       },
     );
   }
 
   /// 추억함에 추가
-  addAlbum(BuildContext context, int albumId) async {
+  addAlbum(BuildContext context, List<int> albumIds) async {
     final result = await _memoryRepository.addToAlbum(
       userId: supabase.auth.currentUser!.id,
       memoryId: _memory!.id,
-      albumId: albumId,
+      albumIds: albumIds,
     );
 
     if (result) {
       context.pop();
-      showSnackBar(context, '앨범에 추가되었습니다');
+      showSnackBar(
+        context,
+        '앨범에 추가되었습니다',
+        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
+        actionTitle: '완료',
+      );
     }
   }
 
@@ -145,15 +155,31 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     // 앨범 이름 입력 dialog 노출
     final TextEditingController controller = TextEditingController();
 
+    var hintText = _memory?.brand ?? DateFormat('yyyy.MM').format(DateTime.now());
+
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) {
-        return const CreateAlbumBottomsheet();
+      builder: (_) {
+        return CreateAlbumBottomsheet(
+          controller: controller,
+          hintText: hintText,
+        );
       },
     );
 
     if (controller.text.isEmpty) {
+      return;
+    }
+
+    final exist = _albums.any((e) => e.name == controller.text);
+    if (exist) {
+      showSnackBar(
+        context,
+        '이미 존재하는 이름입니다',
+        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
+        actionTitle: '닫기',
+      );
       return;
     }
 
@@ -163,11 +189,16 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     );
 
     if (albumId == null) {
-      showSnackBar(context, '앨범 생성에 실패했습니다');
+      showSnackBar(
+        context,
+        '앨범 생성에 실패했습니다',
+        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
+        actionTitle: '닫기',
+      );
       return;
     }
 
-    addAlbum(context, albumId);
+    addAlbum(context, [albumId]);
   }
 
   pop(BuildContext context) {

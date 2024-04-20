@@ -165,7 +165,7 @@ class MemoryRepository {
     final items = await supabase
         .from('memory')
         .select(
-          'id, created_at, photo_uri, video_uri, date, hashtag(name), memory_like(id)',
+          'id, created_at, brand, photo_uri, video_uri, date, hashtag(name), memory_like(id)',
         )
         .eq('user_id', userId)
         .eq('id', memoryId);
@@ -258,17 +258,21 @@ class MemoryRepository {
   Future<bool> addToAlbum({
     required String userId,
     required int memoryId,
-    required int albumId,
+    required List<int> albumIds,
   }) async {
     /**
      * TODO: 앨범에 기억 추가 기능 작성
      * - [x] memory_album 생성
      */
     try {
-      await supabase.from('memory_album').insert({
-        'memory_id': memoryId,
-        'album_id': albumId,
-      });
+      await supabase.from('memory_album').insert(
+            albumIds
+                .map((albumId) => {
+                      'memory_id': memoryId,
+                      'album_id': albumId,
+                    })
+                .toList(),
+          );
 
       return true;
     } catch (e) {
