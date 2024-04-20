@@ -46,116 +46,124 @@ class _AddAlbumBottomsheetState extends State<AddAlbumBottomsheet> {
           minChildSize: 0.5,
           maxChildSize: 0.9,
           builder: (context, scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-              child: Center(
-                child: Column(
-                  children: [
-                    // 안내바
-                    Container(
-                      width: 70,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: ColorFamily.disabledGrey400,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    // title
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Text(
-                        "추억함에 추가하기",
-                        style: TextSmStyle(),
-                      ),
-                    ),
-                    // 추가 아이템
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () => widget.vm.createAlbumAndAdd(context),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: ColorFamily.disabledGrey400,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Icon(
-                                SolarIconsOutline.addFolder,
-                                color: ColorFamily.disabledGrey500,
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.only(left: 12),
-                              child: Text(
-                                "새 추억함",
-                                style: TextSmStyle(),
-                              ),
-                            ),
-                          ],
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
+              ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                child: Center(
+                  child: Column(
+                    children: [
+                      // 안내바
+                      Container(
+                        width: 70,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: ColorFamily.disabledGrey400,
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                    ),
-                    // 앨범 아이템
-                    ...widget.albums.map((e) {
-                      return Padding(
+                      // title
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Text(
+                          "추억함에 추가하기",
+                          style: TextSmStyle(),
+                        ),
+                      ),
+                      // 추가 아이템
+                      Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: InkWell(
-                          onTap: () => toggleSelectedAlbumIds(e.id),
+                          onTap: () => widget.vm.createAlbumAndAdd(context),
                           child: Row(
                             children: [
-                              SizedBox(
+                              Container(
                                 width: 60,
                                 height: 60,
-                                child: 1 < e.imageUrls.length
-                                    ? multipleImageAlbum(e.imageUrls)
-                                    : singleImageAlbum(e.imageUrls),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 12),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        e.name,
-                                        style: const TextSmStyle(),
-                                      ),
-                                      Text(
-                                        '${e.imageUrls.length}장',
-                                        style: const CaptionSmStyle(
-                                          color: ColorFamily.textGrey600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                decoration: BoxDecoration(
+                                  color: ColorFamily.disabledGrey400,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: const Icon(
+                                  SolarIconsOutline.addFolder,
+                                  color: ColorFamily.disabledGrey500,
                                 ),
                               ),
-                              selectedAlbumIds.contains(e.id)
-                                  ? const Icon(
-                                      SolarIconsBold.checkCircle,
-                                      color: ColorFamily.positive,
-                                    )
-                                  : Container(
-                                      width: 20,
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: ColorFamily.disabledGrey400,
-                                          width: 1,
-                                        ),
-                                      ),
-                                    )
+                              const Padding(
+                                padding: EdgeInsets.only(left: 12),
+                                child: Text(
+                                  "새 추억함",
+                                  style: TextSmStyle(),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      );
-                    }),
-                  ],
+                      ),
+                      // 앨범 아이템
+                      ...widget.albums.map((e) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: InkWell(
+                            onTap: () => toggleSelectedAlbumIds(e.id),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 60,
+                                  height: 60,
+                                  child: 1 < e.imageUrls.length
+                                      ? multipleImageAlbum(e.imageUrls)
+                                      : singleImageAlbum(e.imageUrls),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 12),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          e.name,
+                                          style: const TextSmStyle(),
+                                        ),
+                                        Text(
+                                          '${e.imageUrls.length}장',
+                                          style: const CaptionSmStyle(
+                                            color: ColorFamily.textGrey600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                selectedAlbumIds.contains(e.id)
+                                    ? const Icon(
+                                        SolarIconsBold.checkCircle,
+                                        color: ColorFamily.positive,
+                                      )
+                                    : Container(
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: ColorFamily.disabledGrey400,
+                                            width: 1,
+                                          ),
+                                        ),
+                                      )
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ),
             );

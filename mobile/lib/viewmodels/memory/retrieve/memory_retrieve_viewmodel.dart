@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/album/add_album_bottomsheet.dart';
+import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/memory_model.dart';
@@ -146,26 +147,9 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
     await showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('새 앨범'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: '앨범 이름',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => context.pop(),
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () => context.pop(),
-              child: const Text('생성'),
-            ),
-          ],
-        );
+        return const CreateAlbumBottomsheet();
       },
     );
 
