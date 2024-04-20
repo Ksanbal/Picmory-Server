@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/components/album/add_album_bottomsheet.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
+import 'package:picmory/common/components/memory/retrieve/change_date_bottomsheet.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
@@ -12,6 +13,7 @@ import 'package:picmory/models/album/album_model.dart';
 import 'package:picmory/models/memory/memory_model.dart';
 import 'package:picmory/repositories/album_repository.dart';
 import 'package:picmory/repositories/meory_repository.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class MemoryRetrieveViewmodel extends ChangeNotifier {
   // Singleton instance
@@ -232,5 +234,35 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     _isFullScreen = false;
 
     context.pop();
+  }
+
+  showChangeDateBottomsheet(BuildContext context) async {
+    final selectedDay = await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext _) {
+        return ChangeDateBottomsheet(
+          focusedDay: _memory!.date,
+          // focusedDay: DateTime(2024, 4, 20),
+        );
+      },
+      isScrollControlled: true,
+      useSafeArea: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height,
+      ),
+    );
+
+    if (selectedDay == null || isSameDay(_memory!.date, selectedDay)) return;
+
+    final result = await _memoryRepository.edit(
+      userId: supabase.auth.currentUser!.id,
+      memoryId: _memory!.id,
+      date: selectedDay,
+    );
+
+    if (result) {
+      _memory!.date = selectedDay;
+      notifyListeners();
+    }
   }
 }

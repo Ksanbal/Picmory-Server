@@ -1,6 +1,8 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:picmory/common/families/color_family.dart';
+import 'package:picmory/common/families/text_styles/title_sm_style.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -92,22 +94,43 @@ class MemoryRetrieveView extends StatelessWidget {
           // 뒤로가기 버튼
           vm.isFullScreen
               ? Container()
-              : Positioned(
-                  top: MediaQuery.of(context).padding.top,
-                  left: 16,
-                  child: InkWell(
-                    // onTap: context.pop,
-                    onTap: () => vm.pop(context),
-                    child: const CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        SolarIconsOutline.altArrowLeft,
-                        color: Colors.black,
-                      ),
-                    ),
+              : Container(
+                  height: 64 + MediaQuery.of(context).padding.top,
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top,
                   ),
-                ),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: InkWell(
+                          onTap: () => vm.pop(context),
+                          child: const CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              SolarIconsOutline.altArrowLeft,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () => vm.showChangeDateBottomsheet(context),
+                        child: Text(
+                          vm.memory?.date != null
+                              ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
+                              : '',
+                          style: const TitleSmStyle(),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
         ],
       ),
     );

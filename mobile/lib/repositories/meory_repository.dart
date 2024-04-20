@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/crawled_qr_model.dart';
 import 'package:picmory/models/memory/memory_create_model.dart';
@@ -180,28 +179,40 @@ class MemoryRepository {
   }
 
   /// 수정
-  /// - [userID] : 사용자 ID
-  /// - [memoryID] : 기억 ID
+  /// - [userId] : 사용자 ID
+  /// - [memoryId] : 기억 ID
   /// - [photo] : 사진
   /// - [video] : 영상
   /// - [hashTags] : 해시태그 목록
   /// - [date] : 날짜
   edit({
-    required String userID,
-    required int memoryID,
-    required XFile? photo,
-    required XFile? video,
-    required List<String> hashtags,
+    required String userId,
+    required int memoryId,
+    // required XFile? photo,
+    // required XFile? video,
+    // required List<String> hashtags,
     required DateTime date,
-  }) {
+  }) async {
     /**
      * TODO: 기억 수정 기능 작성
-     * - [ ] memoryID로 기억 조회
-     * - [ ] albumID 유효성 체크
-     * - [ ] hashtag 기존과 비교해서 사라진 해시태그는 삭제, 새로운 해시태그는 생성
-     * - [ ] photo, video 삭제 & 업로드 & URI 획득
-     * - [ ] memory 수정
+     * - [x] memory 수정
      */
+
+    try {
+      await supabase
+          .from('memory')
+          .update({
+            'date': date.toString(),
+          })
+          .eq('user_id', userId)
+          .eq('id', memoryId);
+
+      return true;
+    } catch (e) {
+      log(e.toString(), name: 'MemoryRepository.edit');
+    }
+
+    return false;
   }
 
   /// 삭제
