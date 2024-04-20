@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/components/album/add_album_bottomsheet.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
+import 'package:picmory/common/families/color_family.dart';
+import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/album/album_model.dart';
@@ -70,19 +73,40 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     final result = await showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('삭제'),
-          content: const Text('삭제하시겠습니까?'),
-          actions: [
-            TextButton(
-              onPressed: () => context.pop(false),
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () => context.pop(true),
-              child: const Text('삭제'),
-            ),
-          ],
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 86),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: RoundedButton(
+                  onPressed: () => context.pop(true),
+                  backgroundColor: Colors.white,
+                  child: const Text(
+                    "삭제",
+                    style: TextSmStyle(
+                      color: ColorFamily.error,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+              SizedBox(
+                width: double.infinity,
+                child: RoundedButton(
+                  onPressed: () => context.pop(false),
+                  backgroundColor: Colors.white,
+                  child: const Text(
+                    "취소",
+                    style: TextSmStyle(
+                      color: ColorFamily.textGrey700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
