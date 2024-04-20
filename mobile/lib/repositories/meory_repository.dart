@@ -120,7 +120,8 @@ class MemoryRepository {
           .select(
             'id, created_at, photo_uri, video_uri, date, hashtag(name)',
           )
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .order('id', ascending: true);
       result.addAll(items);
     } else if (albumID != null) {
       //
