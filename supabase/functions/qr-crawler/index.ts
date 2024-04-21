@@ -13,11 +13,11 @@ async function monomansion(url: string) {
   // ./download.php?qrcode=Y8X3FY21ePx9NvE2fC&type=P
   // 사진 다운로드 링크
   const photoHref = aList[0].getAttribute("href");
-  const photo = `https://monomansion.net/api/${photoHref.split("./")[1]}`;
+  const photo = [`https://monomansion.net/api/${photoHref.split("./")[1]}`];
 
   // 영상 다운로드 링크
   const videoHref = aList[1].getAttribute("href");
-  const video = `https://monomansion.net/api/${videoHref.split("./")[1]}`;
+  const video = [`https://monomansion.net/api/${videoHref.split("./")[1]}`];
 
   return [photo, video];
 }
@@ -26,10 +26,10 @@ async function monomansion(url: string) {
 function photoqr2(url: string) {
   const path = url.split("index.html")[0];
   // 사진 다운로드 링크
-  const photo = path + "a.jpg";
+  const photo = [path + "a.jpg"];
 
   // 영상 다운로드 링크
-  const video = path + "output.mp4";
+  const video = [path + "output.mp4"];
 
   return [photo, video];
 }
@@ -46,13 +46,11 @@ async function photogray(url: string) {
   // id 값을 base64로 디코딩 && sessionId 추출
   const decodedId = atob(id).split("sessionId=")[1].split("&mode")[0];
 
-  // const photo = [`https://pg-qr-resource.aprd.io/${decodedId}/image.jpg`];
-  // const video = [
-  //   `https://pg-qr-resource.aprd.io/${decodedId}/video.mp4`,
-  //   `https://pg-qr-resource.aprd.io/${decodedId}/timelapse.mp4`,
-  // ];
-  const photo = `https://pg-qr-resource.aprd.io/${decodedId}/image.jpg`;
-  const video = `https://pg-qr-resource.aprd.io/${decodedId}/video.mp4`;
+  const photo = [`https://pg-qr-resource.aprd.io/${decodedId}/image.jpg`];
+  const video = [
+    `https://pg-qr-resource.aprd.io/${decodedId}/video.mp4`,
+    `https://pg-qr-resource.aprd.io/${decodedId}/timelapse.mp4`,
+  ];
 
   return [photo, video];
 }
