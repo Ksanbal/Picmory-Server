@@ -1,4 +1,5 @@
 import { DOMParser } from "https://deno.land/x/deno_dom/deno-dom-wasm.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 /// 모노맨션 다운로드 링크
 async function monomansion(url: string) {
@@ -122,6 +123,25 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // request를 request_log 테이블에 저장
+    if (Deno.env.get('SUPABASE_URL')) {
+      const res = await fetch(url, { redirect: "manual" });
+      const document = await res.text();
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL'), 
+        Deno.env.get('SUPABASE_ANON_KEY')
+      )
+      await supabase.from("request_log").insert(
+        [
+          {
+            url,
+            res: { status: res.status, headers: [...res.headers] },
+            document,
+          },
+        ]
+      );
+    }
+
     // 호스트로 브랜드 구분 및 브랜드별 함수 호출
     const reqHost = url?.split("/")[2];
     const brand = brands[reqHost];
@@ -147,14 +167,6 @@ Deno.serve(async (req: Request) => {
         photo,
         video,
       }),
-      // 테스트용으로 고정으로 반환
-      // JSON.stringify({
-      //   brand: "테스트",
-      //   photo:
-      //     "https://krrnuzfgncscifoykcsf.supabase.co/storage/v1/object/public/picmory/users/ed2e9572-f9af-4fb6-acdd-d453becf227d/memories/1706758953576/image_picker_82907A66-282F-4F54-8C8C-EF1688530243-6432-0000017E655E41AE.jpg?t=2024-02-01T10%3A37%3A46.604Z",
-      //   video:
-      //     "https://krrnuzfgncscifoykcsf.supabase.co/storage/v1/object/public/picmory/users/ed2e9572-f9af-4fb6-acdd-d453becf227d/memories/1706758953576/image_picker_CDB523B5-C060-409F-AA5A-5260EB9C19C7-6432-0000017E6D3B8F5Ftrim.F52BBABE-B66F-4A94-B02B-FF9A4E65E516.MOV?t=2024-02-01T10%3A37%3A54.591Z",
-      // }),
       { headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
