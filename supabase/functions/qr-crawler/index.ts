@@ -1,7 +1,11 @@
 import { DOMParser } from "https://deno.land/x/deno_dom/deno-dom-wasm.ts";
 
 /// 모노맨션 다운로드 링크
-function monomansion(document: any) {
+async function monomansion(url: string) {
+  const res = await fetch(url);
+  const html = await res.text();
+  const document: any = new DOMParser().parseFromString(html, "text/html");
+
   const aList = document.querySelectorAll("a");
 
   // https://monomansion.net/api/download.php?qrcode=Y8X3FY21ePx9NvE2fC&type=P
@@ -18,13 +22,36 @@ function monomansion(document: any) {
 }
 
 /// 포토 시그니처 다운로드 링크
-function photoqr2(document: any, url: string) {
+function photoqr2(url: string) {
   const path = url.split("index.html")[0];
   // 사진 다운로드 링크
   const photo = path + "a.jpg";
 
   // 영상 다운로드 링크
   const video = path + "output.mp4";
+
+  return [photo, video];
+}
+
+/// 포토 그레이
+async function photogray(url: string) {
+  const res = await fetch(url, { redirect: "manual" });
+
+  const redirectUrl = res.headers.get("location");
+
+  // url에서 id 추출
+  const id = redirectUrl!.split("id=")[1];
+
+  // id 값을 base64로 디코딩 && sessionId 추출
+  const decodedId = atob(id).split("sessionId=")[1].split("&mode")[0];
+
+  // const photo = [`https://pg-qr-resource.aprd.io/${decodedId}/image.jpg`];
+  // const video = [
+  //   `https://pg-qr-resource.aprd.io/${decodedId}/video.mp4`,
+  //   `https://pg-qr-resource.aprd.io/${decodedId}/timelapse.mp4`,
+  // ];
+  const photo = `https://pg-qr-resource.aprd.io/${decodedId}/image.jpg`;
+  const video = `https://pg-qr-resource.aprd.io/${decodedId}/video.mp4`;
 
   return [photo, video];
 }
@@ -49,6 +76,8 @@ const hosts = {
   "vividmuseum.co.kr": null,
   /// 인생네컷
   "l4c01.lifejuin.biz": null,
+  /// 포토그레이
+  "pgshort.aprd.io": photogray,
 };
 
 const brands = {
@@ -70,6 +99,8 @@ const brands = {
   "vividmuseum.co.kr": "vivid_museum",
   /// 인생네컷
   "l4c01.lifejuin.biz": "life_four_cut",
+  /// 포토그레이
+  "pgshort.aprd.io": "photogray",
 };
 
 console.log("Hello from Functions!");
@@ -108,12 +139,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // html 요청
-    const res = await fetch(url);
-    const html = await res.text();
-    const document: any = new DOMParser().parseFromString(html, "text/html");
-
-    const [photo, video] = hosts[reqHost](document, url);
+    const [photo, video] = await hosts[reqHost](url);
 
     return new Response(
       JSON.stringify({
