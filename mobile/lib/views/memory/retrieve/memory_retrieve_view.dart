@@ -30,13 +30,67 @@ class MemoryRetrieveView extends StatelessWidget {
                 ? Container()
                 : InkWell(
                     onTap: vm.toggleFullScreen,
-                    splashColor: Colors.transparent,
-                    child: ExtendedImage.network(
-                      vm.memory!.photoUri,
-                      mode: ExtendedImageMode.gesture,
+                    child: PageView.builder(
+                      itemCount: vm.photos.length,
+                      itemBuilder: (_, index) {
+                        final photo = vm.photos[index];
+
+                        return ExtendedImage.network(
+                          photo.uri,
+                          mode: ExtendedImageMode.gesture,
+                        );
+                      },
                     ),
                   ),
           ),
+          // appbar
+          vm.isFullScreen
+              ? Container()
+              : Container(
+                  height: 64 + MediaQuery.of(context).padding.top,
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: InkWell(
+                          onTap: () => vm.pop(context),
+                          child: const CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              SolarIconsOutline.altArrowLeft,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () => vm.showChangeDateBottomsheet(context),
+                        child: Text(
+                          vm.memory?.date != null
+                              ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
+                              : '',
+                          style: const TitleSmStyle(),
+                        ),
+                      ),
+                      if (vm.videos.isNotEmpty)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            onPressed: () => vm.showVideoPlayerDialog(context),
+                            icon: const Icon(Icons.video_library_outlined),
+                          ),
+                        )
+                    ],
+                  ),
+                ),
           // 하단 선택바
           vm.isFullScreen
               ? Container()
@@ -91,46 +145,6 @@ class MemoryRetrieveView extends StatelessWidget {
                     ),
                   ),
                 ),
-          // 뒤로가기 버튼
-          vm.isFullScreen
-              ? Container()
-              : Container(
-                  height: 64 + MediaQuery.of(context).padding.top,
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).padding.top,
-                  ),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: InkWell(
-                          onTap: () => vm.pop(context),
-                          child: const CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.white,
-                            child: Icon(
-                              SolarIconsOutline.altArrowLeft,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () => vm.showChangeDateBottomsheet(context),
-                        child: Text(
-                          vm.memory?.date != null
-                              ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
-                              : '',
-                          style: const TitleSmStyle(),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
         ],
       ),
     );

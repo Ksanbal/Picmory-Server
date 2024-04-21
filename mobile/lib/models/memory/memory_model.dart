@@ -1,22 +1,17 @@
-import 'package:picmory/models/hashtag/hashtag_create_model.dart';
+import 'package:picmory/models/memory/memory_upload_model.dart';
 
 class MemoryModel {
   int id;
-  DateTime createdAt;
   String? brand;
-  String photoUri;
-  String? videoUri;
   DateTime date;
-  List<HashtagModel> hashtag;
   bool isLiked;
+  List<MemoryUploadModel> uploads;
 
   MemoryModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        createdAt = DateTime.parse(json['created_at']),
         brand = json['brand'],
-        photoUri = json['photo_uri'],
-        videoUri = json['video_uri'],
         date = DateTime.parse(json['date']),
-        hashtag = json['hashtag'].map<HashtagModel>((e) => HashtagModel.fromJson(e)).toList(),
-        isLiked = json['is_liked'] ?? false;
+        isLiked = json['is_liked'] ?? false,
+        uploads =
+            json['upload'].map<MemoryUploadModel>((e) => MemoryUploadModel.fromJson(e)).toList();
 }

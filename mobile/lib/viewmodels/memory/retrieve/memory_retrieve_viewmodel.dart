@@ -5,12 +5,14 @@ import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/components/album/add_album_bottomsheet.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/components/memory/retrieve/change_date_bottomsheet.dart';
+import 'package:picmory/common/components/memory/retrieve/video_player_dialog.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/album/album_model.dart';
 import 'package:picmory/models/memory/memory_model.dart';
+import 'package:picmory/models/memory/memory_upload_model.dart';
 import 'package:picmory/repositories/album_repository.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -32,6 +34,16 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;
+
+  List<MemoryUploadModel> get photos {
+    if (memory == null) return [];
+    return _memory!.uploads.where((element) => element.isPhoto).toList();
+  }
+
+  List<MemoryUploadModel> get videos {
+    if (memory == null) return [];
+    return _memory!.uploads.where((element) => !element.isPhoto).toList();
+  }
 
   List<AlbumModel> _albums = [];
 
@@ -264,5 +276,17 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
       _memory!.date = selectedDay;
       notifyListeners();
     }
+  }
+
+  // 비디오 재생 dialog
+  showVideoPlayerDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return VideoPlayerDialog(
+          uris: videos.map((e) => e.uri).toList(),
+        );
+      },
+    );
   }
 }

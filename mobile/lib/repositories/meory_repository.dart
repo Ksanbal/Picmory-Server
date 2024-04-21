@@ -164,7 +164,7 @@ class MemoryRepository {
     final items = await supabase
         .from('memory')
         .select(
-          'id, created_at, brand, photo_uri, video_uri, date, hashtag(name), memory_like(id)',
+          'id, brand, date, memory_like(id), upload(uri, is_photo)',
         )
         .eq('user_id', userId)
         .eq('id', memoryId);
