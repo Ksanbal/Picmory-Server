@@ -11,7 +11,9 @@ dependencies:
   custom_refresh_indicator: ^3.0.0
   dio: ^5.4.0
   extended_image: ^8.2.0
+  firebase_analytics: ^10.8.9
   firebase_core: ^2.24.2
+  firebase_remote_config: ^4.3.17
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.1.0

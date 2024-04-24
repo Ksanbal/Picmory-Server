@@ -1,6 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:picmory/common/families/color_family.dart';
+import 'package:picmory/firebase_options.dart';
 import 'package:picmory/router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,10 +19,22 @@ void main() async {
     anonKey: dotenv.get("SUPABASE_KEY"),
   );
 
+  // Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await remoteConfig.setConfigSettings(RemoteConfigSettings(
+    fetchTimeout: const Duration(minutes: 1),
+    minimumFetchInterval: const Duration(hours: 1),
+  ));
+
   runApp(const MainApp());
 }
 
 final supabase = Supabase.instance.client;
+
+final remoteConfig = FirebaseRemoteConfig.instance;
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/crawled_qr_model.dart';
@@ -315,12 +316,28 @@ class MemoryRepository {
      * TODO: 크롤링 API 호출 기능 작성
      */
     try {
-      final res = await supabase.functions.invoke(
-        'qr-crawler',
-        body: {
-          'url': url,
-        },
-      );
+      await remoteConfig.fetchAndActivate();
+      final host = remoteConfig.getString('api_host');
+      print(host);
+
+      var res;
+      if (host.isEmpty) {
+        res = await supabase.functions.invoke(
+          'qr-crawler',
+          body: {
+            'url': url,
+          },
+        );
+      } else {
+        try {
+          Dio dio = Dio();
+          res = await dio.get(
+            '$host/api/qr-crawler?url=$url',
+          );
+        } catch (error) {
+          return null;
+        }
+      }
 
       return CrawledQrModel.fromJson(res.data);
     } on FunctionException catch (e) {
