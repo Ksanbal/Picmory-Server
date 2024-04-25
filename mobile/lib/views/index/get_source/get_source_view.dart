@@ -3,11 +3,11 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:picmory/common/buttons/icon_rounded_button.dart';
 import 'package:picmory/common/families/asset_image_family.dart';
 import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/caption_md_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
 import 'package:picmory/viewmodels/index/index_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:solar_icons/solar_icons.dart';
 
 class GetSourceView extends StatelessWidget {
   const GetSourceView({
@@ -38,113 +38,86 @@ class GetSourceView extends StatelessWidget {
         ),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.max,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // 스크롤 안내바
           Container(
             width: 70,
             height: 4,
+            margin: const EdgeInsets.only(bottom: 36),
             decoration: BoxDecoration(
               color: ColorFamily.disabledGrey400,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  children: [
-                    const Text(
-                      "Scan QR Code",
-                      style: TitleSmStyle(),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Paint your camera at the code",
-                      style: TextSmStyle(color: Colors.black.withOpacity(0.5)),
-                    ),
-                  ],
-                ),
-                // 카메라 영역
-                AspectRatio(
-                  aspectRatio: 1 / 1,
-                  child: Container(
-                    margin: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: MobileScanner(
-                            controller: MobileScannerController(
-                              detectionSpeed: DetectionSpeed.normal,
-                              facing: CameraFacing.back,
-                            ),
-                            onDetect: (capture) => vm.onQrDetact(
-                              context,
-                              parentContext,
-                              capture,
-                            ),
-                          ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.asset(
-                            AssetImageFamily.cameraFilter,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                        const Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 14),
-                            child: Text(
-                              "어드바이스 텍스트",
-                              style: CaptionMdStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
+          const Padding(
+            padding: EdgeInsets.only(bottom: 4),
+            child: Text(
+              "QR코드 한 번으로 간편하게",
+              style: TitleSmStyle(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 24),
+            child: Text(
+              "픽모리와 함께라면 충분합니다",
+              style: TextSmStyle(
+                color: Colors.black.withOpacity(0.5),
+              ),
+            ),
+          ),
+          // 카메라 영역
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 13),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: AspectRatio(
+              aspectRatio: 1 / 1,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: MobileScanner(
+                      controller: MobileScannerController(
+                        detectionSpeed: DetectionSpeed.normal,
+                        facing: CameraFacing.back,
+                      ),
+                      onDetect: (capture) => vm.onQrDetact(
+                        context,
+                        parentContext,
+                        capture,
+                      ),
                     ),
                   ),
-                ),
-                Column(
-                  children: [
-                    Text(
-                      "Point your camera at the code",
-                      style: TextSmStyle(
-                        color: Colors.black.withOpacity(0.5),
-                      ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.asset(
+                      AssetImageFamily.cameraFilter,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
                     ),
-                    const SizedBox(height: 12),
-                    // 갤러리에서 불러오기 버튼
-                    Container(
-                      constraints: const BoxConstraints(
-                        maxWidth: 215,
-                      ),
-                      child: IconRoundedButton(
-                        onPressed: () => vm.getImageFromGallery(context),
-                        icon: const Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                        ),
-                        child: const Text(
-                          "Button",
-                          style: TextSmStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // 갤러리에서 불러오기 버튼
+          Container(
+            margin: const EdgeInsets.only(top: 36),
+            child: IconRoundedButton(
+              onPressed: () => vm.getImageFromGallery(context),
+              backgroundColor: ColorFamily.primary,
+              icon: const Icon(
+                SolarIconsBold.album,
+                color: Colors.white,
+              ),
+              child: const Text(
+                "앨범에서 사진 불러오기",
+                style: TextSmStyle(
+                  color: Colors.white,
                 ),
-              ],
+              ),
             ),
           ),
         ],

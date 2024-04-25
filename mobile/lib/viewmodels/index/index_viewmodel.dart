@@ -29,16 +29,12 @@ class IndexViewmodel extends ChangeNotifier {
     // QR코드 modal 노출
     await showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext _) {
         return GetSourceView(
           parentContext: context,
         );
       },
-      isScrollControlled: true,
-      useSafeArea: true,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height / 6 * 5,
-      ),
     );
   }
 
