@@ -40,30 +40,15 @@ class IndexViewmodel extends ChangeNotifier {
 
   /// 갤러리에서 사진 불러오기
   getImageFromGallery(BuildContext context) async {
-    ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
-      if (value == null) return;
-      final selectedImage = value;
+    final result = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (result == null) return;
 
-      // 0.5초 대기
-      Future.delayed(const Duration(milliseconds: 500), () {
-        // 영상 선택
-        ImagePicker().pickVideo(source: ImageSource.gallery).then(
-          (value) {
-            final selectedVideo = value;
-
-            context.pop();
-            context.push(
-              '/memory/create',
-              extra: {
-                'from': 'gallery',
-                'image': selectedImage.path,
-                'video': selectedVideo?.path,
-                'brand': null,
-              },
-            );
-          },
-        );
-      });
+    context.pop();
+    context.push('/memory/create', extra: {
+      'from': 'gallery',
+      'image': [result],
+      'video': [],
+      'brand': null,
     });
   }
 
@@ -77,7 +62,7 @@ class IndexViewmodel extends ChangeNotifier {
     BuildContext context,
     BuildContext parentContext,
     BarcodeCapture capture,
-  ) {
+  ) async {
     if (_url != null) return;
 
     final Barcode barcode = capture.barcodes.first;
@@ -88,18 +73,17 @@ class IndexViewmodel extends ChangeNotifier {
     context.pop();
 
     // api 호출로 이미지 & 영상 불러오기
-    _memoryRepository.crawlUrl(_url!).then((value) {
-      if (value == null) return;
+    final result = await _memoryRepository.crawlUrl(_url!);
+    if (result == null) return;
 
-      parentContext.push(
-        '/memory/create',
-        extra: {
-          'from': 'qr',
-          'image': value.photo,
-          'video': value.video,
-          'brand': value.brand,
-        },
-      );
-    });
+    parentContext.push(
+      '/memory/create',
+      extra: {
+        'from': 'qr',
+        'image': result.photo,
+        'video': result.video,
+        'brand': result.brand,
+      },
+    );
   }
 }

@@ -1,13 +1,13 @@
 class MemoryCreateModel {
   String userId;
-  String photoUri;
+  String? photoUri;
   String? videoUri;
   DateTime date = DateTime.now();
   String? brand;
 
   MemoryCreateModel({
     required this.userId,
-    required this.photoUri,
+    this.photoUri,
     this.videoUri,
     required this.date,
     this.brand,
