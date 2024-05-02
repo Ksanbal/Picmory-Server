@@ -1,14 +1,8 @@
-import 'dart:developer';
 import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
@@ -29,29 +23,36 @@ class MemoryCreateViewmodel extends ChangeNotifier {
   bool _createComplete = false;
   bool get createComplete => _createComplete;
 
+  bool _showLoading = false;
+  bool get showLoading => _showLoading;
+
+  PageController pageController = PageController(
+    viewportFraction: 0.9,
+  );
+
   // QR 스캔 여부
   bool _isFromQR = false;
   bool get isFromQR => _isFromQR;
 
   /// QR로 가져온 사진 URL
-  String? _crawledImageUrl;
-  String? get crawledImageUrl => _crawledImageUrl;
+  List<String> _crawledImageUrls = [];
+  List<String> get crawledImageUrls => _crawledImageUrls;
 
   /// QR로 가져온 동영상 URL
-  String? _crawledVideoUrl;
-  String? get crawledVideoUrl => _crawledVideoUrl;
+  List<String> _crawledVideoUrls = [];
+  List<String> get crawledVideoUrls => _crawledVideoUrls;
 
-  /// QR로 가져온 동영상 URL
+  /// QR로 가져온 브랜드
   String? _crawledBrand;
   String? get crawledBrand => _crawledBrand;
 
   // 선택한 사진
-  XFile? _selectedImage;
-  XFile? get selectedImage => _selectedImage;
+  List<XFile> _galleryImages = [];
+  List<XFile> get galleryImages => _galleryImages;
 
   // 선택한 동영상
-  XFile? _selectedVideo;
-  XFile? get selectedVideo => _selectedVideo;
+  List<XFile> _galleryVideos = [];
+  List<XFile> get galleryVideos => _galleryVideos;
 
   /// 날짜
   DateTime date = DateTime.now();
@@ -83,14 +84,15 @@ class MemoryCreateViewmodel extends ChangeNotifier {
       final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
 
       if (extra == null) return;
+      final from = extra['from'];
 
-      if (extra['from'] == 'gallery') {
-        _selectedImage = XFile(extra['image']);
-        if (extra['video'] != null) _selectedVideo = XFile(extra['video']);
-      } else if (extra['from'] == 'qr') {
+      if (from == 'gallery') {
+        _galleryImages = extra['image'].map<XFile>((e) => e as XFile).toList();
+        _galleryVideos = extra['video'].map<XFile>((e) => e as XFile).toList();
+      } else if (from == 'qr') {
         _isFromQR = true;
-        _crawledImageUrl = extra['image'].first;
-        _crawledVideoUrl = extra['video'].first;
+        _crawledImageUrls = extra['image'];
+        _crawledVideoUrls = extra['video'];
         _crawledBrand = extra['brand'];
       }
 
@@ -113,10 +115,27 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 영상 선택 호출
+  void selectVideo() async {
+    final video = await ImagePicker().pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      _galleryVideos.add(video);
+      notifyListeners();
+      pageController.nextPage(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   // 생성
   Future<void> createMemory(BuildContext context) async {
+    // 로딩 표시
+    _showLoading = true;
+    notifyListeners();
+
     if (_isFromQR) {
-      if (_crawledImageUrl == null || _crawledVideoUrl == null) {
+      if (_crawledImageUrls.isEmpty || _crawledVideoUrls.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("QR에서 데이터를 가져오지 못했습니다."),
@@ -125,7 +144,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
         return;
       }
     } else {
-      if (_selectedImage == null) {
+      if (_galleryImages.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("사진을 선택해주세요."),
@@ -136,75 +155,35 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     }
 
     // QR에서 가져온 경우 이미지, 영상을 다운로드 받아서 갤러리에 저장, 저장된 파일을 업로드
-    bool result = false;
+    // bool result = false;
+    int? newMemoryId;
+
     if (_isFromQR) {
-      try {
-        Dio dio = Dio();
-
-        // 사진 다운로드
-        final response = await dio.get(
-          _crawledImageUrl!,
-          options: Options(responseType: ResponseType.bytes),
-        );
-
-        // 갤러리에 사진 다운로드
-        final photoResult = await ImageGallerySaver.saveImage(
-          Uint8List.fromList(response.data),
-          quality: 100,
-          isReturnImagePathOfIOS: true,
-        );
-
-        // 영상 다운로드
-        final tempVideoPath = await getTemporaryDirectory();
-        final videoFilename = _crawledVideoUrl!.split("/").last.split("?").first;
-        final savedVideoPath = "${tempVideoPath.path}/$videoFilename";
-        await dio.download(
-          _crawledVideoUrl!,
-          savedVideoPath,
-        );
-
-        // 갤러리에 영상 다운로드
-        await ImageGallerySaver.saveFile(
-          savedVideoPath,
-        );
-
-        final tempPhotoPath = await getTemporaryDirectory();
-
-        result = await _memoryRepository.create(
-          userId: supabase.auth.currentUser!.id,
-          photo: await File(
-            '${tempPhotoPath.path}/${photoResult['filePath'].split("/").last}',
-          ).writeAsBytes(response.data),
-          photoName: photoResult['filePath'].split("/").last,
-          video: File(savedVideoPath),
-          videoName: videoFilename,
-          date: date,
-          brand: null,
-        );
-      } catch (e) {
-        log(e.toString());
-        return;
-      }
     } else {
-      result = await _memoryRepository.create(
+      newMemoryId = await _memoryRepository.create(
         userId: supabase.auth.currentUser!.id,
-        photo: File(_selectedImage!.path),
-        photoName: _selectedImage!.name,
-        video: _selectedVideo != null ? File(_selectedVideo!.path) : null,
-        videoName: _selectedVideo?.name,
+        photoList: _galleryImages.map((e) => File(e.path)).toList(),
+        photoNameList: _galleryImages.map((e) => e.name).toList(),
+        videoList: _galleryVideos.map((e) => File(e.path)).toList(),
+        videoNameList: _galleryVideos.map((e) => e.name).toList(),
         date: date,
         brand: null,
       );
     }
 
-    if (result) {
+    // 로딩 표시
+    _showLoading = false;
+    notifyListeners();
+
+    if (newMemoryId != null) {
       // final homeViewmodel = Provider.of<HomeViewmodel>(context, listen: false);
       // homeViewmodel.clearDatas();
       // homeViewmodel.loadMemories();
 
       _createComplete = true;
 
-      context.pop();
+      context.pushReplacement('/memory/$newMemoryId');
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("기억이 생성되었습니다 🎉"),
@@ -217,5 +196,92 @@ class MemoryCreateViewmodel extends ChangeNotifier {
         ),
       );
     }
+
+    // // QR에서 가져온 경우 이미지, 영상을 다운로드 받아서 갤러리에 저장, 저장된 파일을 업로드
+    // bool result = false;
+    // if (_isFromQR) {
+    //   try {
+    //     Dio dio = Dio();
+
+    //     // 사진 다운로드
+    //     for (final url in _crawledImageUrls) {
+    //       final response = await dio.get(
+    //         url,
+    //         options: Options(responseType: ResponseType.bytes),
+    //       );
+
+    //       // 갤러리에 사진 다운로드
+    //       final photoResult = await ImageGallerySaver.saveImage(
+    //         Uint8List.fromList(response.data),
+    //         quality: 100,
+    //         isReturnImagePathOfIOS: true,
+    //       );
+    //     }
+
+    //     // 영상 다운로드
+    //     for (final url in _crawledVideoUrls) {
+    //       final tempVideoPath = await getTemporaryDirectory();
+    //       final videoFilename = url.split("/").last.split("?").first;
+    //       final savedVideoPath = "${tempVideoPath.path}/$videoFilename";
+    //       await dio.download(
+    //         url,
+    //         savedVideoPath,
+    //       );
+
+    //       // 갤러리에 영상 다운로드
+    //       await ImageGallerySaver.saveFile(
+    //         savedVideoPath,
+    //       );
+    //     }
+
+    //     final tempPhotoPath = await getTemporaryDirectory();
+
+    //     result = await _memoryRepository.create(
+    //       userId: supabase.auth.currentUser!.id,
+    //       photo: await File(
+    //         '${tempPhotoPath.path}/${photoResult['filePath'].split("/").last}',
+    //       ).writeAsBytes(response.data),
+    //       photoName: photoResult['filePath'].split("/").last,
+    //       video: File(savedVideoPath),
+    //       videoName: videoFilename,
+    //       date: date,
+    //       brand: null,
+    //     );
+    //   } catch (e) {
+    //     log(e.toString());
+    //     return;
+    //   }
+    // } else {
+    //   result = await _memoryRepository.create(
+    //     userId: supabase.auth.currentUser!.id,
+    //     photo: File(_galleryImages!.path),
+    //     photoName: _galleryImages!.name,
+    //     video: _galleryVideos != null ? File(_galleryVideos!.path) : null,
+    //     videoName: _galleryVideos?.name,
+    //     date: date,
+    //     brand: null,
+    //   );
+    // }
+
+    // if (result) {
+    //   // final homeViewmodel = Provider.of<HomeViewmodel>(context, listen: false);
+    //   // homeViewmodel.clearDatas();
+    //   // homeViewmodel.loadMemories();
+
+    //   _createComplete = true;
+
+    //   context.pop();
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text("기억이 생성되었습니다 🎉"),
+    //     ),
+    //   );
+    // } else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text("생성에 실패했습니다 😢"),
+    //     ),
+    //   );
+    // }
   }
 }

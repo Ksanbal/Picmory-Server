@@ -36,12 +36,12 @@ class MemoryRepository {
   /// - [hashTags] : 해시태그 목록
   /// - [date] : 날짜
   /// - [brand] : 브랜드
-  Future<bool> create({
+  Future<int?> create({
     required String userId,
-    required File photo,
-    required String photoName,
-    required File? video,
-    required String? videoName,
+    required List<File> photoList,
+    required List<String> photoNameList,
+    required List<File> videoList,
+    required List<String> videoNameList,
     required DateTime date,
     required String? brand,
   }) async {
@@ -56,40 +56,82 @@ class MemoryRepository {
     final path = 'users/$userId/memories/${now.millisecondsSinceEpoch}';
 
     try {
-      final photoUri = await _uploadFile(
-        path,
-        'picmory',
-        photoName,
-        photo,
-      );
-      final videoUri = video != null && videoName != null
-          ? await _uploadFile(
-              path,
-              'picmory',
-              videoName,
-              video,
-            )
-          : null;
+      final futurePhotoUris = [];
+      for (int i = 0; i < photoList.length; i++) {
+        futurePhotoUris.add(
+          _uploadFile(
+            path,
+            'picmory',
+            photoNameList[i],
+            photoList[i],
+          ),
+        );
+      }
+
+      final futureVideoUris = [];
+      for (int i = 0; i < videoList.length; i++) {
+        futureVideoUris.add(
+          _uploadFile(
+            path,
+            'picmory',
+            videoNameList[i],
+            videoList[i],
+          ),
+        );
+      }
 
       final newMemory = MemoryCreateModel(
         userId: userId,
-        photoUri: photoUri,
-        videoUri: videoUri,
+        photoUri: null,
+        videoUri: null,
         date: date,
         brand: brand,
       );
 
-      await supabase
+      final data = await supabase
           .from('memory')
           .insert(
             newMemory.toJson(),
           )
           .select('id');
+      final newMemoryId = data.first['id'];
 
-      return true;
+      final photoUris = [];
+      for (final uri in futurePhotoUris) {
+        photoUris.add(await uri);
+      }
+
+      final videoUris = [];
+      for (final uri in futureVideoUris) {
+        videoUris.add(await uri);
+      }
+
+      await supabase.from('upload').insert(
+            photoUris
+                .map((e) => {
+                      "uri": e,
+                      "memory_id": newMemoryId,
+                      "is_photo": true,
+                      "filename": photoNameList[photoUris.indexOf(e)],
+                    })
+                .toList(),
+          );
+
+      await supabase.from('upload').insert(
+            videoUris
+                .map((e) => {
+                      "uri": e,
+                      "memory_id": newMemoryId,
+                      "is_photo": false,
+                      "filename": photoNameList[videoUris.indexOf(e)],
+                    })
+                .toList(),
+          );
+
+      return newMemoryId;
     } catch (e) {
       log(e.toString(), name: 'MemoryRepository.create');
-      return false;
+      return null;
     }
   }
 
