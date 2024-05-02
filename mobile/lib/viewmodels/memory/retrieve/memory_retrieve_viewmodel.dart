@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -86,40 +88,45 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     // [x] 삭제 확인 다이얼로그
     final result = await showDialog(
       context: context,
+      useSafeArea: true,
+      barrierColor: Colors.black.withOpacity(0.4),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 86),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: RoundedButton(
-                  onPressed: () => context.pop(true),
-                  backgroundColor: Colors.white,
-                  child: const Text(
-                    "삭제",
-                    style: TextSmStyle(
-                      color: ColorFamily.error,
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 66),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: RoundedButton(
+                    onPressed: () => context.pop(true),
+                    backgroundColor: Colors.white,
+                    child: const Text(
+                      "삭제",
+                      style: TextSmStyle(
+                        color: ColorFamily.error,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              SizedBox(
-                width: double.infinity,
-                child: RoundedButton(
-                  onPressed: () => context.pop(false),
-                  backgroundColor: Colors.white,
-                  child: const Text(
-                    "취소",
-                    style: TextSmStyle(
-                      color: ColorFamily.textGrey700,
+                const SizedBox(height: 5),
+                SizedBox(
+                  width: double.infinity,
+                  child: RoundedButton(
+                    onPressed: () => context.pop(false),
+                    backgroundColor: Colors.white,
+                    child: const Text(
+                      "취소",
+                      style: TextSmStyle(
+                        color: ColorFamily.textGrey700,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
