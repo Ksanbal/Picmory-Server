@@ -1,6 +1,5 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
@@ -75,7 +74,7 @@ class MemoryRetrieveView extends StatelessWidget {
                 children: [
                   // 뒤로가기
                   InkWell(
-                    onTap: context.pop,
+                    onTap: () => vm.pop(context),
                     child: const SizedBox(
                       width: 48,
                       height: 48,
@@ -115,37 +114,39 @@ class MemoryRetrieveView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 날짜 변경
-                  InkWell(
-                    onTap: () => vm.showChangeDateBottomsheet(context),
-                    child: Text(
-                      vm.memory?.date != null
-                          ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
-                          : '',
-                      style: const TitleSmStyle(
-                        color: Colors.white,
+                  Consumer<MemoryRetrieveViewmodel>(builder: (_, vm, __) {
+                    return InkWell(
+                      onTap: () => vm.showChangeDateBottomsheet(context),
+                      child: Text(
+                        vm.memory?.date != null
+                            ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
+                            : '',
+                        style: const TitleSmStyle(
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       // 좋아요
-                      InkWell(
-                        onTap: vm.likeMemory,
-                        child: SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Consumer<MemoryRetrieveViewmodel>(
-                            builder: (_, vm, __) {
-                              final isLiked = vm.memory?.isLiked ?? false;
+                      Consumer<MemoryRetrieveViewmodel>(
+                        builder: (_, value, __) {
+                          final isLiked = vm.memory?.isLiked ?? false;
 
-                              return Icon(
+                          return InkWell(
+                            onTap: vm.likeMemory,
+                            child: SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: Icon(
                                 isLiked ? SolarIconsBold.heart : SolarIconsOutline.heart,
                                 color: Colors.white,
-                              );
-                            },
-                          ),
-                        ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       // 앨범 추가
                       InkWell(
