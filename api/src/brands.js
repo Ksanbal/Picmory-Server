@@ -22,10 +22,12 @@ export const brands = {
   'l4c01.lifejuin.biz': { name: 'life_four_cut', func: null },
   /// 포토그레이
   'pgshort.aprd.io': { name: 'photogray', func: photogray },
-  /// 포토에이스
-  'photoace.co.kr': { name: 'photoace', func: photoace },
+  /// 셀픽스
+  'photoace.co.kr': { name: 'selpix', func: selpix },
   /// 포토이즘
   'qr.seobuk.kr': { name: 'photoism', func: seobuk },
+  /// 픽닷
+  'picdot.kr': { name: 'picdot', func: picdot },
 };
 
 /// 모노맨션 다운로드 링크
@@ -82,8 +84,8 @@ async function photogray(url) {
   return { photo, video };
 }
 
-/// 포토에이스
-async function photoace(url) {
+/// 셀픽스
+async function selpix(url) {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
@@ -132,6 +134,16 @@ async function seobuk(url) {
 
   await page.close();
   await browser.close();
+
+  return { photo, video };
+}
+
+/// 픽닷
+async function picdot(url) {
+  const qrcode = url.split('qrcode=')[1];
+
+  const photo = [`https://picdot.kr/api/download.php?qrcode=${qrcode}&type=P`];
+  const video = [`https://picdot.kr/api/download.php?qrcode=${qrcode}&type=V`];
 
   return { photo, video };
 }
