@@ -2,26 +2,13 @@ import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:picmory/common/families/color_family.dart';
+import 'package:picmory/common/components/get_shimmer.dart';
+
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
-
-  Widget getShimmer(int index) {
-    return SizedBox(
-      height: [300.0, 200.0, 100.0][index % 3],
-      child: Shimmer.fromColors(
-        baseColor: ColorFamily.disabledGrey400,
-        highlightColor: ColorFamily.disabledGrey300,
-        child: Container(
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
