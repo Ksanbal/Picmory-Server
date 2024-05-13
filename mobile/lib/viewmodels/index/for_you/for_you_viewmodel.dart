@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/models/memory/memory_list_model.dart';
 import 'package:picmory/repositories/album_repository.dart';
+import 'package:picmory/repositories/meory_repository.dart';
 
 class ForYouViewmodel extends ChangeNotifier {
   ForYouViewmodel() {
-    getList();
+    getAlbumList();
+    getLikeMemoryList();
 
     forYouViewController.addListener(() {
       final isScrolled = forYouViewController.hasClients && forYouViewController.offset > 0;
@@ -19,9 +22,13 @@ class ForYouViewmodel extends ChangeNotifier {
   }
 
   final AlbumRepository _albumRepository = AlbumRepository();
+  final MemoryRepository _memoryRepository = MemoryRepository();
 
   final List<AlbumModel> _albums = [];
   List<AlbumModel> get albums => _albums;
+
+  final List<MemoryListModel> _memories = [];
+  List<MemoryListModel> get memories => _memories;
 
   // 추억함 페이지 전체 컨트롤러
   final ScrollController forYouViewController = ScrollController();
@@ -36,10 +43,22 @@ class ForYouViewmodel extends ChangeNotifier {
     context.push('/menu');
   }
 
-  getList() async {
+  getAlbumList() async {
     final items = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
     _albums.clear();
     _albums.addAll(items);
     notifyListeners();
+  }
+
+  getLikeMemoryList() async {
+    final items = await _memoryRepository.listOnlyLike(userId: supabase.auth.currentUser!.id);
+    _memories.clear();
+    _memories.addAll(items);
+    notifyListeners();
+  }
+
+  /// 기억 상세 페이지로 이동
+  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
+    context.push('/memory/${memory.id}');
   }
 }

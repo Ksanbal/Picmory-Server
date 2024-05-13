@@ -192,6 +192,19 @@ class MemoryRepository {
     return result.map((e) => MemoryListModel.fromJson(e)).toList();
   }
 
+  /// 좋아요한 목록 조회
+  /// - [userId] : 사용자 ID
+  Future<List<MemoryListModel>> listOnlyLike({required String userId}) async {
+    final items = await supabase
+        .from('memory_like')
+        .select('id, memory(id, date, upload(uri, is_photo))')
+        .eq('user_id', userId)
+        .order('id', ascending: false)
+        .limit(5);
+
+    return items.map((e) => MemoryListModel.fromJson(e['memory'])).toList();
+  }
+
   /// 단일 조회
   /// - [userId] : 사용자 ID
   /// - [memoryId] : 기억 ID

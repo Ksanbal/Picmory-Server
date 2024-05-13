@@ -26,60 +26,80 @@ class ForYouView extends StatelessWidget {
               bottom: MediaQuery.of(context).padding.bottom + 110,
             ),
             children: [
-              // 좋아요
-              SizedBox(
-                height: MediaQuery.of(context).size.width - 32,
-                child: PageView.builder(
-                  itemCount: 6,
-                  controller: vm.likePageController,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Center(
-                        child: AspectRatio(
-                          aspectRatio: 1 / 1,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: index % 2 == 0 ? Colors.grey : Colors.red,
+              if (vm.memories.isNotEmpty)
+                // 좋아요
+                SizedBox(
+                  height: MediaQuery.of(context).size.width - 32,
+                  child: PageView.builder(
+                    itemCount: vm.memories.length,
+                    controller: vm.likePageController,
+                    itemBuilder: (context, index) {
+                      final memory = vm.memories[index];
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: 1 / 1,
+                            child: InkWell(
+                              onTap: () => vm.goToMemoryRetrieve(context, memory),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: ExtendedImage.network(
+                                  memory.photoUri,
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.topCenter,
+                                  loadStateChanged: (state) {
+                                    if (state.extendedImageLoadState == LoadState.loading) {
+                                      return getShimmer(index);
+                                    }
+                                    if (state.extendedImageLoadState == LoadState.failed) {
+                                      return const Center(
+                                        child: Icon(Icons.error),
+                                      );
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    PageIndicatorWidget(
-                      controller: vm.likePageController,
-                      count: 6,
-                    ),
-                    InkWell(
-                      onTap: () {},
-                      child: const Row(
-                        children: [
-                          Text(
-                            "좋아요 더보기",
-                            style: TextSmStyle(
-                              color: ColorFamily.textGrey600,
+              if (vm.memories.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      PageIndicatorWidget(
+                        controller: vm.likePageController,
+                        count: vm.memories.length,
+                      ),
+                      InkWell(
+                        onTap: () {},
+                        child: const Row(
+                          children: [
+                            Text(
+                              "좋아요 더보기",
+                              style: TextSmStyle(
+                                color: ColorFamily.textGrey600,
+                              ),
                             ),
-                          ),
-                          Icon(
-                            SolarIconsOutline.altArrowRight,
-                            color: ColorFamily.textGrey600,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                            Icon(
+                              SolarIconsOutline.altArrowRight,
+                              color: ColorFamily.textGrey600,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
               // 앨범
               GridView.builder(
                 physics: const NeverScrollableScrollPhysics(),
