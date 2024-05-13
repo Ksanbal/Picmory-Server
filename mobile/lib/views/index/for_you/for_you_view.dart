@@ -1,4 +1,6 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:picmory/common/components/get_shimmer.dart';
 import 'package:picmory/common/components/page_indicator_widget.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
@@ -89,8 +91,38 @@ class ForYouView extends StatelessWidget {
                   childAspectRatio: 160 / 206,
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: 10,
+                itemCount: vm.albums.isEmpty ? 10 : vm.albums.length,
                 itemBuilder: (context, index) {
+                  if (vm.albums.isEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: AspectRatio(
+                            aspectRatio: 1 / 1,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: getShimmer(index),
+                            ),
+                          ),
+                        ),
+                        const Text(
+                          "-",
+                          style: TextSmStyle(),
+                        ),
+                        const Text(
+                          "-",
+                          style: CaptionSmStyle(
+                            color: ColorFamily.disabledGrey500,
+                          ),
+                        )
+                      ],
+                    );
+                  }
+
+                  final album = vm.albums[index];
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -100,22 +132,34 @@ class ForYouView extends StatelessWidget {
                           aspectRatio: 1 / 1,
                           child: InkWell(
                             onTap: () {},
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: Colors.grey,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: ExtendedImage.network(
+                                album.imageUrls.first,
+                                fit: BoxFit.cover,
+                                loadStateChanged: (state) {
+                                  if (state.extendedImageLoadState == LoadState.loading) {
+                                    return getShimmer(index);
+                                  }
+                                  if (state.extendedImageLoadState == LoadState.failed) {
+                                    return const Center(
+                                      child: Icon(Icons.error),
+                                    );
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
                           ),
                         ),
                       ),
                       Text(
-                        "앨범 이름",
-                        style: TextSmStyle(),
+                        album.name,
+                        style: const TextSmStyle(),
                       ),
                       Text(
-                        "123",
-                        style: CaptionSmStyle(
+                        album.imageUrls.length.toString(),
+                        style: const CaptionSmStyle(
                           color: ColorFamily.disabledGrey500,
                         ),
                       )

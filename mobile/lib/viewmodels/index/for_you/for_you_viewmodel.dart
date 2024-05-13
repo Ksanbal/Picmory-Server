@@ -6,6 +6,8 @@ import 'package:picmory/repositories/album_repository.dart';
 
 class ForYouViewmodel extends ChangeNotifier {
   ForYouViewmodel() {
+    getList();
+
     forYouViewController.addListener(() {
       final isScrolled = forYouViewController.hasClients && forYouViewController.offset > 0;
       // 이전 상태와 다를 경우에만 변경
