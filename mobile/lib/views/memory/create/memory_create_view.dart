@@ -74,15 +74,15 @@ class MemoryCreateView extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      ...vm.crawledVideoUrls.map(
+                                      ...vm.galleryVideos.map(
                                         (e) => Padding(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 5,
                                           ),
                                           child: VideoPlayer(
                                             fromNetwork: true,
-                                            uri: e,
-                                            file: null,
+                                            uri: null,
+                                            file: e,
                                           ),
                                         ),
                                       ),
@@ -126,9 +126,10 @@ class MemoryCreateView extends StatelessWidget {
                             ),
                             child: PageIndicatorWidget(
                               controller: vm.pageController,
-                              count: vm.isFromQR
-                                  ? vm.crawledImageUrls.length + vm.crawledVideoUrls.length
-                                  : vm.galleryImages.length + vm.galleryVideos.length,
+                              count: (vm.isFromQR
+                                      ? vm.crawledImageUrls.length
+                                      : vm.galleryImages.length) +
+                                  vm.galleryVideos.length,
                             ),
                           )
                         ],
