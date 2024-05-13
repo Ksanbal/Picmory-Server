@@ -75,15 +75,15 @@ class MemoryCreateView extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      ...vm.crawledVideoUrls.map(
+                                      ...vm.galleryVideos.map(
                                         (e) => Padding(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 5,
                                           ),
                                           child: VideoPlayer(
                                             fromNetwork: true,
-                                            uri: e,
-                                            file: null,
+                                            uri: null,
+                                            file: e,
                                           ),
                                         ),
                                       ),
@@ -127,14 +127,10 @@ class MemoryCreateView extends StatelessWidget {
                             ),
                             child: SmoothPageIndicator(
                               controller: vm.pageController,
-                              count: vm.isFromQR
-                                  ? 0
-                                  : vm.galleryImages.length + vm.galleryVideos.length,
-                              effect: const ExpandingDotsEffect(
-                                dotHeight: 6,
-                                dotWidth: 6,
-                                dotColor: ColorFamily.disabledGrey400,
-                              ),
+                              count: (vm.isFromQR
+                                      ? vm.crawledImageUrls.length
+                                      : vm.galleryImages.length) +
+                                  vm.galleryVideos.length,
                             ),
                           )
                         ],

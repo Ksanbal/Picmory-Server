@@ -1,8 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
@@ -37,10 +42,6 @@ class MemoryCreateViewmodel extends ChangeNotifier {
   /// QR로 가져온 사진 URL
   List<String> _crawledImageUrls = [];
   List<String> get crawledImageUrls => _crawledImageUrls;
-
-  /// QR로 가져온 동영상 URL
-  List<String> _crawledVideoUrls = [];
-  List<String> get crawledVideoUrls => _crawledVideoUrls;
 
   /// QR로 가져온 브랜드
   String? _crawledBrand;
@@ -80,7 +81,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
 
   /// 소스 선택 페이지에서 가져온 데이터 처리
   getDataFromExtra(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
 
       if (extra == null) return;
@@ -92,7 +93,16 @@ class MemoryCreateViewmodel extends ChangeNotifier {
       } else if (from == 'qr') {
         _isFromQR = true;
         _crawledImageUrls = extra['image'];
-        _crawledVideoUrls = extra['video'];
+        for (final url in extra['video']) {
+          final tempVideoPath = await getTemporaryDirectory();
+          final savedVideoPath = "${tempVideoPath.path}/${DateTime.now().second}.mp4";
+
+          await Dio().download(
+            url,
+            savedVideoPath,
+          );
+          _galleryVideos = [XFile(savedVideoPath)];
+        }
         _crawledBrand = extra['brand'];
       }
 
@@ -135,7 +145,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     notifyListeners();
 
     if (_isFromQR) {
-      if (_crawledImageUrls.isEmpty || _crawledVideoUrls.isEmpty) {
+      if (_crawledImageUrls.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("QR에서 데이터를 가져오지 못했습니다."),
@@ -155,10 +165,56 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     }
 
     // QR에서 가져온 경우 이미지, 영상을 다운로드 받아서 갤러리에 저장, 저장된 파일을 업로드
-    // bool result = false;
     int? newMemoryId;
 
     if (_isFromQR) {
+      try {
+        Dio dio = Dio();
+
+        // 사진 다운로드
+        final List<File> downloadedImageFiles = [];
+        for (final url in _crawledImageUrls) {
+          final response = await dio.get(
+            url,
+            options: Options(responseType: ResponseType.bytes),
+          );
+
+          // 갤러리에 사진 다운로드
+          final photoResult = await ImageGallerySaver.saveImage(
+            Uint8List.fromList(response.data),
+            quality: 100,
+            isReturnImagePathOfIOS: true,
+          );
+
+          final tempPhotoPath = await getTemporaryDirectory();
+          final imageFile = await File(
+            '${tempPhotoPath.path}/${photoResult['filePath'].split("/").last}',
+          ).writeAsBytes(response.data);
+
+          downloadedImageFiles.add(imageFile);
+        }
+
+        // 영상 다운로드
+        for (final file in _galleryVideos) {
+          // 갤러리에 영상 다운로드
+          await ImageGallerySaver.saveFile(
+            file.path,
+          );
+        }
+
+        newMemoryId = await _memoryRepository.create(
+          userId: supabase.auth.currentUser!.id,
+          photoList: downloadedImageFiles,
+          photoNameList: downloadedImageFiles.map((e) => e.path.split('/').last).toList(),
+          videoList: _galleryVideos.map((e) => File(e.path)).toList(),
+          videoNameList: _galleryVideos.map((e) => e.name).toList(),
+          date: date,
+          brand: _crawledBrand,
+        );
+      } catch (e) {
+        log(e.toString());
+        return;
+      }
     } else {
       newMemoryId = await _memoryRepository.create(
         userId: supabase.auth.currentUser!.id,
@@ -176,10 +232,6 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     notifyListeners();
 
     if (newMemoryId != null) {
-      // final homeViewmodel = Provider.of<HomeViewmodel>(context, listen: false);
-      // homeViewmodel.clearDatas();
-      // homeViewmodel.loadMemories();
-
       _createComplete = true;
 
       context.pushReplacement('/memory/$newMemoryId');
@@ -196,92 +248,5 @@ class MemoryCreateViewmodel extends ChangeNotifier {
         ),
       );
     }
-
-    // // QR에서 가져온 경우 이미지, 영상을 다운로드 받아서 갤러리에 저장, 저장된 파일을 업로드
-    // bool result = false;
-    // if (_isFromQR) {
-    //   try {
-    //     Dio dio = Dio();
-
-    //     // 사진 다운로드
-    //     for (final url in _crawledImageUrls) {
-    //       final response = await dio.get(
-    //         url,
-    //         options: Options(responseType: ResponseType.bytes),
-    //       );
-
-    //       // 갤러리에 사진 다운로드
-    //       final photoResult = await ImageGallerySaver.saveImage(
-    //         Uint8List.fromList(response.data),
-    //         quality: 100,
-    //         isReturnImagePathOfIOS: true,
-    //       );
-    //     }
-
-    //     // 영상 다운로드
-    //     for (final url in _crawledVideoUrls) {
-    //       final tempVideoPath = await getTemporaryDirectory();
-    //       final videoFilename = url.split("/").last.split("?").first;
-    //       final savedVideoPath = "${tempVideoPath.path}/$videoFilename";
-    //       await dio.download(
-    //         url,
-    //         savedVideoPath,
-    //       );
-
-    //       // 갤러리에 영상 다운로드
-    //       await ImageGallerySaver.saveFile(
-    //         savedVideoPath,
-    //       );
-    //     }
-
-    //     final tempPhotoPath = await getTemporaryDirectory();
-
-    //     result = await _memoryRepository.create(
-    //       userId: supabase.auth.currentUser!.id,
-    //       photo: await File(
-    //         '${tempPhotoPath.path}/${photoResult['filePath'].split("/").last}',
-    //       ).writeAsBytes(response.data),
-    //       photoName: photoResult['filePath'].split("/").last,
-    //       video: File(savedVideoPath),
-    //       videoName: videoFilename,
-    //       date: date,
-    //       brand: null,
-    //     );
-    //   } catch (e) {
-    //     log(e.toString());
-    //     return;
-    //   }
-    // } else {
-    //   result = await _memoryRepository.create(
-    //     userId: supabase.auth.currentUser!.id,
-    //     photo: File(_galleryImages!.path),
-    //     photoName: _galleryImages!.name,
-    //     video: _galleryVideos != null ? File(_galleryVideos!.path) : null,
-    //     videoName: _galleryVideos?.name,
-    //     date: date,
-    //     brand: null,
-    //   );
-    // }
-
-    // if (result) {
-    //   // final homeViewmodel = Provider.of<HomeViewmodel>(context, listen: false);
-    //   // homeViewmodel.clearDatas();
-    //   // homeViewmodel.loadMemories();
-
-    //   _createComplete = true;
-
-    //   context.pop();
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text("기억이 생성되었습니다 🎉"),
-    //     ),
-    //   );
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text("생성에 실패했습니다 😢"),
-    //     ),
-    //   );
-    // }
   }
 }
