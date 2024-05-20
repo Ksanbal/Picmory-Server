@@ -1,15 +1,14 @@
 import 'dart:io';
-
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player.dart';
+import 'package:picmory/common/components/page_indicator_widget.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:solar_icons/solar_icons.dart';
 
 class MemoryCreateView extends StatelessWidget {
@@ -125,7 +124,7 @@ class MemoryCreateView extends StatelessWidget {
                               top: 16,
                               bottom: 51,
                             ),
-                            child: SmoothPageIndicator(
+                            child: PageIndicatorWidget(
                               controller: vm.pageController,
                               count: (vm.isFromQR
                                       ? vm.crawledImageUrls.length
