@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/viewmodels/auth/signin/signin_viewmodel.dart';
+import 'package:picmory/viewmodels/index/for_you/albums/albums_viewmodel.dart';
 import 'package:picmory/viewmodels/index/for_you/for_you_viewmodel.dart';
 import 'package:picmory/viewmodels/index/for_you/like_memories/like_memories_viewmodel.dart';
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
@@ -10,6 +11,7 @@ import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dar
 import 'package:picmory/viewmodels/menu/menu_viewmodel.dart';
 import 'package:picmory/viewmodels/splash/splash_viewmodel.dart';
 import 'package:picmory/views/auth/signin_view.dart';
+import 'package:picmory/views/index/for_you/albums/albums_view.dart';
 import 'package:picmory/views/index/for_you/like_memories/like_memories_view.dart';
 import 'package:picmory/views/index/index_view.dart';
 import 'package:picmory/views/memory/create/memory_create_view.dart';
@@ -114,6 +116,15 @@ final router = GoRouter(
                 builder: (_, state) => ChangeNotifierProvider.value(
                   value: LikeMemoriesViewmodel(),
                   child: const LikeMemoriesView(),
+                ),
+              ),
+              GoRoute(
+                path: 'albums/:id',
+                builder: (_, state) => ChangeNotifierProvider.value(
+                  value: AlbumsViewmodel(
+                    int.parse(state.pathParameters['id']!),
+                  ),
+                  child: const AlbumsView(),
                 ),
               ),
             ],

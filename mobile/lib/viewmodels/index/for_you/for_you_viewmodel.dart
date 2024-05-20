@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
+import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/album/album_model.dart';
 import 'package:picmory/models/memory/memory_list_model.dart';
@@ -69,5 +71,63 @@ class ForYouViewmodel extends ChangeNotifier {
   /// 기억 상세 페이지로 이동
   goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
     context.push('/memory/${memory.id}');
+  }
+
+  /// 앨범 생성 dialog 노출
+  createAlbum(BuildContext context) async {
+    // 앨범 이름 입력 dialog 노출
+    final TextEditingController controller = TextEditingController();
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return CreateAlbumBottomsheet(
+          controller: controller,
+          hintText: '앨범 이름',
+        );
+      },
+    );
+
+    if (controller.text.isEmpty) {
+      return;
+    }
+
+    final exist = _albums.any((e) => e.name == controller.text);
+    if (exist) {
+      showSnackBar(
+        context,
+        '이미 존재하는 이름입니다',
+        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
+        actionTitle: '닫기',
+      );
+      return;
+    }
+
+    final int? albumId = await _albumRepository.create(
+      userId: supabase.auth.currentUser!.id,
+      name: controller.text,
+    );
+
+    if (albumId == null) {
+      showSnackBar(
+        context,
+        '앨범 생성에 실패했습니다',
+        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
+        actionTitle: '닫기',
+      );
+      return;
+    }
+
+    // 해당 앨범 페이지로 이동
+    routeToAlbums(context, albumId);
+  }
+
+  /// 앨범 페이지로 이동
+  routeToAlbums(BuildContext context, int id) async {
+    await context.push('/for-you/albums/$id');
+
+    // 앨범 목록 다시 로드
+    getAlbumList();
   }
 }

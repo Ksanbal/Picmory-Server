@@ -151,24 +151,28 @@ class ForYouView extends StatelessWidget {
                         child: AspectRatio(
                           aspectRatio: 1 / 1,
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () => vm.routeToAlbums(context, album.id),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(5),
-                              child: ExtendedImage.network(
-                                album.imageUrls.first,
-                                fit: BoxFit.cover,
-                                loadStateChanged: (state) {
-                                  if (state.extendedImageLoadState == LoadState.loading) {
-                                    return getShimmer(index);
-                                  }
-                                  if (state.extendedImageLoadState == LoadState.failed) {
-                                    return const Center(
-                                      child: Icon(Icons.error),
-                                    );
-                                  }
-                                  return null;
-                                },
-                              ),
+                              child: album.imageUrls.isEmpty
+                                  ? Container(
+                                      color: ColorFamily.disabledGrey400,
+                                    )
+                                  : ExtendedImage.network(
+                                      album.imageUrls.first,
+                                      fit: BoxFit.cover,
+                                      loadStateChanged: (state) {
+                                        if (state.extendedImageLoadState == LoadState.loading) {
+                                          return getShimmer(index);
+                                        }
+                                        if (state.extendedImageLoadState == LoadState.failed) {
+                                          return const Center(
+                                            child: Icon(Icons.error),
+                                          );
+                                        }
+                                        return null;
+                                      },
+                                    ),
                             ),
                           ),
                         ),
@@ -201,7 +205,7 @@ class ForYouView extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(SolarIconsOutline.addFolder),
                       color: vm.isShrink ? Colors.white : Colors.black,
-                      onPressed: () {},
+                      onPressed: () => vm.createAlbum(context),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -211,7 +215,7 @@ class ForYouView extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(SolarIconsOutline.hamburgerMenu),
                       color: vm.isShrink ? Colors.white : Colors.black,
-                      onPressed: () {},
+                      onPressed: () => vm.routeToMenu(context),
                     ),
                   ),
                 ],
