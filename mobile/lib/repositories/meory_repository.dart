@@ -137,26 +137,26 @@ class MemoryRepository {
 
   /// 목록 조회
   /// - [userId] : 사용자 ID
-  /// - [albumID] : 앨범 ID
+  /// - [albumId] : 앨범 ID
   /// - [hashtag] : 해시태그
   Future<List<MemoryListModel>> list({
     required String userId,
-    required int? albumID,
+    required int? albumId,
     List<String> hashtags = const [],
   }) async {
     /**
      * TODO: 기억 목록 조회 기능 작성
-     * - [x] albumID, hashtag가 모두 null이 아니면 에러
-     * - [x] albumID, hashtag가 모두 null이면 전체 기억 목록 조회
-     * - [ ] albumID가 null이 아니면 해당 앨범의 기억 목록 조회
+     * - [x] albumId, hashtag가 모두 null이 아니면 에러
+     * - [x] albumId, hashtag가 모두 null이면 전체 기억 목록 조회
+     * - [ ] albumId가 null이 아니면 해당 앨범의 기억 목록 조회
      * - [ ] hashtag가 null이 아니면 해당 해시태그가 포함된 기억 목록 조회
      */
-    if (albumID != null && hashtags.isEmpty) {
-      throw Exception('albumID, hashtags 둘 중 하나만 입력해주세요');
+    if (albumId != null && hashtags.isNotEmpty) {
+      throw Exception('albumId, hashtags 둘 중 하나만 입력해주세요');
     }
 
     final result = [];
-    if (albumID == null && hashtags.isEmpty) {
+    if (albumId == null && hashtags.isEmpty) {
       final items = await supabase
           .from('memory')
           .select(
@@ -165,8 +165,14 @@ class MemoryRepository {
           .eq('user_id', userId)
           .order('id', ascending: true);
       result.addAll(items);
-    } else if (albumID != null) {
-      //
+    } else if (albumId != null) {
+      final items = await supabase
+          .from('memory_album')
+          .select('id, album_id, memory(id, date, upload(uri, is_photo))')
+          .eq('album_id', albumId)
+          .order('id', ascending: false);
+
+      return items.map((e) => MemoryListModel.fromJson(e['memory'])).toList();
     } else if (hashtags.isNotEmpty) {
       final items = await supabase
           .from('memory')

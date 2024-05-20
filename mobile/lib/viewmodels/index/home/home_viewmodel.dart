@@ -63,7 +63,7 @@ class HomeViewmodel extends ChangeNotifier {
     final userId = supabase.auth.currentUser!.id;
     final items = await _memoryRepository.list(
       userId: userId,
-      albumID: null,
+      albumId: null,
       hashtags: hashtags,
     );
 
