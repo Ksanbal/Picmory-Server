@@ -80,7 +80,7 @@ class ForYouView extends StatelessWidget {
                         count: vm.memories.length,
                       ),
                       InkWell(
-                        onTap: () {},
+                        onTap: () => vm.routeToLikeMemories(context),
                         child: const Row(
                           children: [
                             Text(

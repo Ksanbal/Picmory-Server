@@ -39,10 +39,18 @@ class ForYouViewmodel extends ChangeNotifier {
   // 좋아요 페이지 컨트롤러
   final PageController likePageController = PageController();
 
+  /// 메뉴 페이지로 이동
   routeToMenu(BuildContext context) {
     context.push('/menu');
   }
 
+  /// 좋아요 페이지로 이동
+  routeToLikeMemories(BuildContext context) async {
+    await context.push('/for-you/like-memories');
+    getLikeMemoryList();
+  }
+
+  /// 앨범 목록 로드
   getAlbumList() async {
     final items = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
     _albums.clear();
@@ -50,6 +58,7 @@ class ForYouViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 좋아요한 기억 목록 로드
   getLikeMemoryList() async {
     final items = await _memoryRepository.listOnlyLike(userId: supabase.auth.currentUser!.id);
     _memories.clear();

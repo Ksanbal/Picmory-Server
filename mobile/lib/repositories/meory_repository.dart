@@ -194,13 +194,17 @@ class MemoryRepository {
 
   /// 좋아요한 목록 조회
   /// - [userId] : 사용자 ID
-  Future<List<MemoryListModel>> listOnlyLike({required String userId}) async {
+  Future<List<MemoryListModel>> listOnlyLike({
+    required String userId,
+    int page = 1,
+    int pageCount = 5,
+  }) async {
     final items = await supabase
         .from('memory_like')
         .select('id, memory(id, date, upload(uri, is_photo))')
         .eq('user_id', userId)
         .order('id', ascending: false)
-        .limit(5);
+        .range((page - 1) * pageCount, page * pageCount);
 
     return items.map((e) => MemoryListModel.fromJson(e['memory'])).toList();
   }
