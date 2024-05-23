@@ -193,6 +193,20 @@ class ForYouView extends StatelessWidget {
               ),
             ],
           ),
+          if (vm.isShrink)
+            Container(
+              height: MediaQuery.of(context).padding.top + kToolbarHeight,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.4),
+                    Colors.black.withOpacity(0),
+                  ],
+                ),
+              ),
+            ),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.only(right: 16),

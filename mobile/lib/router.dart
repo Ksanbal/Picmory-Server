@@ -48,107 +48,108 @@ final router = GoRouter(
      * Index
      */
     GoRoute(
-        path: '/',
-        builder: (_, state) => MultiProvider(
-              providers: [
-                ChangeNotifierProvider(
-                  create: (_) => IndexViewmodel(),
-                ),
-                ChangeNotifierProvider(
-                  create: (_) => HomeViewmodel(
-                    MemoryCreateViewmodel(),
-                    MemoryRetrieveViewmodel(),
-                  ),
-                ),
-                ChangeNotifierProvider(
-                  create: (_) => ForYouViewmodel(),
-                ),
-              ],
-              child: IndexView(),
+      path: '/',
+      builder: (_, state) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => IndexViewmodel(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => HomeViewmodel(
+              MemoryCreateViewmodel(),
+              MemoryRetrieveViewmodel(),
             ),
-        routes: [
-          /**
+          ),
+          ChangeNotifierProvider(
+            create: (_) => ForYouViewmodel(),
+          ),
+        ],
+        child: IndexView(),
+      ),
+      routes: [
+        /**
           * memory
           */
-          GoRoute(
-            path: 'memory',
-            builder: (_, state) => Container(),
-            routes: [
-              GoRoute(
-                path: 'create',
-                builder: (_, state) => ChangeNotifierProvider.value(
-                  value: MemoryCreateViewmodel(),
-                  child: const MemoryCreateView(),
-                ),
+        GoRoute(
+          path: 'memory',
+          builder: (_, state) => Container(),
+          routes: [
+            GoRoute(
+              path: 'create',
+              builder: (_, state) => ChangeNotifierProvider.value(
+                value: MemoryCreateViewmodel(),
+                child: const MemoryCreateView(),
               ),
-              GoRoute(
-                path: ':memoryId',
-                // builder: (_, state) => ChangeNotifierProvider.value(
-                //   value: MemoryRetrieveViewmodel(),
-                //   child: MemoryRetrieveView(
-                //     memoryId: state.pathParameters['memoryId']!,
-                //   ),
-                // ),
-                builder: (_, state) => MultiProvider(
-                  providers: [
-                    ChangeNotifierProvider.value(
-                      value: MemoryRetrieveViewmodel(),
-                    ),
-                    ChangeNotifierProvider(
-                      create: (_) => ForYouViewmodel(),
-                    ),
-                  ],
-                  child: MemoryRetrieveView(
-                    memoryId: state.pathParameters['memoryId']!,
+            ),
+            GoRoute(
+              path: ':memoryId',
+              // builder: (_, state) => ChangeNotifierProvider.value(
+              //   value: MemoryRetrieveViewmodel(),
+              //   child: MemoryRetrieveView(
+              //     memoryId: state.pathParameters['memoryId']!,
+              //   ),
+              // ),
+              builder: (_, state) => MultiProvider(
+                providers: [
+                  ChangeNotifierProvider.value(
+                    value: MemoryRetrieveViewmodel(),
                   ),
+                  ChangeNotifierProvider(
+                    create: (_) => ForYouViewmodel(),
+                  ),
+                ],
+                child: MemoryRetrieveView(
+                  memoryId: state.pathParameters['memoryId']!,
                 ),
               ),
-            ],
-          ),
-          /**
+            ),
+          ],
+        ),
+        /**
            * for you
            */
-          GoRoute(
-            path: 'for-you',
-            builder: (_, state) => Container(),
-            routes: [
-              GoRoute(
-                path: 'like-memories',
-                builder: (_, state) => ChangeNotifierProvider.value(
-                  value: LikeMemoriesViewmodel(),
-                  child: const LikeMemoriesView(),
-                ),
+        GoRoute(
+          path: 'for-you',
+          builder: (_, state) => Container(),
+          routes: [
+            GoRoute(
+              path: 'like-memories',
+              builder: (_, state) => ChangeNotifierProvider.value(
+                value: LikeMemoriesViewmodel(),
+                child: const LikeMemoriesView(),
               ),
-              GoRoute(
-                path: 'albums/:id',
-                builder: (_, state) => ChangeNotifierProvider.value(
-                  value: AlbumsViewmodel(
-                    int.parse(state.pathParameters['id']!),
-                  ),
-                  child: const AlbumsView(),
+            ),
+            GoRoute(
+              path: 'albums/:id',
+              builder: (_, state) => ChangeNotifierProvider.value(
+                value: AlbumsViewmodel(
+                  int.parse(state.pathParameters['id']!),
                 ),
+                child: const AlbumsView(),
               ),
-            ],
-          ),
-          /**
+            ),
+          ],
+        ),
+        /**
           * 메뉴 목록
           */
-          GoRoute(
-            path: 'menu',
-            builder: (_, state) => ChangeNotifierProvider(
-              create: (_) => MenuViewmodel(),
-              child: const MenuView(),
-            ),
-            routes: [
-              GoRoute(
-                path: 'user',
-                builder: (_, state) => ChangeNotifierProvider.value(
-                  value: MenuViewmodel(),
-                  child: const UserView(),
-                ),
-              ),
-            ],
+        GoRoute(
+          path: 'menu',
+          builder: (_, state) => ChangeNotifierProvider(
+            create: (_) => MenuViewmodel(),
+            child: const MenuView(),
           ),
-        ]),
+          routes: [
+            GoRoute(
+              path: 'user',
+              builder: (_, state) => ChangeNotifierProvider.value(
+                value: MenuViewmodel(),
+                child: const UserView(),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
   ],
 );

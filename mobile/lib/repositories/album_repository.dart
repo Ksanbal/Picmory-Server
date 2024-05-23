@@ -20,7 +20,7 @@ class AlbumRepository {
 
       return data.first['id'] as int;
     } catch (e) {
-      log(e.toString(), name: 'MemoryRepository.create');
+      log(e.toString(), name: 'AlbumRepository.create');
       return null;
     }
   }
@@ -48,9 +48,33 @@ class AlbumRepository {
         }).toList();
       }
     } catch (e) {
-      log(e.toString(), name: 'MemoryRepository.changeLikeStatus');
+      log(e.toString(), name: 'AlbumRepository.list');
     }
 
     return [];
+  }
+
+  /// 앨범 개별 조회
+  /// - [userId] : 사용자 Id
+  /// - [albumId] : 앨범 Id
+  Future<AlbumModel?> retrieve({
+    required String userId,
+    required int albumId,
+  }) async {
+    try {
+      final data = await supabase
+          .from('album')
+          .select('id, name, memory_album(id, memory(photo_uri))')
+          .eq('user_id', userId)
+          .eq('id', albumId)
+          .limit(1);
+
+      if (data.isNotEmpty) {
+        return AlbumModel.fromJson(data.first);
+      }
+    } catch (e) {
+      log(e.toString(), name: 'AlbumRepository.retrieve');
+    }
+    return null;
   }
 }
