@@ -17,6 +17,7 @@ import 'package:picmory/views/index/index_view.dart';
 import 'package:picmory/views/memory/create/memory_create_view.dart';
 import 'package:picmory/views/memory/retrieve/memory_retrieve_view.dart';
 import 'package:picmory/views/menu/menu_view.dart';
+import 'package:picmory/views/menu/user/user_view.dart';
 import 'package:picmory/views/splash/splash_view.dart';
 import 'package:provider/provider.dart';
 
@@ -138,6 +139,15 @@ final router = GoRouter(
               create: (_) => MenuViewmodel(),
               child: const MenuView(),
             ),
+            routes: [
+              GoRoute(
+                path: 'user',
+                builder: (_, state) => ChangeNotifierProvider.value(
+                  value: MenuViewmodel(),
+                  child: const UserView(),
+                ),
+              ),
+            ],
           ),
         ]),
   ],
