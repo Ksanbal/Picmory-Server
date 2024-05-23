@@ -115,7 +115,7 @@ class AlbumsView extends StatelessWidget {
                             SolarIconsOutline.trashBinMinimalistic,
                           ),
                           color: vm.isShrink ? Colors.white : Colors.black,
-                          onPressed: context.pop,
+                          onPressed: () => vm.delete(context),
                         ),
                       ),
                     ),

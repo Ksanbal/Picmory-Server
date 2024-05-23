@@ -1,15 +1,11 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/components/album/add_album_bottomsheet.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/components/memory/retrieve/change_date_bottomsheet.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player_dialog.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/album/album_model.dart';
@@ -86,51 +82,7 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
   /// 삭제
   delete(BuildContext context) async {
     // [x] 삭제 확인 다이얼로그
-    final result = await showDialog(
-      context: context,
-      useSafeArea: true,
-      barrierColor: Colors.black.withOpacity(0.4),
-      builder: (context) {
-        return BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 66),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: RoundedButton(
-                    onPressed: () => context.pop(true),
-                    backgroundColor: Colors.white,
-                    child: const Text(
-                      "삭제",
-                      style: TextSmStyle(
-                        color: ColorFamily.error,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                SizedBox(
-                  width: double.infinity,
-                  child: RoundedButton(
-                    onPressed: () => context.pop(false),
-                    backgroundColor: Colors.white,
-                    child: const Text(
-                      "취소",
-                      style: TextSmStyle(
-                        color: ColorFamily.textGrey700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    final result = await showConfirmDelete(context);
 
     // [x] 삭제 요청
     if (result == true) {

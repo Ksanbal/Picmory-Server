@@ -77,4 +77,62 @@ class AlbumRepository {
     }
     return null;
   }
+
+  /// 앨범 이름 수정
+  /// - [userId] : 사용자 Id
+  /// - [albumId] : 앨범 Id
+  /// - [name] : 앨범 이름
+  Future<bool> updateName({
+    required String userId,
+    required int albumId,
+    required String name,
+  }) async {
+    try {
+      await supabase
+          .from('album')
+          .update({
+            'name': name,
+          })
+          .eq(
+            'user_id',
+            userId,
+          )
+          .eq(
+            'id',
+            albumId,
+          );
+
+      return true;
+    } catch (e) {
+      log(e.toString(), name: 'AlbumRepository.updateName');
+    }
+    return false;
+  }
+
+  /// 앨범 삭제
+  /// - [userId] : 사용자 Id
+  /// - [albumId] : 앨범 Id
+  Future<bool> delete({
+    required String userId,
+    required int albumId,
+  }) async {
+    try {
+      await supabase
+          .from('album')
+          .delete()
+          .eq(
+            'user_id',
+            userId,
+          )
+          .eq(
+            'id',
+            albumId,
+          );
+
+      return true;
+    } catch (e) {
+      log(e.toString(), name: 'AlbumRepository.delete');
+    }
+    return false;
+  }
 }

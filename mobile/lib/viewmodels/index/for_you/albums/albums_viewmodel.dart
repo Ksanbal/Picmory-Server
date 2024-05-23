@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/album/album_model.dart';
 import 'package:picmory/models/memory/memory_list_model.dart';
@@ -54,5 +56,19 @@ class AlbumsViewmodel extends ChangeNotifier {
 
     _memories.addAll(items);
     notifyListeners();
+  }
+
+  delete(BuildContext context) async {
+    final result = await showConfirmDelete(context);
+
+    if (result != null && result) {
+      await _albumRepository.delete(
+        userId: supabase.auth.currentUser!.id,
+        albumId: _id,
+      );
+
+      // 삭제 후 이전 페이지로 이동
+      context.pop();
+    }
   }
 }
