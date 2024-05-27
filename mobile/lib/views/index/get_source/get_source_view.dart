@@ -20,7 +20,6 @@ class GetSourceView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = Provider.of<IndexViewmodel>(parentContext);
-    vm.clearUrl();
 
     return Container(
       width: double.infinity,

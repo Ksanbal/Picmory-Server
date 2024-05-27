@@ -57,12 +57,6 @@ class SigninView extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // 배경 이미지
-          // Image.network(
-          //   "",
-          //   fit: BoxFit.cover,
-          //   height: double.infinity,
-          // ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

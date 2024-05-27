@@ -8,6 +8,10 @@ import 'package:picmory/repositories/meory_repository.dart';
 import 'package:picmory/views/index/get_source/get_source_view.dart';
 
 class IndexViewmodel extends ChangeNotifier {
+  IndexViewmodel() {
+    clearUrl();
+  }
+
   final MemoryRepository _memoryRepository = MemoryRepository();
 
   /// 하단 바텀 네비게이션의 인덱스

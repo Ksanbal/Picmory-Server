@@ -383,9 +383,8 @@ class MemoryRepository {
     try {
       await remoteConfig.fetchAndActivate();
       final host = remoteConfig.getString('api_host');
-      print(host);
 
-      var res;
+      dynamic res;
       if (host.isEmpty) {
         res = await supabase.functions.invoke(
           'qr-crawler',
