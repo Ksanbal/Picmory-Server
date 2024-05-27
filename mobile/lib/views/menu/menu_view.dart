@@ -63,31 +63,31 @@ class MenuView extends StatelessWidget {
             // 메뉴
             // 공지사항
             myListTile(
-              onTap: () {},
+              onTap: vm.showNotice,
               title: "공지사항",
               icon: const Icon(SolarIconsOutline.clipboardText),
             ),
             // 이용약관 및 정책
             myListTile(
-              onTap: () {},
+              onTap: vm.showTermsAndPolicy,
               title: "이용 약관 및 정책",
               icon: const Icon(SolarIconsOutline.bookBookmarkMinimalistic),
             ),
             // 개인정보처리방침
             myListTile(
-              onTap: () {},
+              onTap: vm.showPrivacyPolicy,
               title: "개인정보처리방침",
               icon: const Icon(SolarIconsOutline.eye),
             ),
             // 문의하기
             myListTile(
-              onTap: () {},
+              onTap: vm.contactUs,
               title: "문의하기",
               icon: const Icon(SolarIconsOutline.callChat),
             ),
             // 오픈소스 라이센스
             myListTile(
-              onTap: () {},
+              onTap: () => vm.routeToLicense(context),
               title: "오픈소스 라이센스",
               icon: const Icon(SolarIconsOutline.infoCircle),
             ),

@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:picmory/common/components/menu/user/confirm_withdraw_widget.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/repositories/auth_repository.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class MenuViewmodel extends ChangeNotifier {
   MenuViewmodel() {
@@ -65,6 +66,31 @@ class MenuViewmodel extends ChangeNotifier {
         }
       },
     );
+  }
+
+  /// 공지사항 페이지로 이동
+  showNotice() {
+    launchUrlString('https://alive-stick-1e6.notion.site/28e60d33f7ba40aa8ede8133a79e140a?pvs=4');
+  }
+
+  /// 이용 약관 및 정책
+  showTermsAndPolicy() {
+    launchUrlString('https://alive-stick-1e6.notion.site/43b4e41791434542b03b1adb1ce38217?pvs=4');
+  }
+
+  /// 개인정보처리방침
+  showPrivacyPolicy() {
+    launchUrlString('https://alive-stick-1e6.notion.site/d348792bdd124bbf816ff2646b30f7a2?pvs=4');
+  }
+
+  /// 문의하기
+  contactUs() {
+    launchUrlString('mailto:picmory@gmail.com?subject=문의하기&body=문의 내용을 입력해주세요.');
+  }
+
+  /// 오픈소스 라이센스
+  routeToLicense(BuildContext context) {
+    context.push('/menu/license');
   }
 
   /**

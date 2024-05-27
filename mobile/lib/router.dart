@@ -16,6 +16,7 @@ import 'package:picmory/views/index/for_you/like_memories/like_memories_view.dar
 import 'package:picmory/views/index/index_view.dart';
 import 'package:picmory/views/memory/create/memory_create_view.dart';
 import 'package:picmory/views/memory/retrieve/memory_retrieve_view.dart';
+import 'package:picmory/views/menu/license/license_view.dart';
 import 'package:picmory/views/menu/menu_view.dart';
 import 'package:picmory/views/menu/user/user_view.dart';
 import 'package:picmory/views/splash/splash_view.dart';
@@ -146,6 +147,10 @@ final router = GoRouter(
                 value: MenuViewmodel(),
                 child: const UserView(),
               ),
+            ),
+            GoRoute(
+              path: 'license',
+              builder: (_, state) => const LicenseView(),
             ),
           ],
         ),
