@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/main.dart';
 
@@ -9,6 +10,7 @@ class SplashViewmodel extends ChangeNotifier {
 
     // build가 완전히 종료되고 나면 실행
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
       if (user == null) {
         context.go('/auth/signin');
       } else {

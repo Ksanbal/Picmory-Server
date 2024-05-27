@@ -10,10 +10,6 @@ class SplashView extends StatelessWidget {
     final vm = Provider.of<SplashViewmodel>(context, listen: false);
     vm.checkAuthNRoute(context);
 
-    return const Scaffold(
-      body: Center(
-        child: Text("Splash Screen"),
-      ),
-    );
+    return const Scaffold();
   }
 }
