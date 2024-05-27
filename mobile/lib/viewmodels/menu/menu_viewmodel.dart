@@ -47,7 +47,7 @@ class MenuViewmodel extends ChangeNotifier {
   /// 앱 버전 가져오기
   getAppVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    _appVersion = packageInfo.version;
+    _appVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
 
     notifyListeners();
   }
@@ -85,7 +85,21 @@ class MenuViewmodel extends ChangeNotifier {
 
   /// 문의하기
   contactUs() {
-    launchUrlString('mailto:picmory@gmail.com?subject=문의하기&body=문의 내용을 입력해주세요.');
+    launchUrlString("""mailto:picmory.contact@gmail.com?body=
+	1.  사용자명: $_userName
+  2.  앱 버전 : $_appVersion
+	3.	문의 유형:
+	•	기능 관련 문의
+	•	버그/오류 신고
+	•	계정 문제
+	•	기타
+	4.	문의 내용:
+	•	구체적인 문제 또는 질문을 상세히 작성해 주세요.
+	•	필요 시 관련 스크린샷이나 파일을 첨부해 주세요.
+
+다음 양식을 사용하여 문의해 주시면 
+보다 빠른 서비스 개선을 도와드리겠습니다. 감사합니다.
+""");
   }
 
   /// 오픈소스 라이센스
