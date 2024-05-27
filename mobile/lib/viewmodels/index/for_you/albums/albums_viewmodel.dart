@@ -54,6 +54,7 @@ class AlbumsViewmodel extends ChangeNotifier {
       albumId: _id,
     );
 
+    _memories.clear();
     _memories.addAll(items);
     notifyListeners();
   }
@@ -69,6 +70,25 @@ class AlbumsViewmodel extends ChangeNotifier {
 
       // 삭제 후 이전 페이지로 이동
       context.pop();
+    }
+  }
+
+  deleteMemoryFromAlbum(BuildContext context, int memoryId) async {
+    final result = await showConfirmDelete(
+      context,
+      title: "앨범에서 삭제",
+    );
+
+    if (result != null && result) {
+      await _memoryRepository.deleteFromAlbum(
+        userId: supabase.auth.currentUser!.id,
+        memoryId: memoryId,
+        albumId: _id,
+      );
+
+      // 삭제 후 리스트에서 제거
+      getMemoryList();
+      notifyListeners();
     }
   }
 }

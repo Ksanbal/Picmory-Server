@@ -359,19 +359,31 @@ class MemoryRepository {
   }
 
   /// 앨범에서 삭제
-  /// - [userID] : 사용자 ID
-  /// - [memoryID] : 기억 ID
-  /// - [albumID] : 앨범 ID
+  /// - [userId] : 사용자 Id
+  /// - [memoryId] : 기억 Id
+  /// - [albumId] : 앨범 Id
   deleteFromAlbum({
-    required String userID,
-    required int memoryID,
-    required int albumID,
-  }) {
+    required String userId,
+    required int memoryId,
+    required int albumId,
+  }) async {
     /**
      * TODO: 앨범에서 기억 삭제 기능 작성
-     * - [ ] memoryID & albumID로 memory_album 조회
+     * - [ ] memoryId & albumId로 memory_album 조회
      * - [ ] memory_album 삭제
      */
+    try {
+      await supabase
+          .from('memory_album')
+          .delete()
+          .eq('album_id', albumId)
+          .eq('memory_id', memoryId);
+
+      return true;
+    } catch (e) {
+      log(e.toString(), name: 'MemoryRepository.deleteFromAlbum');
+      return false;
+    }
   }
 
   /// QR로 스캔한 URL 크롤링 API

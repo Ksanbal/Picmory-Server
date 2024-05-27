@@ -6,7 +6,10 @@ import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 
-Future<bool?> showConfirmDelete(BuildContext context) async {
+Future<bool?> showConfirmDelete(
+  BuildContext context, {
+  String title = "삭제",
+}) async {
   return await showDialog(
     context: context,
     useSafeArea: true,
@@ -24,9 +27,9 @@ Future<bool?> showConfirmDelete(BuildContext context) async {
                 child: RoundedButton(
                   onPressed: () => context.pop(true),
                   backgroundColor: Colors.white,
-                  child: const Text(
-                    "삭제",
-                    style: TextSmStyle(
+                  child: Text(
+                    title,
+                    style: const TextSmStyle(
                       color: ColorFamily.error,
                     ),
                   ),

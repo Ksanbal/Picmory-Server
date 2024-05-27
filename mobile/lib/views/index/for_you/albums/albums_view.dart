@@ -31,22 +31,25 @@ class AlbumsView extends StatelessWidget {
                 itemBuilder: (_, index) {
                   final memory = vm.memories[index];
 
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: ExtendedImage.network(
-                      memory.photoUri,
-                      fit: BoxFit.cover,
-                      loadStateChanged: (state) {
-                        if (state.extendedImageLoadState == LoadState.loading) {
-                          return getShimmer(index);
-                        }
-                        if (state.extendedImageLoadState == LoadState.failed) {
-                          return const Center(
-                            child: Icon(Icons.error),
-                          );
-                        }
-                        return null;
-                      },
+                  return InkWell(
+                    onLongPress: () => vm.deleteMemoryFromAlbum(context, memory.id),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: ExtendedImage.network(
+                        memory.photoUri,
+                        fit: BoxFit.cover,
+                        loadStateChanged: (state) {
+                          if (state.extendedImageLoadState == LoadState.loading) {
+                            return getShimmer(index);
+                          }
+                          if (state.extendedImageLoadState == LoadState.failed) {
+                            return const Center(
+                              child: Icon(Icons.error),
+                            );
+                          }
+                          return null;
+                        },
+                      ),
                     ),
                   );
                 },
