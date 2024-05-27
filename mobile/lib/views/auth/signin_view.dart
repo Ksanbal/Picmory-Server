@@ -53,10 +53,6 @@ class SigninView extends StatelessWidget {
       ),
     ];
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      vm.loadLatestSigninProvider();
-    });
-
     return Material(
       child: Stack(
         alignment: Alignment.center,

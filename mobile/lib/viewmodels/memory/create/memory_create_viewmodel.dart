@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:picmory/common/utils/show_loading.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 
@@ -27,9 +28,6 @@ class MemoryCreateViewmodel extends ChangeNotifier {
 
   bool _createComplete = false;
   bool get createComplete => _createComplete;
-
-  bool _showLoading = false;
-  bool get showLoading => _showLoading;
 
   PageController pageController = PageController(
     viewportFraction: 0.9,
@@ -141,8 +139,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
   // 생성
   Future<void> createMemory(BuildContext context) async {
     // 로딩 표시
-    _showLoading = true;
-    notifyListeners();
+    showLoading(context);
 
     if (_isFromQR) {
       if (_crawledImageUrls.isEmpty) {
@@ -228,8 +225,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     }
 
     // 로딩 표시
-    _showLoading = false;
-    notifyListeners();
+    removeLoading();
 
     if (newMemoryId != null) {
       _createComplete = true;

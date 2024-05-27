@@ -62,6 +62,7 @@ flutter:
     - assets/icons/
     # Images
     - assets/images/camera_filter/
+    - assets/images/loading/
     # Logo
     - assets/logo.png
 

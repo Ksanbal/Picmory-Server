@@ -5,10 +5,17 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:picmory/common/utils/show_loading.dart';
 import 'package:picmory/repositories/auth_repository.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SigninViewmodel extends ChangeNotifier {
+  SigninViewmodel() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadLatestSigninProvider();
+    });
+  }
+
   final _authRepository = AuthRepository();
 
   final storage = const FlutterSecureStorage();
@@ -21,6 +28,8 @@ class SigninViewmodel extends ChangeNotifier {
 
   /// 구글 로그인
   signinWithGoogle(BuildContext context) async {
+    showLoading(context);
+
     try {
       final webClientId = dotenv.get('GOOGLE_WEB_CLIENT_ID');
 
@@ -46,6 +55,8 @@ class SigninViewmodel extends ChangeNotifier {
           .then(
         (value) {
           if (value) {
+            removeLoading();
+
             storage.write(key: 'latestSigninProvider', value: 'google');
             context.go('/');
           }
