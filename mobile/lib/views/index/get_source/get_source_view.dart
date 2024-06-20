@@ -3,6 +3,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:picmory/common/buttons/icon_rounded_button.dart';
 import 'package:picmory/common/families/asset_image_family.dart';
 import 'package:picmory/common/families/color_family.dart';
+import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
 import 'package:picmory/viewmodels/index/index_viewmodel.dart';
@@ -101,6 +102,17 @@ class GetSourceView extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Text(
+              "지원 브랜드 : ${supportBrands.join(", ")}",
+              style: CaptionSmStyle(
+                color: Colors.black.withOpacity(0.5),
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.visible,
             ),
           ),
           // 갤러리에서 불러오기 버튼
