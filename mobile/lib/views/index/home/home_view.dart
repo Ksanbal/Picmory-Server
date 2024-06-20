@@ -3,6 +3,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
+import 'package:picmory/common/families/text_styles/title_sm_style.dart';
 
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -40,54 +41,61 @@ class HomeView extends StatelessWidget {
           ],
         );
       },
-      child: MasonryGridView.count(
-        crossAxisCount: vm.crossAxisCount,
-        itemCount: vm.memories.isEmpty ? 10 : vm.memories.length,
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-        cacheExtent: 9999,
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top,
-          bottom: MediaQuery.of(context).padding.bottom + 110,
-        ),
-        itemBuilder: (context, index) {
-          if (vm.memories.isEmpty) {
-            return Card(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: getShimmer(index),
+      child: vm.memories == null
+          ? const Center(
+              child: Text(
+                "👇 추억을 추가해주세요 👇",
+                style: TitleSmStyle(),
               ),
-            );
-          }
-
-          final memory = vm.memories[index];
-
-          // 사진
-          return InkWell(
-            onTap: () => vm.goToMemoryRetrieve(context, memory),
-            child: Card(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: ExtendedImage.network(
-                  memory.photoUri,
-                  fit: BoxFit.cover,
-                  loadStateChanged: (state) {
-                    if (state.extendedImageLoadState == LoadState.loading) {
-                      return getShimmer(index);
-                    }
-                    if (state.extendedImageLoadState == LoadState.failed) {
-                      return const Center(
-                        child: Icon(Icons.error),
-                      );
-                    }
-                    return null;
-                  },
-                ),
+            )
+          : MasonryGridView.count(
+              crossAxisCount: vm.crossAxisCount,
+              itemCount: (vm.memories ?? []).isEmpty ? 10 : (vm.memories ?? []).length,
+              crossAxisSpacing: 5,
+              mainAxisSpacing: 5,
+              cacheExtent: 9999,
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                bottom: MediaQuery.of(context).padding.bottom + 110,
               ),
+              itemBuilder: (context, index) {
+                if ((vm.memories ?? []).isEmpty) {
+                  return Card(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: getShimmer(index),
+                    ),
+                  );
+                }
+
+                final memory = (vm.memories ?? [])[index];
+
+                // 사진
+                return InkWell(
+                  onTap: () => vm.goToMemoryRetrieve(context, memory),
+                  child: Card(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: ExtendedImage.network(
+                        memory.photoUri,
+                        fit: BoxFit.cover,
+                        loadStateChanged: (state) {
+                          if (state.extendedImageLoadState == LoadState.loading) {
+                            return getShimmer(index);
+                          }
+                          if (state.extendedImageLoadState == LoadState.failed) {
+                            return const Center(
+                              child: Icon(Icons.error),
+                            );
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

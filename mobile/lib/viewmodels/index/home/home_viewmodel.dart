@@ -27,15 +27,16 @@ class HomeViewmodel extends ChangeNotifier {
     // 삭제 리스너
     _memoryRetrieveViewmodel.addListener(() {
       if (_memoryRetrieveViewmodel.deleteComplete) {
-        _memories.removeWhere((element) => element.id == _memoryRetrieveViewmodel.memory!.id);
+        if (_memories == null) return;
+        _memories?.removeWhere((element) => element.id == _memoryRetrieveViewmodel.memory!.id);
         notifyListeners();
       }
     });
   }
 
   /// 저장된 기억 목록
-  final List<MemoryListModel> _memories = [];
-  List<MemoryListModel> get memories => _memories;
+  List<MemoryListModel>? _memories = [];
+  List<MemoryListModel>? get memories => _memories;
 
   /// 해시태그 목록
   final List<String> _hashtags = [];
@@ -67,17 +68,21 @@ class HomeViewmodel extends ChangeNotifier {
       hashtags: hashtags,
     );
 
-    _memories.addAll(items);
+    if (items.isEmpty) {
+      _memories = null;
+    } else {
+      _memories?.addAll(items);
+    }
     notifyListeners();
   }
 
   clearDatas() {
-    _memories.clear();
+    _memories?.clear();
     _hashtags.clear();
   }
 
   deleteMemoryFromList(int memoryId) {
-    _memories.removeWhere((element) => element.id == memoryId);
+    _memories?.removeWhere((element) => element.id == memoryId);
     notifyListeners();
   }
 

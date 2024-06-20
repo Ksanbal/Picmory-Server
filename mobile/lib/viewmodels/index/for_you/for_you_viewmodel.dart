@@ -26,11 +26,11 @@ class ForYouViewmodel extends ChangeNotifier {
   final AlbumRepository _albumRepository = AlbumRepository();
   final MemoryRepository _memoryRepository = MemoryRepository();
 
-  final List<AlbumModel> _albums = [];
-  List<AlbumModel> get albums => _albums;
+  List<AlbumModel>? _albums = [];
+  List<AlbumModel>? get albums => _albums;
 
-  final List<MemoryListModel> _memories = [];
-  List<MemoryListModel> get memories => _memories;
+  List<MemoryListModel>? _memories = [];
+  List<MemoryListModel>? get memories => _memories;
 
   // 추억함 페이지 전체 컨트롤러
   final ScrollController forYouViewController = ScrollController();
@@ -55,16 +55,25 @@ class ForYouViewmodel extends ChangeNotifier {
   /// 앨범 목록 로드
   getAlbumList() async {
     final items = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
-    _albums.clear();
-    _albums.addAll(items);
+    if (items.isEmpty) {
+      _albums = null;
+    } else {
+      _albums?.clear();
+      _albums?.addAll(items);
+    }
     notifyListeners();
   }
 
   /// 좋아요한 기억 목록 로드
   getLikeMemoryList() async {
     final items = await _memoryRepository.listOnlyLike(userId: supabase.auth.currentUser!.id);
-    _memories.clear();
-    _memories.addAll(items);
+
+    if (items.isEmpty) {
+      _memories = null;
+    } else {
+      _memories?.clear();
+      _memories?.addAll(items);
+    }
     notifyListeners();
   }
 
@@ -93,8 +102,8 @@ class ForYouViewmodel extends ChangeNotifier {
       return;
     }
 
-    final exist = _albums.any((e) => e.name == controller.text);
-    if (exist) {
+    final exist = _albums?.any((e) => e.name == controller.text);
+    if (exist != null && exist) {
       showSnackBar(
         context,
         '이미 존재하는 이름입니다',
