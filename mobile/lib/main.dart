@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ void main() async {
 final supabase = Supabase.instance.client;
 
 final remoteConfig = FirebaseRemoteConfig.instance;
+final analytics = FirebaseAnalytics.instance;
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});

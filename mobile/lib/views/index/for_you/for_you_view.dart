@@ -5,6 +5,7 @@ import 'package:picmory/common/components/page_indicator_widget.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/index/for_you/for_you_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -14,6 +15,8 @@ class ForYouView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    analytics.logScreenView(screenName: "for you");
+
     final vm = Provider.of<ForYouViewmodel>(context, listen: true);
 
     return Scaffold(

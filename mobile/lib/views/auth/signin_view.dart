@@ -8,6 +8,7 @@ import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/families/text_styles/title_lg_style.dart';
+import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/auth/signin/signin_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,8 @@ class SigninView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    analytics.logScreenView(screenName: "signin");
+
     final vm = Provider.of<SigninViewmodel>(context, listen: false);
 
     final signinButtons = [

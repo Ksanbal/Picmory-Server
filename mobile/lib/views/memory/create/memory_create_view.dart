@@ -7,6 +7,7 @@ import 'package:picmory/common/components/memory/retrieve/video_player.dart';
 import 'package:picmory/common/components/page_indicator_widget.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -16,6 +17,8 @@ class MemoryCreateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    analytics.logScreenView(screenName: "memory create");
+
     final vm = Provider.of<MemoryCreateViewmodel>(context, listen: false);
     vm.getDataFromExtra(context);
 

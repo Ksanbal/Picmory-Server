@@ -13,9 +13,11 @@ class GetSourceView extends StatelessWidget {
   const GetSourceView({
     super.key,
     required this.parentContext,
+    required this.supportBrands,
   });
 
   final BuildContext parentContext;
+  final List<String> supportBrands;
 
   @override
   Widget build(BuildContext context) {

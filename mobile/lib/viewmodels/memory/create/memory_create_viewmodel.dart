@@ -227,6 +227,11 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     // 로딩 표시
     removeLoading();
 
+    analytics.logEvent(name: 'create memory', parameters: {
+      'from': _isFromQR ? 'qr' : 'gallery',
+      'brand': crawledBrand ?? '',
+    });
+
     if (newMemoryId != null) {
       _createComplete = true;
 

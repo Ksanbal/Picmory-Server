@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:picmory/common/utils/show_loading.dart';
+import 'package:picmory/main.dart';
 import 'package:picmory/repositories/auth_repository.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -57,6 +58,9 @@ class SigninViewmodel extends ChangeNotifier {
           if (value) {
             removeLoading();
 
+            // 로그인 로깅
+            analytics.logLogin(loginMethod: 'google');
+
             storage.write(key: 'latestSigninProvider', value: 'google');
             context.go('/');
           }
@@ -73,6 +77,7 @@ class SigninViewmodel extends ChangeNotifier {
 
   /// 애플 로그인
   signinWithApple(BuildContext context) async {
+    showLoading(context);
     try {
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -93,6 +98,11 @@ class SigninViewmodel extends ChangeNotifier {
           .then(
         (value) {
           if (value) {
+            removeLoading();
+
+            // 로그인 로깅
+            analytics.logLogin(loginMethod: 'apple');
+
             storage.write(key: 'latestSigninProvider', value: 'apple');
             context.go('/');
           }

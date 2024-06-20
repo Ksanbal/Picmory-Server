@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/main.dart';
 
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,8 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    analytics.logScreenView(screenName: "home");
+
     final vm = Provider.of<HomeViewmodel>(context, listen: true);
 
     return CustomRefreshIndicator(

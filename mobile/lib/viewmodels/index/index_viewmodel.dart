@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:picmory/common/utils/show_snackbar.dart';
+import 'package:picmory/main.dart';
 import 'package:picmory/repositories/meory_repository.dart';
 import 'package:picmory/views/index/get_source/get_source_view.dart';
 
@@ -30,6 +32,11 @@ class IndexViewmodel extends ChangeNotifier {
 
   /// QR 인식 모달 노출
   _showQrModalBottomSheet(BuildContext context) async {
+    // 지원브랜드 목록 불러오기
+    await remoteConfig.fetchAndActivate();
+    final supportBrands =
+        remoteConfig.getString('support_brands').split(',').map((e) => e.trim()).toList();
+
     // QR코드 modal 노출
     await showModalBottomSheet(
       context: context,
@@ -37,6 +44,7 @@ class IndexViewmodel extends ChangeNotifier {
       builder: (BuildContext _) {
         return GetSourceView(
           parentContext: context,
+          supportBrands: supportBrands,
         );
       },
     );
@@ -46,6 +54,8 @@ class IndexViewmodel extends ChangeNotifier {
   getImageFromGallery(BuildContext context) async {
     final result = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (result == null) return;
+
+    analytics.logEvent(name: 'load image from gallery');
 
     context.pop();
     context.push('/memory/create', extra: {
@@ -68,6 +78,8 @@ class IndexViewmodel extends ChangeNotifier {
     BarcodeCapture capture,
   ) async {
     if (_url != null) return;
+
+    analytics.logEvent(name: 'load image from qr');
 
     final Barcode barcode = capture.barcodes.first;
     log('Barcode found! ${barcode.rawValue}');

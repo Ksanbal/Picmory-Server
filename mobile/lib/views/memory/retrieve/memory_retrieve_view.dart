@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -17,6 +18,8 @@ class MemoryRetrieveView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    analytics.logScreenView(screenName: "memory retrieve");
+
     final vm = Provider.of<MemoryRetrieveViewmodel>(context, listen: false);
     vm.getMemory(int.parse(memoryId));
 
