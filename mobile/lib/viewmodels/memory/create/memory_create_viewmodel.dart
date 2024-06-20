@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:picmory/common/utils/show_loading.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/repositories/meory_repository.dart';
+import 'package:picmory/repositories/memory_repository.dart';
 
 class MemoryCreateViewmodel extends ChangeNotifier {
   // Singleton instance

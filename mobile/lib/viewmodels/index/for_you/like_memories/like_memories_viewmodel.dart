@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/memory_list_model.dart';
-import 'package:picmory/repositories/meory_repository.dart';
+import 'package:picmory/repositories/memory_repository.dart';
 
 class LikeMemoriesViewmodel extends ChangeNotifier {
   LikeMemoriesViewmodel() {

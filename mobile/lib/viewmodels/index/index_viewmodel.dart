@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/repositories/meory_repository.dart';
+import 'package:picmory/repositories/memory_repository.dart';
 import 'package:picmory/views/index/get_source/get_source_view.dart';
 
 class IndexViewmodel extends ChangeNotifier {

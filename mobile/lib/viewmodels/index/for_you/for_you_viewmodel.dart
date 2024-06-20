@@ -6,7 +6,7 @@ import 'package:picmory/main.dart';
 import 'package:picmory/models/album/album_model.dart';
 import 'package:picmory/models/memory/memory_list_model.dart';
 import 'package:picmory/repositories/album_repository.dart';
-import 'package:picmory/repositories/meory_repository.dart';
+import 'package:picmory/repositories/memory_repository.dart';
 
 class ForYouViewmodel extends ChangeNotifier {
   ForYouViewmodel() {
