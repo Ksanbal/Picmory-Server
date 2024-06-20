@@ -12,7 +12,12 @@
           "package_name": "com.ksanbal.picmory"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1020948043600-lfkdo35jlku1hbhpe1pq38lpfqo0b6ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyATHTIBLViLSmZKtq7VrSi2xQPKavWFNMs"
@@ -21,6 +26,10 @@
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
+            {
+              "client_id": "1020948043600-lfkdo35jlku1hbhpe1pq38lpfqo0b6ld.apps.googleusercontent.com",
+              "client_type": 3
+            },
             {
               "client_id": "1020948043600-o8s55ior4tucspk8as2m8n9tmipnaql4.apps.googleusercontent.com",
               "client_type": 2,
