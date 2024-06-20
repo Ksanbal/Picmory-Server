@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/repositories/memory_repository.dart';
 import 'package:picmory/views/index/get_source/get_source_view.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class IndexViewmodel extends ChangeNotifier {
   IndexViewmodel() {
@@ -86,12 +86,15 @@ class IndexViewmodel extends ChangeNotifier {
 
     _url = barcode.rawValue;
 
+    if (_url == null) return;
+
     context.pop();
 
     // api 호출로 이미지 & 영상 불러오기
     final result = await _memoryRepository.crawlUrl(_url!);
     if (result == null) {
-      showSnackBar(context, '이미지를 불러오는데 실패했습니다ㅠㅠ');
+      // 인웹으로 이동
+      launchUrlString(_url!);
       return;
     }
 
