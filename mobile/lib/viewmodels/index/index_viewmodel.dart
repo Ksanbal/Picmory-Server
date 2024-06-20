@@ -78,7 +78,10 @@ class IndexViewmodel extends ChangeNotifier {
 
     // api 호출로 이미지 & 영상 불러오기
     final result = await _memoryRepository.crawlUrl(_url!);
-    if (result == null) return;
+    if (result == null) {
+      showSnackBar(context, '이미지를 불러오는데 실패했습니다ㅠㅠ');
+      return;
+    }
 
     parentContext.push(
       '/memory/create',
