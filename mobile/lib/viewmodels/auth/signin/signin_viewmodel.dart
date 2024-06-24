@@ -55,8 +55,6 @@ class SigninViewmodel extends ChangeNotifier {
       )
           .then(
         (value) {
-          removeLoading();
-
           if (value) {
             // 로그인 로깅
             analytics.logLogin(loginMethod: 'google');
@@ -72,6 +70,8 @@ class SigninViewmodel extends ChangeNotifier {
         name: 'signinWithGoogle',
         error: error,
       );
+    } finally {
+      removeLoading();
     }
   }
 
@@ -114,6 +114,8 @@ class SigninViewmodel extends ChangeNotifier {
         name: 'signInWithApple',
         error: error,
       );
+    } finally {
+      removeLoading();
     }
   }
 
