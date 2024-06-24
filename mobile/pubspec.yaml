@@ -1,10 +1,10 @@
 name: picmory
-description: 'A new Flutter project.'
-publish_to: 'none'
-version: 0.1.0+3
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0+5
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: ">=3.2.3 <4.0.0"
 
 dependencies:
   animate_do: ^3.3.3
@@ -68,13 +68,13 @@ flutter:
     - assets/logo.png
 
 flutter_launcher_icons:
-  image_path: 'assets/logo.png'
+  image_path: "assets/logo.png"
   ios: true
   remove_alpha_ios: true
   # android: "launcher_icon"
   # min_sdk_android: 21 # android min sdk min:16, default 21
 
 flutter_native_splash:
-  color: '#ffffff'
+  color: "#ffffff"
   image: assets/logo.png
   ios: true
