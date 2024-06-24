@@ -33,7 +33,7 @@ class AlbumRepository {
     try {
       final data = await supabase
           .from('album')
-          .select('id, name, memory_album(id, memory(photo_uri))')
+          .select('id, name, memory_album(id, memory(upload(uri, is_photo)))')
           .eq('user_id', userId)
           .order('id', ascending: false);
 
