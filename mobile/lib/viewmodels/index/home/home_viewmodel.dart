@@ -12,10 +12,6 @@ class HomeViewmodel extends ChangeNotifier {
   final MemoryRetrieveViewmodel _memoryRetrieveViewmodel;
 
   HomeViewmodel(this._memoryCreateViewmodel, this._memoryRetrieveViewmodel) {
-    clearDatas();
-    loadMemories();
-    // loadHashtags();
-
     // 생성 리스너
     _memoryCreateViewmodel.addListener(() {
       if (_memoryCreateViewmodel.createComplete) {
@@ -32,6 +28,11 @@ class HomeViewmodel extends ChangeNotifier {
         notifyListeners();
       }
     });
+  }
+
+  init() {
+    clearDatas();
+    loadMemories();
   }
 
   /// 저장된 기억 목록

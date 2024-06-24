@@ -10,9 +10,6 @@ import 'package:picmory/repositories/memory_repository.dart';
 
 class ForYouViewmodel extends ChangeNotifier {
   ForYouViewmodel() {
-    getAlbumList();
-    getLikeMemoryList();
-
     forYouViewController.addListener(() {
       final isScrolled = forYouViewController.hasClients && forYouViewController.offset > 0;
       // 이전 상태와 다를 경우에만 변경
@@ -21,6 +18,11 @@ class ForYouViewmodel extends ChangeNotifier {
         notifyListeners();
       }
     });
+  }
+
+  init() {
+    getAlbumList();
+    getLikeMemoryList();
   }
 
   final AlbumRepository _albumRepository = AlbumRepository();
@@ -55,10 +57,11 @@ class ForYouViewmodel extends ChangeNotifier {
   /// 앨범 목록 로드
   getAlbumList() async {
     final items = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
+
     if (items.isEmpty) {
       _albums = null;
     } else {
-      _albums?.clear();
+      _albums = [];
       _albums?.addAll(items);
     }
     notifyListeners();
@@ -71,7 +74,7 @@ class ForYouViewmodel extends ChangeNotifier {
     if (items.isEmpty) {
       _memories = null;
     } else {
-      _memories?.clear();
+      _memories = [];
       _memories?.addAll(items);
     }
     notifyListeners();
