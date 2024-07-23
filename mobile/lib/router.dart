@@ -7,6 +7,7 @@ import 'package:picmory/viewmodels/index/for_you/like_memories/like_memories_vie
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
 import 'package:picmory/viewmodels/index/index_viewmodel.dart';
 import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
+import 'package:picmory/viewmodels/memory/memory_get_source_viewmodel/memory_get_source_viewmodel.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:picmory/viewmodels/menu/menu_viewmodel.dart';
 import 'package:picmory/viewmodels/splash/splash_viewmodel.dart';
@@ -15,6 +16,7 @@ import 'package:picmory/views/index/for_you/albums/albums_view.dart';
 import 'package:picmory/views/index/for_you/like_memories/like_memories_view.dart';
 import 'package:picmory/views/index/index_view.dart';
 import 'package:picmory/views/memory/create/memory_create_view.dart';
+import 'package:picmory/views/memory/get_source/memory_get_source_view.dart';
 import 'package:picmory/views/memory/retrieve/memory_retrieve_view.dart';
 import 'package:picmory/views/menu/license/license_view.dart';
 import 'package:picmory/views/menu/menu_view.dart';
@@ -75,6 +77,13 @@ final router = GoRouter(
           path: 'memory',
           builder: (_, state) => Container(),
           routes: [
+            GoRoute(
+              path: 'get-source',
+              builder: (_, state) => ChangeNotifierProvider.value(
+                value: MemoryGetSourceViewmodel(),
+                child: const MemoryGetSourceView(),
+              ),
+            ),
             GoRoute(
               path: 'create',
               builder: (_, state) => ChangeNotifierProvider.value(

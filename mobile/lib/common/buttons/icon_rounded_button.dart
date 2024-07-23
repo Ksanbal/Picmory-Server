@@ -7,17 +7,19 @@ class IconRoundedButton extends StatelessWidget {
     required this.icon,
     required this.child,
     this.backgroundColor,
+    this.isDense = false,
   });
 
   final Function()? onPressed;
   final Widget icon;
   final Widget child;
   final Color? backgroundColor;
+  final bool isDense;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
+      width: isDense ? null : double.infinity,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: icon,
