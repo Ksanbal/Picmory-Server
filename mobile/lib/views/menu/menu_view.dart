@@ -94,12 +94,17 @@ class MenuView extends StatelessWidget {
             // 구분선
             const Divider(color: ColorFamily.disabledGrey300),
             // 앱 버전
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                "앱버전 v.${vm.appVersion}",
-                style: const TextSmStyle(
-                  color: ColorFamily.textGrey700,
+            InkWell(
+              onTap: () => vm.activeDeveloperMode(context),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  "앱버전 v.${vm.appVersion}",
+                  style: const TextSmStyle(
+                    color: ColorFamily.textGrey700,
+                  ),
                 ),
               ),
             ),

@@ -126,4 +126,35 @@ class MenuViewmodel extends ChangeNotifier {
 
     context.go('/auth/signin');
   }
+
+  /**
+   * 개발자
+   */
+  /// 개발자 모드 활성화
+  int versionTapCount = 0;
+  activeDeveloperMode(BuildContext context) async {
+    versionTapCount++;
+
+    if (versionTapCount == 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('개발자 모드까지 2번'),
+        ),
+      );
+    } else if (versionTapCount == 9) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('개발자 모드까지 1번'),
+        ),
+      );
+    } else if (versionTapCount == 10) {
+      await messaging.subscribeToTopic('developer');
+      // 활성화 여부 snackbar 노출
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('개발자 모드가 활성화 되었습니다.'),
+        ),
+      );
+    }
+  }
 }
