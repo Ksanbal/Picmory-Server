@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:solar_icons/solar_icons.dart';
 
 class IndexBottomNavibationBar extends StatelessWidget {
@@ -31,7 +30,6 @@ class IndexBottomNavibationBar extends StatelessWidget {
                   child: Container(
                     height: 76,
                     constraints: const BoxConstraints(maxWidth: 300),
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
@@ -39,54 +37,42 @@ class IndexBottomNavibationBar extends StatelessWidget {
                     child: Row(
                       children: [
                         Expanded(
-                          child: InkWell(
-                            onTap: () => onTap(0),
-                            highlightColor: Colors.red,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  SolarIconsOutline.home1,
-                                  color: currentIndex == 0
-                                      ? ColorFamily.primary
-                                      : ColorFamily.textGrey700,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "메인",
-                                  style: CaptionSmStyle(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 0, 12),
+                            child: InkWell(
+                              onTap: () => onTap(0),
+                              highlightColor: Colors.red,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    SolarIconsOutline.home1,
                                     color: currentIndex == 0
                                         ? ColorFamily.primary
-                                        : ColorFamily.textGrey900,
+                                        : ColorFamily.textGrey700,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
                         const Spacer(),
                         Expanded(
-                          child: InkWell(
-                            onTap: () => onTap(2),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  SolarIconsOutline.notes,
-                                  color: currentIndex == 2
-                                      ? ColorFamily.primary
-                                      : ColorFamily.textGrey700,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "추억함",
-                                  style: CaptionSmStyle(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 8, 20, 12),
+                            child: InkWell(
+                              onTap: () => onTap(2),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    SolarIconsOutline.heart,
                                     color: currentIndex == 2
                                         ? ColorFamily.primary
-                                        : ColorFamily.textGrey900,
+                                        : ColorFamily.textGrey700,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -116,7 +102,7 @@ class IndexBottomNavibationBar extends StatelessWidget {
                   ],
                 ),
                 child: const Icon(
-                  SolarIconsBold.galleryAdd,
+                  SolarIconsOutline.qrCode,
                   color: Colors.white,
                 ),
               ),
