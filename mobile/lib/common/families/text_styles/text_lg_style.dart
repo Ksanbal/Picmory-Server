@@ -4,8 +4,8 @@ class TextLgStyle extends TextStyle {
   const TextLgStyle({
     Color? color,
   }) : super(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
           color: color,
         );
 }

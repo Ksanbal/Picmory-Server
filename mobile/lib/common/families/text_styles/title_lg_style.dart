@@ -5,8 +5,8 @@ class TitleLgStyle extends TextStyle {
     Color? color,
     List<Shadow>? shadows,
   }) : super(
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
+          fontSize: 32,
+          fontWeight: FontWeight.w700,
           color: color,
           shadows: shadows,
         );

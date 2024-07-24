@@ -6,7 +6,7 @@ class TitleSmStyle extends TextStyle {
     FontWeight? fontWeight,
     List<Shadow>? shadows,
   }) : super(
-          fontSize: 20,
+          fontSize: 24,
           color: color,
           fontWeight: fontWeight,
           shadows: shadows,

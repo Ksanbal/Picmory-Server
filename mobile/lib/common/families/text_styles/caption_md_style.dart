@@ -5,7 +5,7 @@ class CaptionMdStyle extends TextStyle {
     Color? color,
   }) : super(
           fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           color: color,
         );
 }

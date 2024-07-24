@@ -4,7 +4,7 @@ class TitleMdStyle extends TextStyle {
   const TitleMdStyle({
     Color? color,
   }) : super(
-          fontSize: 26,
+          fontSize: 30,
           color: color,
         );
 }

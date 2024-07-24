@@ -4,7 +4,7 @@ class TextMdStyle extends TextStyle {
   const TextMdStyle({
     Color? color,
   }) : super(
-          fontSize: 18,
+          fontSize: 20,
           color: color,
         );
 }

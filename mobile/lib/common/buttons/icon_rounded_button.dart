@@ -30,8 +30,8 @@ class IconRoundedButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
           ),
           padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
+            horizontal: 24,
+            vertical: 12,
           ),
         ),
       ),
