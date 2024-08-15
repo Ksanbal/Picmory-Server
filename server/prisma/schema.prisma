@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// 유저 정보
+model Member {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  deletedAt DateTime?    @map("deleted_at")
+  email     String       @unique
+  name      String
+  metadata  Json
+  provider  UserProvider
+  fcmToken  String?      @map("fcm_token")
+  isAdmin   Boolean      @default(false) @map("is_admin")
+  Memory    Memory[]
+  Album     Album[]
+
+  @@map("member")
+}
+
+// 소셜 로그인 제공자
+enum UserProvider {
+  APPLE
+  GOOGLE
+
+  @@map("user_provider")
+}
+
+// JWT RefreshToken
+model RefreshToken {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  token     String    @unique
+  memberId  Int       @map("member_id")
+  expiredAt DateTime  @map("expired_at")
+
+  @@map("refresh_token")
+}
+
+// 기억
+model Memory {
+  id             Int              @id @default(autoincrement())
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  deletedAt      DateTime?        @map("deleted_at")
+  Member         Member           @relation(fields: [memberId], references: [id])
+  memberId       Int              @map("member_id")
+  date           DateTime         @default(now())
+  brandName      String           @map("brand_name")
+  like           Boolean          @default(false)
+  MemoryFile     MemoryFile[]
+  AlbumsOnMemory AlbumsOnMemory[]
+
+  @@index([memberId])
+  @@map("memory")
+}
+
+// 기억 파일
+model MemoryFile {
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  deletedAt     DateTime?      @map("deleted_at")
+  Memory        Memory?        @relation(fields: [memoryId], references: [id])
+  memoryId      Int?           @map("memory_id")
+  type          MemoryFileType
+  originalName  String
+  size          Int
+  path          String
+  thumbnailPath String         @map("thumbnail_uri")
+
+  @@index([memoryId])
+  @@map("memory_file")
+}
+
+// 기억 파일 타입
+enum MemoryFileType {
+  IMAGE
+  VIDEO
+}
+
+// 앨범
+model Album {
+  id             Int              @id @default(autoincrement())
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  deletedAt      DateTime?        @map("deleted_at")
+  Member         Member           @relation(fields: [memberId], references: [id])
+  memberId       Int              @map("member_id")
+  name           String
+  AlbumsOnMemory AlbumsOnMemory[]
+
+  @@index([memberId])
+  @@map("album")
+}
+
+// 앨범에 속한 기억
+model AlbumsOnMemory {
+  Album    Album  @relation(fields: [albumId], references: [id])
+  albumId  Int    @map("album_id")
+  Memory   Memory @relation(fields: [memoryId], references: [id])
+  memoryId Int    @map("memory_id")
+
+  @@id([albumId, memoryId])
+  @@index([albumId])
+  @@index([memoryId])
+  @@map("albums_on_memory")
+}
+
+// 지원하는 브랜드 목록
+model Brand {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  name      String
+
+  @@map("brand")
+}
