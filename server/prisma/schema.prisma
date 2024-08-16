@@ -16,18 +16,19 @@ datasource db {
 
 // 유저 정보
 model Member {
-  id        Int          @id @default(autoincrement())
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
-  deletedAt DateTime?    @map("deleted_at")
-  email     String       @unique
-  name      String
-  metadata  Json
-  provider  UserProvider
-  fcmToken  String?      @map("fcm_token")
-  isAdmin   Boolean      @default(false) @map("is_admin")
-  Memory    Memory[]
-  Album     Album[]
+  id         Int          @id @default(autoincrement())
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  deletedAt  DateTime?    @map("deleted_at")
+  providerId String       @unique @map("provider_id")
+  provider   UserProvider
+  email      String       @unique
+  name       String
+  metadata   Json
+  fcmToken   String?      @map("fcm_token")
+  isAdmin    Boolean      @default(false) @map("is_admin")
+  Memory     Memory[]
+  Album      Album[]
 
   @@map("member")
 }
