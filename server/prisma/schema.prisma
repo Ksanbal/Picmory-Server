@@ -22,7 +22,7 @@ model Member {
   deletedAt  DateTime?    @map("deleted_at")
   providerId String       @unique @map("provider_id")
   provider   UserProvider
-  email      String       @unique
+  email      String
   name       String
   metadata   Json
   fcmToken   String?      @map("fcm_token")
