@@ -43,13 +43,11 @@ enum UserProvider {
 
 // JWT RefreshToken
 model RefreshToken {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-  token     String    @unique
-  memberId  Int       @map("member_id")
-  expiredAt DateTime  @map("expired_at")
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  token     String   @unique
+  memberId  Int      @map("member_id")
+  expiredAt DateTime @map("expired_at")
 
   @@map("refresh_token")
 }
@@ -113,12 +111,12 @@ model Album {
 
 // 앨범에 속한 기억
 model AlbumsOnMemory {
+  id       Int    @id @default(autoincrement())
   Album    Album  @relation(fields: [albumId], references: [id])
   albumId  Int    @map("album_id")
   Memory   Memory @relation(fields: [memoryId], references: [id])
   memoryId Int    @map("memory_id")
 
-  @@id([albumId, memoryId])
   @@index([albumId])
   @@index([memoryId])
   @@map("albums_on_memory")
