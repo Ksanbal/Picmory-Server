@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AuthRefreshReqDto } from 'src/1-presentation/dto/auth/request/refresh.dto';
 import { AuthSigninReqDto } from 'src/1-presentation/dto/auth/request/signin.dto';
 import { AuthService } from 'src/3-domain/service/auth/auth.service';
 import { MembersService } from 'src/3-domain/service/members/members.service';
@@ -44,6 +45,21 @@ export class AuthFacade {
   }
 
   // 토큰 갱신
+  async refresh(dto: RefreshDto) {
+    const { refreshToken } = dto.body;
+
+    // Refresh Token 검증
+    const refreshTokenEntity = await this.authService.getRefreshToken({
+      token: refreshToken,
+    });
+
+    // 새로운 AccessToken 발급
+    const newAccessToken = await this.authService.generateAccessToken(
+      refreshTokenEntity.memberId,
+    );
+
+    return { accessToken: newAccessToken };
+  }
 }
 
 type SigninDto = {
@@ -52,4 +68,8 @@ type SigninDto = {
 
 type SignooutDto = {
   sub: number;
+};
+
+type RefreshDto = {
+  body: AuthRefreshReqDto;
 };

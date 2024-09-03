@@ -29,6 +29,17 @@ export class RefreshTokenRepository {
       },
     });
   }
+
+  /**
+   * 토큰으로 조회
+   */
+  async findByToken(dto: FindByTokenDto): Promise<RefreshToken | null> {
+    return await this.prisma.refreshToken.findFirst({
+      where: {
+        token: dto.token,
+      },
+    });
+  }
 }
 
 type CreateDto = {
@@ -39,4 +50,8 @@ type CreateDto = {
 
 type DeleteDto = {
   memberId: number;
+};
+
+type FindByTokenDto = {
+  token: string;
 };

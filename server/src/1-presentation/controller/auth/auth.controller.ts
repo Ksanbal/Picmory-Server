@@ -1,6 +1,8 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
+import { AuthRefreshReqDto } from 'src/1-presentation/dto/auth/request/refresh.dto';
 import { AuthSigninReqDto } from 'src/1-presentation/dto/auth/request/signin.dto';
+import { RefreshResDto } from 'src/1-presentation/dto/auth/response/refresh.dto';
 import { SigninResDto } from 'src/1-presentation/dto/auth/response/signin.dto';
 import { JwtAuthGuard } from 'src/1-presentation/guard/auth/auth.guard';
 import { AuthFacade } from 'src/2-application/facade/auth/auth.facade';
@@ -15,14 +17,19 @@ export class AuthController {
     return plainToClass(SigninResDto, await this.authFacade.signin({ body }));
   }
 
-  // [ ] 로그아웃
-  @UseGuards(JwtAuthGuard)
+  // [x] 로그아웃
   @Post('signout')
-  async signout(@CurrentUser() sub: number) {
+  @UseGuards(JwtAuthGuard)
+  async signout(@CurrentUser() sub: number): Promise<void> {
     return await this.authFacade.signout({ sub });
   }
 
-  // [ ] 토큰 갱신
+  // [x] 토큰 갱신
   @Post('refresh')
-  refresh() {}
+  async refresh(@Body() body: AuthRefreshReqDto): Promise<RefreshResDto> {
+    return plainToInstance(
+      RefreshResDto,
+      await this.authFacade.refresh({ body }),
+    );
+  }
 }

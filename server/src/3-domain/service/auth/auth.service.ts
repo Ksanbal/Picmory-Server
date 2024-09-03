@@ -1,6 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { RefreshToken } from '@prisma/client';
 import * as dayjs from 'dayjs';
 import { RefreshTokenRepository } from 'src/4-infrastructure/repository/auth/refresh-token.repository';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
@@ -53,10 +58,29 @@ export class AuthService {
     }
   }
 
+  async getRefreshToken(dto: GetRefreshTokenDto): Promise<RefreshToken> {
+    const { token } = dto;
+
+    const refreshToken = await this.refreshTokenRepository.findByToken({
+      token,
+    });
+
+    if (!refreshToken) {
+      throw new UnauthorizedException(ERROR_MESSAGES.AUTH_FAILED_VERIFY_TOKEN);
+    }
+
+    // 만료시간 체크
+    if (refreshToken.expiredAt < new Date()) {
+      throw new ForbiddenException(ERROR_MESSAGES.AUTH_FAILED_VERIFY_TOKEN);
+    }
+
+    return refreshToken;
+  }
+
   /**
    * AccessToken 생성
    */
-  private async generateAccessToken(sub: number): Promise<string> {
+  async generateAccessToken(sub: number): Promise<string> {
     const payload = { sub };
 
     return this.jwtService.signAsync(payload, {
@@ -86,4 +110,8 @@ type CreateTokenDto = {
 
 type DeleteRefreshTokenDto = {
   sub: number;
+};
+
+type GetRefreshTokenDto = {
+  token: string;
 };
