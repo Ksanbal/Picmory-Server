@@ -34,7 +34,7 @@ export class AuthService {
         expiredAt,
       });
     } catch (error) {
-      throw new Error(ERROR_MESSAGES.AUTH_FAIL_INSERT_TOKEN);
+      throw new Error(ERROR_MESSAGES.AUTH_FAILED_INSERT_TOKEN);
     }
 
     return { accessToken, refreshToken };
@@ -48,7 +48,7 @@ export class AuthService {
 
     return this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_EXPIRATION_TIME'),
+      expiresIn: Number(this.configService.get<string>('JWT_EXPIRATION_TIME')),
     });
   }
 
@@ -60,7 +60,9 @@ export class AuthService {
 
     return this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION_TIME'),
+      expiresIn: Number(
+        this.configService.get<string>('JWT_REFRESH_EXPIRATION_TIME'),
+      ),
     });
   }
 }
