@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { RefreshToken } from '@prisma/client';
-import { Dayjs } from 'dayjs';
 import { PrismaService } from 'src/lib/database/prisma.service';
 
 @Injectable()
@@ -15,7 +14,18 @@ export class RefreshTokenRepository {
       data: {
         memberId: dto.memberId,
         token: dto.token,
-        expiredAt: dto.expiredAt.toDate(),
+        expiredAt: dto.expiredAt,
+      },
+    });
+  }
+
+  /**
+   * 갱신
+   */
+  async delete(dto: DeleteDto): Promise<void> {
+    await this.prisma.refreshToken.deleteMany({
+      where: {
+        memberId: dto.memberId,
       },
     });
   }
@@ -24,5 +34,9 @@ export class RefreshTokenRepository {
 type CreateDto = {
   memberId: number;
   token: string;
-  expiredAt: Dayjs;
+  expiredAt: Date;
+};
+
+type DeleteDto = {
+  memberId: number;
 };

@@ -9,7 +9,7 @@ export class MemberRepository {
   /**
    * provider 정보로 사용자 조회
    */
-  async getByProviderId(dto: GetByProviderIdDto): Promise<Member | null> {
+  async findByProviderId(dto: FindByProviderIdDto): Promise<Member | null> {
     const { provider, providerId } = dto;
 
     return await this.prisma.member.findFirst({
@@ -31,11 +31,26 @@ export class MemberRepository {
       data: member,
     });
   }
+
+  /**
+   * 사용자 id로 사용자 조회
+   */
+  async findById(dto: FindByIdDto): Promise<Member | null> {
+    return await this.prisma.member.findUnique({
+      where: {
+        id: dto.id,
+      },
+    });
+  }
 }
 
-type GetByProviderIdDto = {
+type FindByProviderIdDto = {
   provider: UserProvider;
   providerId: string;
+};
+
+type FindByIdDto = {
+  id: number;
 };
 
 type UpdateDto = {

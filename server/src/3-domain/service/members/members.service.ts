@@ -13,10 +13,23 @@ export class MembersService {
   async getByProvider(dto: GetByProviderDto): Promise<Member> {
     const { provider, providerId } = dto;
 
-    const member = await this.memberRepository.getByProviderId({
+    const member = await this.memberRepository.findByProviderId({
       provider,
       providerId,
     });
+
+    if (member == null) {
+      throw new NotFoundException(ERROR_MESSAGES.MEMBER_NOT_FOUND);
+    }
+
+    return member;
+  }
+
+  /**
+   * 사용자 id로 사용자 가져오기
+   */
+  async getById(dto: GetByIdDto): Promise<Member> {
+    const member = await this.memberRepository.findById(dto);
 
     if (member == null) {
       throw new NotFoundException(ERROR_MESSAGES.MEMBER_NOT_FOUND);
@@ -47,4 +60,8 @@ type GetByProviderDto = {
 type UpdateDto = {
   member: Member;
   fcmToken: string;
+};
+
+type GetByIdDto = {
+  id: number;
 };

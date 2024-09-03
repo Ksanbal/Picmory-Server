@@ -31,13 +31,26 @@ export class AuthService {
       await this.refreshTokenRepository.create({
         memberId: dto.sub,
         token: refreshToken,
-        expiredAt,
+        expiredAt: expiredAt.toDate(),
       });
     } catch (error) {
       throw new Error(ERROR_MESSAGES.AUTH_FAILED_INSERT_TOKEN);
     }
 
     return { accessToken, refreshToken };
+  }
+
+  /**
+   * RefreshToken 만료처리
+   */
+  async deleteRefreshToken(dto: DeleteRefreshTokenDto) {
+    try {
+      await this.refreshTokenRepository.delete({
+        memberId: dto.sub,
+      });
+    } catch (error) {
+      throw new Error(ERROR_MESSAGES.AUTH_FAILED_EXPIRE_TOKEN);
+    }
   }
 
   /**
@@ -68,5 +81,9 @@ export class AuthService {
 }
 
 type CreateTokenDto = {
+  sub: number;
+};
+
+type DeleteRefreshTokenDto = {
   sub: number;
 };

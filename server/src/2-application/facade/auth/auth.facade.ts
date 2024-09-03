@@ -10,9 +10,9 @@ export class AuthFacade {
     private readonly membersService: MembersService,
   ) {}
 
-  // [ ] 로그인
-  async signin(dto: AuthSigninReqDto) {
-    const { provider, providerId, fcmToken } = dto;
+  // 로그인
+  async signin(dto: SigninDto) {
+    const { provider, providerId, fcmToken } = dto.body;
 
     // provider로 사용자 가져오기
     const member = await this.membersService.getByProvider({
@@ -29,9 +29,27 @@ export class AuthFacade {
     return token;
   }
 
-  // [ ] 로그아웃
+  // 로그아웃
+  async signout(dto: SignooutDto) {
+    const { sub } = dto;
 
-  // [ ] 토큰 유효성 검사
+    // id로 사용자 가져오기
+    const member = await this.membersService.getById({ id: sub });
 
-  // [ ] 토큰 갱신
+    // FCM Token 삭제
+    await this.membersService.updateFcmToken({ member, fcmToken: null });
+
+    // Refresh Token을 만료처리
+    await this.authService.deleteRefreshToken({ sub });
+  }
+
+  // 토큰 갱신
 }
+
+type SigninDto = {
+  body: AuthSigninReqDto;
+};
+
+type SignooutDto = {
+  sub: number;
+};
