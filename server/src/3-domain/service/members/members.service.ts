@@ -39,6 +39,20 @@ export class MembersService {
   }
 
   /**
+   * provider id로 사용자 존재 여부 확인
+   */
+  async existsByProviderId(dto: GetByProviderDto): Promise<boolean> {
+    const { provider, providerId } = dto;
+
+    const member = await this.memberRepository.findByProviderId({
+      provider,
+      providerId,
+    });
+
+    return member != null;
+  }
+
+  /**
    * 사용자 FCM 정보 업데이트
    */
   async updateFcmToken(dto: UpdateDto): Promise<Member> {
@@ -49,6 +63,17 @@ export class MembersService {
     const updatedMember = await this.memberRepository.update({ member });
 
     return updatedMember;
+  }
+
+  /**
+   * 사용자 생성
+   */
+  async create(dto: CreateDto): Promise<Member> {
+    try {
+      return await this.memberRepository.create(dto);
+    } catch (error) {
+      throw new Error(ERROR_MESSAGES.MEMBER_FAILED_CREATE);
+    }
   }
 }
 
@@ -64,4 +89,12 @@ type UpdateDto = {
 
 type GetByIdDto = {
   id: number;
+};
+
+type CreateDto = {
+  providerId: string;
+  provider: UserProvider;
+  email: string;
+  name: string;
+  metadata: Record<string, any>;
 };

@@ -42,6 +42,17 @@ export class MemberRepository {
       },
     });
   }
+
+  /**
+   * 사용자 생성
+   */
+  async create(dto: CreateDto): Promise<Member | null> {
+    return await this.prisma.member.create({
+      data: {
+        ...dto,
+      },
+    });
+  }
 }
 
 type FindByProviderIdDto = {
@@ -55,4 +66,12 @@ type FindByIdDto = {
 
 type UpdateDto = {
   member: Member;
+};
+
+type CreateDto = {
+  providerId: string;
+  provider: UserProvider;
+  email: string;
+  name: string;
+  metadata: Record<string, any>;
 };
