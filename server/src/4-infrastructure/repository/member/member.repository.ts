@@ -14,6 +14,7 @@ export class MemberRepository {
 
     return await this.prisma.member.findFirst({
       where: {
+        deletedAt: null,
         provider,
         providerId,
       },
@@ -27,7 +28,9 @@ export class MemberRepository {
     const { member } = dto;
 
     return await this.prisma.member.update({
-      where: { id: member.id },
+      where: {
+        id: member.id,
+      },
       data: member,
     });
   }
@@ -39,6 +42,7 @@ export class MemberRepository {
     return await this.prisma.member.findUnique({
       where: {
         id: dto.id,
+        deletedAt: null,
       },
     });
   }
