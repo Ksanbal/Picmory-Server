@@ -75,6 +75,17 @@ export class MembersService {
       throw new Error(ERROR_MESSAGES.MEMBER_FAILED_CREATE);
     }
   }
+
+  /**
+   * 사용자 삭제
+   */
+  async delete(dto: DeleteDto) {
+    const { member } = dto;
+
+    member.deletedAt = new Date();
+
+    await this.memberRepository.update({ member: dto.member });
+  }
 }
 
 type GetByProviderDto = {
@@ -97,4 +108,8 @@ type CreateDto = {
   email: string;
   name: string;
   metadata: Record<string, any>;
+};
+
+type DeleteDto = {
+  member: Member;
 };

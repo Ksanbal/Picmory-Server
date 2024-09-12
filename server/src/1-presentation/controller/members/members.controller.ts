@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { MembersRegisterReqDto } from 'src/1-presentation/dto/members/request/register.dto';
 import { JwtAuthGuard } from 'src/1-presentation/guard/auth/auth.guard';
 import { MembersFacade } from 'src/2-application/facade/members/members.facade';
@@ -22,4 +22,9 @@ export class MembersController {
   }
 
   // 회원탈퇴
+  @Delete('me')
+  @UseGuards(JwtAuthGuard)
+  async deleteMe(@CurrentUser() sub: number) {
+    return await this.membersFacade.deleteMe({ sub });
+  }
 }

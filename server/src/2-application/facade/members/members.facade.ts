@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Member } from '@prisma/client';
 import { MembersRegisterReqDto } from 'src/1-presentation/dto/members/request/register.dto';
 import { MembersService } from 'src/3-domain/service/members/members.service';
@@ -33,6 +37,14 @@ export class MembersFacade {
   }
 
   // 회원탈퇴
+  async deleteMe(dto: DeleteMeDto) {
+    const member = await this.memberService.getById({ id: dto.sub });
+    if (member == null) {
+      throw new NotFoundException(ERROR_MESSAGES.MEMBER_NOT_FOUND);
+    }
+
+    await this.memberService.delete({ member });
+  }
 }
 
 type RegisterDto = {
@@ -40,5 +52,9 @@ type RegisterDto = {
 };
 
 type GetMeDto = {
+  sub: number;
+};
+
+type DeleteMeDto = {
   sub: number;
 };
