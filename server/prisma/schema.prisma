@@ -29,6 +29,7 @@ model Member {
   isAdmin    Boolean      @default(false) @map("is_admin")
   Memory     Memory[]
   Album      Album[]
+  MemoryFile MemoryFile[]
 
   @@map("member")
 }
@@ -76,15 +77,18 @@ model MemoryFile {
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
   deletedAt     DateTime?      @map("deleted_at")
+  Member        Member         @relation(fields: [memberId], references: [id])
+  memberId      Int            @map("member_id")
   Memory        Memory?        @relation(fields: [memoryId], references: [id])
   memoryId      Int?           @map("memory_id")
   type          MemoryFileType
   originalName  String
   size          Int
   path          String
-  thumbnailPath String         @map("thumbnail_uri")
+  thumbnailPath String?        @map("thumbnail_uri")
 
   @@index([memoryId])
+  @@index([memberId])
   @@map("memory_file")
 }
 
