@@ -1,5 +1,5 @@
 import { UserProvider } from '@prisma/client';
-import { IsEnum, IsFirebasePushId, IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 
 export class AuthSigninReqDto {
   @IsEnum(UserProvider)
@@ -8,6 +8,6 @@ export class AuthSigninReqDto {
   @IsString()
   providerId: string;
 
-  @IsFirebasePushId()
+  @IsString()
   fcmToken: string;
 }

@@ -14,6 +14,7 @@ import { PrismaService } from 'src/lib/database/prisma.service';
   imports: [
     PassportModule,
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

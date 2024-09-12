@@ -1,6 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { MembersRegisterReqDto } from 'src/1-presentation/dto/members/request/register.dto';
+import { JwtAuthGuard } from 'src/1-presentation/guard/auth/auth.guard';
 import { MembersFacade } from 'src/2-application/facade/members/members.facade';
+import { CurrentUser } from 'src/lib/decorator/current-user.decorator';
 
 @Controller('members')
 export class MembersController {
@@ -13,6 +15,11 @@ export class MembersController {
   }
 
   // 정보 조회
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getMe(@CurrentUser() sub: number) {
+    return await this.membersFacade.getMe({ sub });
+  }
 
   // 회원탈퇴
 }

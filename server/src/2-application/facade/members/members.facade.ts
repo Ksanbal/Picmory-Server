@@ -26,10 +26,19 @@ export class MembersFacade {
   }
 
   // 정보 조회
+  async getMe(dto: GetMeDto): Promise<Member> {
+    const member = await this.memberService.getById({ id: dto.sub });
+
+    return member;
+  }
 
   // 회원탈퇴
 }
 
 type RegisterDto = {
   body: MembersRegisterReqDto;
+};
+
+type GetMeDto = {
+  sub: number;
 };
