@@ -15,6 +15,15 @@ export class MemoryFileRepository {
       },
     });
   }
+
+  async update(dto: UpdateDto) {
+    return await this.prisma.memoryFile.update({
+      where: { id: dto.memoryFile.id },
+      data: {
+        ...dto.memoryFile,
+      },
+    });
+  }
 }
 
 type CreateDto = {
@@ -23,4 +32,8 @@ type CreateDto = {
   originalName: string;
   size: number;
   path: string;
+};
+
+type UpdateDto = {
+  memoryFile: MemoryFile;
 };

@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MembersModule } from './module/members/members.module';
 import { MemoriesModule } from './module/memories/memories.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { FileModule } from './module/file/file.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     AuthModule,
     MembersModule,
     MemoriesModule,
+    FileModule,
   ],
 })
 export class AppModule {}

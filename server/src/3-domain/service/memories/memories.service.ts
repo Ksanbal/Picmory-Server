@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { MemoryFile, MemoryFileType } from '@prisma/client';
 import { MemoryFileRepository } from 'src/4-infrastructure/repository/memories/memory-file.repository';
+import { EVENT_NAMES } from 'src/lib/constants/event-names';
 
 @Injectable()
 export class MemoriesService {
@@ -30,13 +31,30 @@ export class MemoriesService {
     });
 
     // 파일 생성 이벤트 발행
-    // this.eventEmitter.emit(EVENT_NAMES.MEMORIES_FILE_CREATED, newFile);
+    this.eventEmitter.emit(EVENT_NAMES.MEMORIES_FILE_CREATED, {
+      memoryFile: newFile,
+    });
 
     return newFile;
+  }
+
+  /**
+   * 파일 정보 업데이트
+   */
+  async updateMemoryFile(dto: UpdateMemoryFileDto): Promise<void> {
+    const { memoryFile } = dto;
+
+    await this.memoryFileRepository.update({
+      memoryFile,
+    });
   }
 }
 
 type UploadDto = {
   sub: number;
   file: Express.Multer.File;
+};
+
+type UpdateMemoryFileDto = {
+  memoryFile: MemoryFile;
 };
