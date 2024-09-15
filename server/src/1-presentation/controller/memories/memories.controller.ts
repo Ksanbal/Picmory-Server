@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -15,6 +16,7 @@ import { MemoriesFacade } from 'src/2-application/facade/memories/memories.facad
 import { CurrentUser } from 'src/lib/decorator/current-user.decorator';
 import * as path from 'path';
 import * as fs from 'fs';
+import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/create.dto';
 
 @Controller('memories')
 @UseGuards(JwtAuthGuard)
@@ -57,7 +59,9 @@ export class MemoriesController {
 
   // 생성
   @Post()
-  async create() {}
+  async create(@CurrentUser() sub: number, @Body() body: MemoriesCreateReqDto) {
+    return await this.memoriesFacade.create({ sub, body });
+  }
 
   // 목록 조회
   @Get()

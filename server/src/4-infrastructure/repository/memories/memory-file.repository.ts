@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MemoryFile, MemoryFileType } from '@prisma/client';
+import { MemoryFile, MemoryFileType, PrismaClient } from '@prisma/client';
+import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
 
 @Injectable()
@@ -24,6 +25,37 @@ export class MemoryFileRepository {
       },
     });
   }
+
+  /**
+   * 해당 사용자가 업로드한 파일들이고 memory랑 연결되지 않은 파일들을 가져옴
+   */
+  async findAllByIds(dto: FindAllByIdsDto) {
+    return await this.prisma.memoryFile.findMany({
+      where: {
+        id: {
+          in: dto.ids,
+        },
+        memberId: dto.memberId,
+        memoryId: null,
+      },
+    });
+  }
+
+  /**
+   * 여러 파일을 memory에 연결
+   */
+  async linkManyToMemory(dto: LinkManyToMemoryDto) {
+    await dto.tx.memoryFile.updateMany({
+      where: {
+        id: {
+          in: dto.fileIds,
+        },
+      },
+      data: {
+        memoryId: dto.memoryId,
+      },
+    });
+  }
 }
 
 type CreateDto = {
@@ -36,4 +68,15 @@ type CreateDto = {
 
 type UpdateDto = {
   memoryFile: MemoryFile;
+};
+
+type FindAllByIdsDto = {
+  memberId: number;
+  ids: number[];
+};
+
+type LinkManyToMemoryDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
+  fileIds: number[];
+  memoryId: number;
 };

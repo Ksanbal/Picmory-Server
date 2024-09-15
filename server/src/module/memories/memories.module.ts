@@ -6,6 +6,7 @@ import { MemoryFileRepository } from 'src/4-infrastructure/repository/memories/m
 import { PrismaService } from 'src/lib/database/prisma.service';
 import { FileModule } from '../file/file.module';
 import { MemoriesEventHandler } from 'src/1-presentation/event/memories/memories.event';
+import { MemoryRepository } from 'src/4-infrastructure/repository/memories/memory.repository';
 
 @Module({
   imports: [FileModule],
@@ -15,6 +16,7 @@ import { MemoriesEventHandler } from 'src/1-presentation/event/memories/memories
     MemoriesFacade,
     MemoriesService,
     MemoryFileRepository,
+    MemoryRepository,
     MemoriesEventHandler,
   ],
 })

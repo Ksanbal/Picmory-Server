@@ -8,4 +8,7 @@ export const ERROR_MESSAGES = {
   AUTH_FAILED_EXPIRE_TOKEN: '토큰을 만료처리하는데 실패했습니다',
   AUTH_FAILED_VERIFY_TOKEN: '유효하지 않은 토큰입니다',
   AUTH_EXPIRED_TOKEN: '만료된 토큰입니다.',
+  // Memories
+  MEMORIES_INVALID_FILE_IDS: '잘못된 파일 아이디입니다',
+  MEMORIES_FAILED_CREATE: '기억 생성에 실패했습니다',
 };
