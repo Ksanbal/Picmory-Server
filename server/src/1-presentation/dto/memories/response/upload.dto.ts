@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class RefreshResDto {
+export class MemoriesUploadResDto {
   @Expose()
-  accessToken: string;
+  id: number;
 }

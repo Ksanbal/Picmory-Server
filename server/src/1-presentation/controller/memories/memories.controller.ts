@@ -21,6 +21,8 @@ import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/cr
 import { MemoriesListReqDto } from 'src/1-presentation/dto/memories/request/list.dto';
 import { MemoriesListResDto } from 'src/1-presentation/dto/memories/response/list.dto';
 import { plainToInstance } from 'class-transformer';
+import { MemoriesUploadResDto } from 'src/1-presentation/dto/memories/response/upload.dto';
+import { MemoriesCreateResDto } from 'src/1-presentation/dto/memories/response/create.dto';
 
 @Controller('memories')
 @UseGuards(JwtAuthGuard)
@@ -57,19 +59,31 @@ export class MemoriesController {
   async upload(
     @CurrentUser() sub: number,
     @UploadedFile() file: Express.Multer.File,
-  ) {
-    return await this.memoriesFacade.upload({ sub, file });
+  ): Promise<MemoriesUploadResDto> {
+    return plainToInstance(
+      MemoriesUploadResDto,
+      await this.memoriesFacade.upload({ sub, file }),
+    );
   }
 
   // 생성
   @Post()
-  async create(@CurrentUser() sub: number, @Body() body: MemoriesCreateReqDto) {
-    return await this.memoriesFacade.create({ sub, body });
+  async create(
+    @CurrentUser() sub: number,
+    @Body() body: MemoriesCreateReqDto,
+  ): Promise<MemoriesCreateResDto> {
+    return plainToInstance(
+      MemoriesCreateResDto,
+      await this.memoriesFacade.create({ sub, body }),
+    );
   }
 
   // 목록 조회
   @Get()
-  async list(@CurrentUser() sub: number, @Query() query: MemoriesListReqDto) {
+  async list(
+    @CurrentUser() sub: number,
+    @Query() query: MemoriesListReqDto,
+  ): Promise<MemoriesListResDto[]> {
     return plainToInstance(
       MemoriesListResDto,
       await this.memoriesFacade.list({ sub, query }),

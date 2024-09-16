@@ -13,7 +13,7 @@ export class MembersFacade {
   constructor(private readonly memberService: MembersService) {}
 
   // 회원가입
-  async register(dto: RegisterDto): Promise<Member> {
+  async register(dto: RegisterDto): Promise<void> {
     // 중복여부 확인
     const member = await this.memberService.existsByProviderId({
       providerId: dto.body.providerId,
@@ -24,9 +24,7 @@ export class MembersFacade {
     }
 
     // 사용자 생성
-    const newMember = await this.memberService.create({ ...dto.body });
-
-    return newMember;
+    await this.memberService.create({ ...dto.body });
   }
 
   // 정보 조회
