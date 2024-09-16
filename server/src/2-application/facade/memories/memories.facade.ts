@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { MemoryFile } from '@prisma/client';
+import { Memory, MemoryFile } from '@prisma/client';
 import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/create.dto';
+import { MemoriesListReqDto } from 'src/1-presentation/dto/memories/request/list.dto';
 import { FileService } from 'src/3-domain/service/file/file.service';
 import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
@@ -82,6 +83,22 @@ export class MemoriesFacade {
       throw new BadRequestException(ERROR_MESSAGES.MEMORIES_FAILED_CREATE);
     }
   }
+
+  /**
+   * 목록 조회
+   */
+  async list(dto: ListDto): Promise<(Memory & { MemoryFile: MemoryFile[] })[]> {
+    const { sub, query } = dto;
+    const { like, albumId, page, limit } = query;
+
+    return await this.memoriesService.list({
+      memberId: sub,
+      like,
+      albumId,
+      page,
+      limit,
+    });
+  }
 }
 
 type UploadDto = {
@@ -96,4 +113,9 @@ type CreateThumbnailDto = {
 type CreateDto = {
   sub: number;
   body: MemoriesCreateReqDto;
+};
+
+type ListDto = {
+  sub: number;
+  query: MemoriesListReqDto;
 };

@@ -106,6 +106,32 @@ export class MemoriesService {
       memoryId,
     });
   }
+
+  /**
+   * 기억 목록 조회
+   */
+  async list(dto: ListDto) {
+    const { memberId, like, albumId, page, limit } = dto;
+
+    let memories: (Memory & { MemoryFile: MemoryFile[] })[] = [];
+    if (albumId) {
+      memories = await this.memoryRepository.findAllInAlbum({
+        memberId,
+        albumId,
+        page,
+        limit,
+      });
+    } else {
+      memories = await this.memoryRepository.findAll({
+        memberId,
+        like,
+        page,
+        limit,
+      });
+    }
+
+    return memories;
+  }
 }
 
 type UploadDto = {
@@ -133,4 +159,13 @@ type LinkMemoryFilesDto = {
   tx: Omit<PrismaClient, ITXClientDenyList>;
   fileIds: number[];
   memoryId: number;
+};
+
+type ListDto = {
+  memberId: number;
+  like: boolean;
+  albumId: number;
+
+  page: number;
+  limit: number;
 };

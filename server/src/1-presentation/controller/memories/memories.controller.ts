@@ -5,6 +5,7 @@ import {
   Get,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -17,6 +18,9 @@ import { CurrentUser } from 'src/lib/decorator/current-user.decorator';
 import * as path from 'path';
 import * as fs from 'fs';
 import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/create.dto';
+import { MemoriesListReqDto } from 'src/1-presentation/dto/memories/request/list.dto';
+import { MemoriesListResDto } from 'src/1-presentation/dto/memories/response/list.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('memories')
 @UseGuards(JwtAuthGuard)
@@ -65,7 +69,12 @@ export class MemoriesController {
 
   // 목록 조회
   @Get()
-  async list() {}
+  async list(@CurrentUser() sub: number, @Query() query: MemoriesListReqDto) {
+    return plainToInstance(
+      MemoriesListResDto,
+      await this.memoriesFacade.list({ sub, query }),
+    );
+  }
 
   // 상세 조회
   @Get(':id')
