@@ -66,6 +66,24 @@ export class MemoryRepository {
       take: dto.limit,
     });
   }
+
+  /**
+   * 기억 상세 조회
+   */
+  async findById(
+    dto: FindByIdDto,
+  ): Promise<(Memory & { MemoryFile: MemoryFile[] }) | null> {
+    return await this.prismaService.memory.findFirst({
+      include: {
+        MemoryFile: true,
+      },
+      where: {
+        id: dto.id,
+        memberId: dto.memberId,
+        deletedAt: null,
+      },
+    });
+  }
 }
 
 type CreateDto = {
@@ -87,4 +105,9 @@ type FindAllInAlbumDto = {
   albumId: number;
   page: number;
   limit: number;
+};
+
+type FindByIdDto = {
+  memberId: number;
+  id: number;
 };

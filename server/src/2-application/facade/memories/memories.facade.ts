@@ -99,6 +99,20 @@ export class MemoriesFacade {
       limit,
     });
   }
+
+  /**
+   * 상세 조회
+   */
+  async retrieve(
+    dto: RetrieveDto,
+  ): Promise<Memory & { MemoryFile: MemoryFile[] }> {
+    const { sub, id } = dto;
+
+    return await this.memoriesService.retrieve({
+      memberId: sub,
+      id,
+    });
+  }
 }
 
 type UploadDto = {
@@ -118,4 +132,9 @@ type CreateDto = {
 type ListDto = {
   sub: number;
   query: MemoriesListReqDto;
+};
+
+type RetrieveDto = {
+  sub: number;
+  id: number;
 };

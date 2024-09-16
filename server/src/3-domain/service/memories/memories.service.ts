@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   Memory,
@@ -132,6 +136,24 @@ export class MemoriesService {
 
     return memories;
   }
+
+  /**
+   * 기억 상세 조회
+   */
+  async retrieve(
+    dto: RetrieveDto,
+  ): Promise<Memory & { MemoryFile: MemoryFile[] }> {
+    const memory = await this.memoryRepository.findById({
+      memberId: dto.memberId,
+      id: dto.id,
+    });
+
+    if (memory == null) {
+      throw new NotFoundException(ERROR_MESSAGES.MEMORIES_NOT_FOUND);
+    }
+
+    return memory;
+  }
 }
 
 type UploadDto = {
@@ -168,4 +190,9 @@ type ListDto = {
 
   page: number;
   limit: number;
+};
+
+type RetrieveDto = {
+  memberId: number;
+  id: number;
 };
