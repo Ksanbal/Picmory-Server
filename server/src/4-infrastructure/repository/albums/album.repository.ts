@@ -32,8 +32,32 @@ export class AlbumRepository {
     });
   }
 
-  // [ ] 단일 조회
-  // [ ] 수정
+  /**
+   * 단일 조회
+   */
+  async findById(dto: FindByIdDto): Promise<Album | null> {
+    return await this.prismaService.album.findUnique({
+      where: {
+        memberId: dto.memberId,
+        id: dto.id,
+      },
+    });
+  }
+
+  /**
+   * 수정
+   */
+  async update(dto: UpdateDto): Promise<Album> {
+    return await this.prismaService.album.update({
+      where: {
+        id: dto.album.id,
+      },
+      data: {
+        ...dto.album,
+      },
+    });
+  }
+
   // [ ] 삭제
 }
 
@@ -46,4 +70,13 @@ type ListDto = {
   memberId: number;
   page: number;
   limit: number;
+};
+
+type FindByIdDto = {
+  memberId: number;
+  id: number;
+};
+
+type UpdateDto = {
+  album: Album;
 };

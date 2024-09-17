@@ -1,6 +1,17 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { AlbumsCreateReqDto } from 'src/1-presentation/dto/albums/request/create.dto';
+import { AlbumsUpdateReqDto } from 'src/1-presentation/dto/albums/request/update.dto';
 import { AlbumsCreateResDto } from 'src/1-presentation/dto/albums/response/create.dto';
 import { AlbumsListResDto } from 'src/1-presentation/dto/albums/response/list.dto';
 import { PaginationDto } from 'src/1-presentation/dto/common/pagination.dto';
@@ -30,7 +41,10 @@ export class AlbumsController {
 
   // [x] 목록 조회
   @Get()
-  async list(@CurrentUser() sub: number, @Query() query: PaginationDto) {
+  async list(
+    @CurrentUser() sub: number,
+    @Query() query: PaginationDto,
+  ): Promise<AlbumsListResDto[]> {
     return plainToInstance(
       AlbumsListResDto,
       await this.albumsFacade.list({
@@ -40,7 +54,21 @@ export class AlbumsController {
     );
   }
 
-  // [ ] 수정
+  // [x] 수정
+  @Put(':id')
+  async update(
+    @CurrentUser() sub: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: AlbumsUpdateReqDto,
+  ): Promise<void> {
+    return await this.albumsFacade.update({
+      memberId: sub,
+      id,
+      body,
+    });
+  }
+
   // [ ] 삭제
   // [ ] 앨범에 추억 추가
+  // [ ] 앨범에서 추억 삭제
 }

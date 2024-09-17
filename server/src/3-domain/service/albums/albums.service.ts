@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Album } from '@prisma/client';
 import { AlbumForListModel } from 'src/3-domain/model/albums/album-for-list.model';
 import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.repository';
 import { AlbumsOnMemoryRepository } from 'src/4-infrastructure/repository/albums/albums-on-memory.repository';
+import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
 
 @Injectable()
 export class AlbumsService {
@@ -58,7 +59,26 @@ export class AlbumsService {
     return result;
   }
 
-  // [ ] 수정
+  // [x] 수정
+  async update(dto: UpdateDto): Promise<void> {
+    const { memberId, id, ...data } = dto;
+
+    const album = await this.albumRepository.findById({
+      memberId,
+      id,
+    });
+
+    if (album == null) {
+      throw new NotFoundException(ERROR_MESSAGES.ALBUMS_NOT_FOUND);
+    }
+
+    Object.assign(album, data);
+
+    await this.albumRepository.update({
+      album,
+    });
+  }
+
   // [ ] 삭제
   // [ ] 앨범에 추억 추가
 }
@@ -72,4 +92,10 @@ type ListDto = {
   memberId: number;
   page: number;
   limit: number;
+};
+
+type UpdateDto = {
+  memberId: number;
+  id: number;
+  name: string;
 };
