@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as sharp from 'sharp';
+import * as fs from 'fs';
 
 @Injectable()
 export class FileService {
@@ -24,8 +25,27 @@ export class FileService {
       return null;
     }
   }
+
+  /**
+   * 파일 삭제
+   */
+  async delete(dto: DeleteDto): Promise<void> {
+    const { filePaths } = dto;
+
+    for (const filePath of filePaths) {
+      try {
+        fs.rmSync(filePath);
+      } catch (error) {
+        console.error('Error during delete files: ', error, filePath);
+      }
+    }
+  }
 }
 
 type CreateThumbnailDto = {
   filePath: string;
+};
+
+type DeleteDto = {
+  filePaths: string[];
 };

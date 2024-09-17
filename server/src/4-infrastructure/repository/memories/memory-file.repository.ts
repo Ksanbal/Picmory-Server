@@ -56,6 +56,20 @@ export class MemoryFileRepository {
       },
     });
   }
+
+  /**
+   * 여러 파일을 memoryId를 이용해서 삭제
+   */
+  async deleteManyByMemoryId(dto: DeleteManyByMemoryIdDto) {
+    await dto.tx.memoryFile.updateMany({
+      where: {
+        memoryId: dto.memoryId,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+  }
 }
 
 type CreateDto = {
@@ -78,5 +92,10 @@ type FindAllByIdsDto = {
 type LinkManyToMemoryDto = {
   tx: Omit<PrismaClient, ITXClientDenyList>;
   fileIds: number[];
+  memoryId: number;
+};
+
+type DeleteManyByMemoryIdDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
   memoryId: number;
 };

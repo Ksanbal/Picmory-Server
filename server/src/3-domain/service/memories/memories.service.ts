@@ -154,6 +154,28 @@ export class MemoriesService {
 
     return memory;
   }
+
+  /**
+   * 기억 삭제
+   */
+  async delete(dto: DeleteDto): Promise<void> {
+    const { tx, memory } = dto;
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { MemoryFile, ...memoryOnly } = memory;
+
+    // 기억 삭제
+    await this.memoryRepository.delete({
+      tx,
+      memory: memoryOnly,
+    });
+
+    // 기억 파일 삭제
+    await this.memoryFileRepository.deleteManyByMemoryId({
+      tx,
+      memoryId: memory.id,
+    });
+  }
 }
 
 type UploadDto = {
@@ -195,4 +217,9 @@ type ListDto = {
 type RetrieveDto = {
   memberId: number;
   id: number;
+};
+
+type DeleteDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
+  memory: Memory & { MemoryFile: MemoryFile[] };
 };

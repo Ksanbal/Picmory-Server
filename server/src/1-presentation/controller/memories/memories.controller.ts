@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -98,7 +100,7 @@ export class MemoriesController {
   async retrieve(
     @CurrentUser() sub: number,
     @Param('id', ParseIntPipe) id: number,
-  ) {
+  ): Promise<MemoriesRetrieveResDto> {
     return plainToInstance(
       MemoriesRetrieveResDto,
       await this.memoriesFacade.retrieve({ sub, id }),
@@ -111,5 +113,11 @@ export class MemoriesController {
 
   // 삭제
   @Delete(':id')
-  async delete() {}
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(
+    @CurrentUser() sub: number,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<void> {
+    return await this.memoriesFacade.delete({ sub, id });
+  }
 }

@@ -113,6 +113,40 @@ export class MemoriesFacade {
       id,
     });
   }
+
+  /**
+   * 삭제
+   */
+  async delete(dto: DeleteDto): Promise<void> {
+    const { sub, id } = dto;
+
+    const memory = await this.memoriesService.retrieve({
+      memberId: sub,
+      id,
+    });
+
+    await this.prisma.$transaction(async (tx) => {
+      // 기억 삭제
+      await this.memoriesService.delete({
+        tx,
+        memory,
+      });
+    });
+
+    // 기억 파일들 삭제
+    const filePaths = [];
+    memory.MemoryFile.forEach((file) => {
+      filePaths.push(file.path);
+
+      if (file.thumbnailPath != null) {
+        filePaths.push(file.thumbnailPath);
+      }
+    });
+
+    await this.fileService.delete({
+      filePaths,
+    });
+  }
 }
 
 type UploadDto = {
@@ -135,6 +169,11 @@ type ListDto = {
 };
 
 type RetrieveDto = {
+  sub: number;
+  id: number;
+};
+
+type DeleteDto = {
   sub: number;
   id: number;
 };

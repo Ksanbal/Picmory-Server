@@ -84,6 +84,20 @@ export class MemoryRepository {
       },
     });
   }
+
+  /**
+   * 기억 삭제
+   */
+  async delete(dto: DeleteDto): Promise<void> {
+    await dto.tx.memory.update({
+      where: {
+        id: dto.memory.id,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+  }
 }
 
 type CreateDto = {
@@ -110,4 +124,9 @@ type FindAllInAlbumDto = {
 type FindByIdDto = {
   memberId: number;
   id: number;
+};
+
+type DeleteDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
+  memory: Memory;
 };
