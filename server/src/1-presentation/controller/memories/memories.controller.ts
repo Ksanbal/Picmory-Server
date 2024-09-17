@@ -28,6 +28,7 @@ import { plainToInstance } from 'class-transformer';
 import { MemoriesUploadResDto } from 'src/1-presentation/dto/memories/response/upload.dto';
 import { MemoriesCreateResDto } from 'src/1-presentation/dto/memories/response/create.dto';
 import { MemoriesRetrieveResDto } from 'src/1-presentation/dto/memories/response/retrieve.dto';
+import { MemoriesUpdateReqDto } from 'src/1-presentation/dto/memories/request/update.dto';
 
 @Controller('memories')
 @UseGuards(JwtAuthGuard)
@@ -109,7 +110,13 @@ export class MemoriesController {
 
   // 수정
   @Put(':id')
-  async update() {}
+  async update(
+    @CurrentUser() sub: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: MemoriesUpdateReqDto,
+  ): Promise<void> {
+    return await this.memoriesFacade.update({ sub, id, body });
+  }
 
   // 삭제
   @Delete(':id')

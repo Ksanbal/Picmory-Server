@@ -86,6 +86,20 @@ export class MemoryRepository {
   }
 
   /**
+   * 기억 수정
+   */
+  async update(dto: UpdateDto): Promise<void> {
+    await this.prismaService.memory.update({
+      where: {
+        id: dto.memory.id,
+      },
+      data: {
+        ...dto.memory,
+      },
+    });
+  }
+
+  /**
    * 기억 삭제
    */
   async delete(dto: DeleteDto): Promise<void> {
@@ -124,6 +138,10 @@ type FindAllInAlbumDto = {
 type FindByIdDto = {
   memberId: number;
   id: number;
+};
+
+type UpdateDto = {
+  memory: Memory;
 };
 
 type DeleteDto = {

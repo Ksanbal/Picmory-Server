@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Memory, MemoryFile } from '@prisma/client';
 import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/create.dto';
 import { MemoriesListReqDto } from 'src/1-presentation/dto/memories/request/list.dto';
+import { MemoriesUpdateReqDto } from 'src/1-presentation/dto/memories/request/update.dto';
 import { FileService } from 'src/3-domain/service/file/file.service';
 import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
@@ -115,6 +116,21 @@ export class MemoriesFacade {
   }
 
   /**
+   * 수정
+   */
+  async update(dto: UpdateDto): Promise<void> {
+    return await this.memoriesService.update({
+      memberId: dto.sub,
+      id: dto.id,
+      data: {
+        brandName: dto.body.brandName,
+        date: dto.body.date,
+        like: dto.body.like,
+      },
+    });
+  }
+
+  /**
    * 삭제
    */
   async delete(dto: DeleteDto): Promise<void> {
@@ -171,6 +187,12 @@ type ListDto = {
 type RetrieveDto = {
   sub: number;
   id: number;
+};
+
+type UpdateDto = {
+  sub: number;
+  id: number;
+  body: MemoriesUpdateReqDto;
 };
 
 type DeleteDto = {

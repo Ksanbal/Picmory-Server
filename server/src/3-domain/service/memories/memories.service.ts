@@ -156,6 +156,27 @@ export class MemoriesService {
   }
 
   /**
+   * 기억 수정
+   */
+  async update(dto: UpdateDto) {
+    const memory = await this.memoryRepository.findById({
+      memberId: dto.memberId,
+      id: dto.id,
+    });
+
+    if (memory == null) {
+      throw new NotFoundException(ERROR_MESSAGES.MEMORIES_NOT_FOUND);
+    }
+
+    Object.assign(memory, dto.data);
+    delete memory.MemoryFile;
+
+    await this.memoryRepository.update({
+      memory,
+    });
+  }
+
+  /**
    * 기억 삭제
    */
   async delete(dto: DeleteDto): Promise<void> {
@@ -217,6 +238,16 @@ type ListDto = {
 type RetrieveDto = {
   memberId: number;
   id: number;
+};
+
+type UpdateDto = {
+  memberId: number;
+  id: number;
+  data: {
+    brandName: string | null;
+    date: Date | null;
+    like: boolean | null;
+  };
 };
 
 type DeleteDto = {
