@@ -108,6 +108,7 @@ model Album {
   memberId       Int              @map("member_id")
   name           String
   AlbumsOnMemory AlbumsOnMemory[]
+  lastAddAt      DateTime         @default(now()) @map("last_add_at")
 
   @@index([memberId])
   @@map("album")

@@ -16,7 +16,22 @@ export class AlbumRepository {
     });
   }
 
-  // [ ] 목록 조회
+  /**
+   * lastAddAt desc로 정렬하여 memberId에 해당하는 앨범 목록을 조회합니다.
+   */
+  async findAllByMemberId(dto: ListDto): Promise<Album[]> {
+    return await this.prismaService.album.findMany({
+      where: {
+        memberId: dto.memberId,
+      },
+      orderBy: {
+        lastAddAt: 'desc',
+      },
+      take: dto.limit,
+      skip: (dto.page - 1) * dto.limit,
+    });
+  }
+
   // [ ] 단일 조회
   // [ ] 수정
   // [ ] 삭제
@@ -25,4 +40,10 @@ export class AlbumRepository {
 type CreateDto = {
   memberId: number;
   name: string;
+};
+
+type ListDto = {
+  memberId: number;
+  page: number;
+  limit: number;
 };
