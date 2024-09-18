@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -68,7 +71,19 @@ export class AlbumsController {
     });
   }
 
-  // [ ] 삭제
+  // [x] 삭제
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(
+    @CurrentUser() sub: number,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<void> {
+    return await this.albumsFacade.delete({
+      memberId: sub,
+      id,
+    });
+  }
+
   // [ ] 앨범에 추억 추가
   // [ ] 앨범에서 추억 삭제
 }

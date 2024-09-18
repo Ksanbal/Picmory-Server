@@ -4,12 +4,14 @@ import { AlbumForListModel } from 'src/3-domain/model/albums/album-for-list.mode
 import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.repository';
 import { AlbumsOnMemoryRepository } from 'src/4-infrastructure/repository/albums/albums-on-memory.repository';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
+import { PrismaService } from 'src/lib/database/prisma.service';
 
 @Injectable()
 export class AlbumsService {
   constructor(
     private readonly albumRepository: AlbumRepository,
     private readonly albumsOnMemoryRepository: AlbumsOnMemoryRepository,
+    private readonly prismaService: PrismaService,
   ) {}
 
   // [x] 생성
@@ -79,7 +81,34 @@ export class AlbumsService {
     });
   }
 
-  // [ ] 삭제
+  // [x] 삭제
+  async delete(dto: DeleteDto): Promise<void> {
+    const { memberId, id } = dto;
+
+    const album = await this.albumRepository.findById({
+      memberId,
+      id,
+    });
+
+    if (album == null) {
+      throw new NotFoundException(ERROR_MESSAGES.ALBUMS_NOT_FOUND);
+    }
+
+    await this.prismaService.$transaction(async (tx) => {
+      // 앨범 삭제
+      await this.albumRepository.delete({
+        tx,
+        album,
+      });
+
+      // 앨범에 속한 추억 삭제
+      await this.albumsOnMemoryRepository.deleteByAlbumId({
+        tx,
+        albumId: album.id,
+      });
+    });
+  }
+
   // [ ] 앨범에 추억 추가
 }
 
@@ -98,4 +127,9 @@ type UpdateDto = {
   memberId: number;
   id: number;
   name: string;
+};
+
+type DeleteDto = {
+  memberId: number;
+  id: number;
 };

@@ -36,7 +36,14 @@ export class AlbumsFacade {
     });
   }
 
-  // [ ] 삭제
+  // [x] 삭제
+  async delete(dto: DeleteDto): Promise<void> {
+    return await this.albumsService.delete({
+      memberId: dto.memberId,
+      id: dto.id,
+    });
+  }
+
   // [ ] 앨범에 추억 추가
 }
 
@@ -54,4 +61,9 @@ type UpdateDto = {
   memberId: number;
   id: number;
   body: AlbumsUpdateReqDto;
+};
+
+type DeleteDto = {
+  memberId: number;
+  id: number;
 };

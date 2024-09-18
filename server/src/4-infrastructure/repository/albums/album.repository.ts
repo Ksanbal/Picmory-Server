@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Album } from '@prisma/client';
+import { Album, PrismaClient } from '@prisma/client';
+import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
 
 @Injectable()
@@ -23,6 +24,7 @@ export class AlbumRepository {
     return await this.prismaService.album.findMany({
       where: {
         memberId: dto.memberId,
+        deletedAt: null,
       },
       orderBy: {
         lastAddAt: 'desc',
@@ -58,7 +60,19 @@ export class AlbumRepository {
     });
   }
 
-  // [ ] 삭제
+  /**
+   * 삭제
+   */
+  async delete(dto: DeleteDto): Promise<Album> {
+    return await dto.tx.album.update({
+      where: {
+        id: dto.album.id,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+  }
 }
 
 type CreateDto = {
@@ -78,5 +92,10 @@ type FindByIdDto = {
 };
 
 type UpdateDto = {
+  album: Album;
+};
+
+type DeleteDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
   album: Album;
 };

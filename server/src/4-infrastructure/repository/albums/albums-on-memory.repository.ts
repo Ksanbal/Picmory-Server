@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MemoryFileType } from '@prisma/client';
+import { MemoryFileType, PrismaClient } from '@prisma/client';
+import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
 
 @Injectable()
@@ -48,6 +49,14 @@ export class AlbumsOnMemoryRepository {
       },
     });
   }
+
+  async deleteByAlbumId(dto: DeleteByAlbumIdDto): Promise<void> {
+    await dto.tx.albumsOnMemory.deleteMany({
+      where: {
+        albumId: dto.albumId,
+      },
+    });
+  }
 }
 
 type CountByAlbumIdsDto = {
@@ -56,4 +65,9 @@ type CountByAlbumIdsDto = {
 
 type FindLastMemoryByAlbumIdsDto = {
   albumIds: number[];
+};
+
+type DeleteByAlbumIdDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
+  albumId: number;
 };
