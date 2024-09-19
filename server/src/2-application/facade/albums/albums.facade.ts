@@ -71,6 +71,18 @@ export class AlbumsFacade {
       memories,
     });
   }
+
+  // [x] 앨범에서 추억 삭제
+  async deleteMemory(dto: DeleteMemoriesDto): Promise<void> {
+    const { memberId, albumId, memoryId } = dto;
+
+    // 앨범에서 메모리 삭제
+    return await this.albumsService.deleteMemoriesFromAlbum({
+      memberId,
+      albumId,
+      memoryId,
+    });
+  }
 }
 
 type CreateDto = {
@@ -98,4 +110,10 @@ type AddMemoriesDto = {
   memberId: number;
   albumId: number;
   body: AblumsAddMemoriesReqDto;
+};
+
+type DeleteMemoriesDto = {
+  memberId: number;
+  albumId: number;
+  memoryId: number;
 };

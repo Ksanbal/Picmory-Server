@@ -99,5 +99,18 @@ export class AlbumsController {
     });
   }
 
-  // [ ] 앨범에서 추억 삭제
+  // [x] 앨범에서 추억 삭제
+  @Delete(':id/memories/:memoryId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteMemory(
+    @CurrentUser() sub: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('memoryId', ParseIntPipe) memoryId: number,
+  ) {
+    return await this.albumsFacade.deleteMemory({
+      memberId: sub,
+      albumId: id,
+      memoryId,
+    });
+  }
 }

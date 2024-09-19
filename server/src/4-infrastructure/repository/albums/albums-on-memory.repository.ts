@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MemoryFileType, PrismaClient } from '@prisma/client';
+import { AlbumsOnMemory, MemoryFileType, PrismaClient } from '@prisma/client';
 import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
 
@@ -66,6 +66,29 @@ export class AlbumsOnMemoryRepository {
       },
     });
   }
+
+  /**
+   * 앨범에 추가된 추억 조회
+   */
+  async findUnique(dto: FindUniqueDto): Promise<AlbumsOnMemory | null> {
+    return await this.prismaService.albumsOnMemory.findFirst({
+      where: {
+        albumId: dto.albumId,
+        memoryId: dto.memoryId,
+      },
+    });
+  }
+
+  /**
+   * 앨범에서 추억 삭제
+   */
+  async delete(dto: DeleteDto): Promise<void> {
+    await this.prismaService.albumsOnMemory.delete({
+      where: {
+        id: dto.albumOnMemory.id,
+      },
+    });
+  }
 }
 
 type CreateManyDto = {
@@ -84,4 +107,13 @@ type FindLastMemoryByAlbumIdsDto = {
 type DeleteByAlbumIdDto = {
   tx: Omit<PrismaClient, ITXClientDenyList>;
   albumId: number;
+};
+
+type FindUniqueDto = {
+  albumId: number;
+  memoryId: number;
+};
+
+type DeleteDto = {
+  albumOnMemory: AlbumsOnMemory;
 };

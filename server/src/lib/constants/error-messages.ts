@@ -15,4 +15,6 @@ export const ERROR_MESSAGES = {
   MEMORIES_INVALID_MEMORY_IDS: '잘못된 기억 아이디입니다',
   // Albums
   ALBUMS_NOT_FOUND: '앨범을 찾을 수 없습니다',
+  // AlbumsOnMemory
+  ALBUMS_ON_MEMORY_NOT_FOUND: '앨범에 속한 기억을 찾을 수 없습니다',
 };

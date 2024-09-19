@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Album, Memory } from '@prisma/client';
+import { Album, AlbumsOnMemory, Memory } from '@prisma/client';
 import { AlbumForListModel } from 'src/3-domain/model/albums/album-for-list.model';
 import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.repository';
 import { AlbumsOnMemoryRepository } from 'src/4-infrastructure/repository/albums/albums-on-memory.repository';
@@ -133,6 +133,49 @@ export class AlbumsService {
 
     return await this.albumsOnMemoryRepository.createMany(albumOnMemories);
   }
+
+  // [ ] 앨범에서 추억 조회
+  async retrieveMemoryFromAlbum(
+    dto: RetrieveMemoryFromAlbumDto,
+  ): Promise<AlbumsOnMemory> {
+    const { albumId, memoryId } = dto;
+
+    const albumOnMemory = await this.albumsOnMemoryRepository.findUnique({
+      albumId,
+      memoryId,
+    });
+
+    if (albumOnMemory == null) {
+      throw new NotFoundException(ERROR_MESSAGES.ALBUMS_ON_MEMORY_NOT_FOUND);
+    }
+
+    return albumOnMemory;
+  }
+
+  // [x] 앨범에서 추억 삭제
+  async deleteMemoriesFromAlbum(
+    dto: DeleteMemoriesFromAlbumDto,
+  ): Promise<void> {
+    const { memberId, albumId, memoryId } = dto;
+
+    const album = await this.retrieve({
+      memberId,
+      id: albumId,
+    });
+
+    const albumOnMemory = await this.albumsOnMemoryRepository.findUnique({
+      albumId: album.id,
+      memoryId,
+    });
+
+    if (albumOnMemory == null) {
+      throw new NotFoundException(ERROR_MESSAGES.ALBUMS_ON_MEMORY_NOT_FOUND);
+    }
+
+    return await this.albumsOnMemoryRepository.delete({
+      albumOnMemory,
+    });
+  }
 }
 
 type CreateDto = {
@@ -165,4 +208,15 @@ type DeleteDto = {
 type AddMemoriesDto = {
   album: Album;
   memories: Memory[];
+};
+
+type RetrieveMemoryFromAlbumDto = {
+  albumId: number;
+  memoryId: number;
+};
+
+type DeleteMemoriesFromAlbumDto = {
+  memberId: number;
+  albumId: number;
+  memoryId: number;
 };
