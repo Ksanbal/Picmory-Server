@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Album } from '@prisma/client';
+import { AblumsAddMemoriesReqDto } from 'src/1-presentation/dto/albums/request/add-memories.dto';
 import { AlbumsCreateReqDto } from 'src/1-presentation/dto/albums/request/create.dto';
 import { AlbumsUpdateReqDto } from 'src/1-presentation/dto/albums/request/update.dto';
 import { PaginationDto } from 'src/1-presentation/dto/common/pagination.dto';
 import { AlbumForListModel } from 'src/3-domain/model/albums/album-for-list.model';
 import { AlbumsService } from 'src/3-domain/service/albums/albums.service';
+import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
 
 @Injectable()
 export class AlbumsFacade {
-  constructor(private readonly albumsService: AlbumsService) {}
+  constructor(
+    private readonly albumsService: AlbumsService,
+    private readonly memoriesService: MemoriesService,
+  ) {}
 
   // [x] 생성
   async create(dto: CreateDto): Promise<Album> {
@@ -44,7 +49,28 @@ export class AlbumsFacade {
     });
   }
 
-  // [ ] 앨범에 추억 추가
+  // [x] 앨범에 추억 추가
+  async addMemories(dto: AddMemoriesDto): Promise<void> {
+    const { memberId, albumId, body } = dto;
+
+    // 앨범 조회
+    const album = await this.albumsService.retrieve({
+      memberId,
+      id: albumId,
+    });
+
+    // 메모리 목록 조회
+    const memories = await this.memoriesService.listByIds({
+      memberId,
+      ids: body.ids,
+    });
+
+    // 앨범에 메모리 추가
+    return await this.albumsService.addMemories({
+      album,
+      memories,
+    });
+  }
 }
 
 type CreateDto = {
@@ -66,4 +92,10 @@ type UpdateDto = {
 type DeleteDto = {
   memberId: number;
   id: number;
+};
+
+type AddMemoriesDto = {
+  memberId: number;
+  albumId: number;
+  body: AblumsAddMemoriesReqDto;
 };

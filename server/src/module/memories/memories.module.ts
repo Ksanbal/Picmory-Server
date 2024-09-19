@@ -19,5 +19,6 @@ import { MemoryRepository } from 'src/4-infrastructure/repository/memories/memor
     MemoryRepository,
     MemoriesEventHandler,
   ],
+  exports: [MemoriesService],
 })
 export class MemoriesModule {}

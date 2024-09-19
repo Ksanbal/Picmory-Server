@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Album } from '@prisma/client';
+import { Album, Memory } from '@prisma/client';
 import { AlbumForListModel } from 'src/3-domain/model/albums/album-for-list.model';
 import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.repository';
 import { AlbumsOnMemoryRepository } from 'src/4-infrastructure/repository/albums/albums-on-memory.repository';
@@ -61,6 +61,21 @@ export class AlbumsService {
     return result;
   }
 
+  // [x] 단일 조회
+  async retrieve(dto: RetrieveDto): Promise<Album> {
+    const { memberId, id } = dto;
+
+    const album = await this.albumRepository.findById({
+      memberId,
+      id,
+    });
+    if (album == null) {
+      throw new NotFoundException(ERROR_MESSAGES.ALBUMS_NOT_FOUND);
+    }
+
+    return album;
+  }
+
   // [x] 수정
   async update(dto: UpdateDto): Promise<void> {
     const { memberId, id, ...data } = dto;
@@ -109,7 +124,15 @@ export class AlbumsService {
     });
   }
 
-  // [ ] 앨범에 추억 추가
+  // [x] 앨범에 추억 추가
+  async addMemories(dto: AddMemoriesDto): Promise<void> {
+    const albumOnMemories = dto.memories.map((memory) => ({
+      albumId: dto.album.id,
+      memoryId: memory.id,
+    }));
+
+    return await this.albumsOnMemoryRepository.createMany(albumOnMemories);
+  }
 }
 
 type CreateDto = {
@@ -123,6 +146,11 @@ type ListDto = {
   limit: number;
 };
 
+type RetrieveDto = {
+  memberId: number;
+  id: number;
+};
+
 type UpdateDto = {
   memberId: number;
   id: number;
@@ -132,4 +160,9 @@ type UpdateDto = {
 type DeleteDto = {
   memberId: number;
   id: number;
+};
+
+type AddMemoriesDto = {
+  album: Album;
+  memories: Memory[];
 };

@@ -13,6 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { AblumsAddMemoriesReqDto } from 'src/1-presentation/dto/albums/request/add-memories.dto';
 import { AlbumsCreateReqDto } from 'src/1-presentation/dto/albums/request/create.dto';
 import { AlbumsUpdateReqDto } from 'src/1-presentation/dto/albums/request/update.dto';
 import { AlbumsCreateResDto } from 'src/1-presentation/dto/albums/response/create.dto';
@@ -84,6 +85,19 @@ export class AlbumsController {
     });
   }
 
-  // [ ] 앨범에 추억 추가
+  // [x] 앨범에 추억 추가
+  @Post(':id/memories')
+  async addMemories(
+    @CurrentUser() sub: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: AblumsAddMemoriesReqDto,
+  ) {
+    return await this.albumsFacade.addMemories({
+      memberId: sub,
+      albumId: id,
+      body,
+    });
+  }
+
   // [ ] 앨범에서 추억 삭제
 }

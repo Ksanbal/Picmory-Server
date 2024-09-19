@@ -12,6 +12,7 @@ export const ERROR_MESSAGES = {
   MEMORIES_INVALID_FILE_IDS: '잘못된 파일 아이디입니다',
   MEMORIES_FAILED_CREATE: '기억 생성에 실패했습니다',
   MEMORIES_NOT_FOUND: '기억을 찾을 수 없습니다',
+  MEMORIES_INVALID_MEMORY_IDS: '잘못된 기억 아이디입니다',
   // Albums
   ALBUMS_NOT_FOUND: '앨범을 찾을 수 없습니다',
 };

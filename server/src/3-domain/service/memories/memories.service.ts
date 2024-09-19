@@ -138,6 +138,24 @@ export class MemoriesService {
   }
 
   /**
+   * id 목록으로 기억 목록 조회
+   */
+  async listByIds(dto: ListByIdsDto): Promise<Memory[]> {
+    const { memberId, ids } = dto;
+
+    const memories = await this.memoryRepository.findAllByIds({
+      memberId,
+      ids,
+    });
+
+    if (memories.length !== ids.length) {
+      throw new BadRequestException(ERROR_MESSAGES.MEMORIES_INVALID_MEMORY_IDS);
+    }
+
+    return memories;
+  }
+
+  /**
    * 기억 상세 조회
    */
   async retrieve(
@@ -233,6 +251,11 @@ type ListDto = {
 
   page: number;
   limit: number;
+};
+
+type ListByIdsDto = {
+  memberId: number;
+  ids: number[];
 };
 
 type RetrieveDto = {

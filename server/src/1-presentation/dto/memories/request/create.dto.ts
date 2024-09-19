@@ -1,8 +1,8 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsDate, IsString } from 'class-validator';
+import { IsDate, IsInt, IsString } from 'class-validator';
 
 export class MemoriesCreateReqDto {
-  @IsArray()
+  @IsInt({ each: true })
   fileIds: number[];
 
   @IsDate()

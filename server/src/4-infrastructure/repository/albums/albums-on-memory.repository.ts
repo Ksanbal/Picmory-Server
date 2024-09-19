@@ -8,6 +8,15 @@ export class AlbumsOnMemoryRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   /**
+   * 앨범에 추억을 추가
+   */
+  async createMany(dto: CreateManyDto[]): Promise<void> {
+    await this.prismaService.albumsOnMemory.createMany({
+      data: dto,
+    });
+  }
+
+  /**
    * 앨범별 추억 개수를 조회합니다.
    */
   async countByAlbumIds(dto: CountByAlbumIdsDto) {
@@ -58,6 +67,11 @@ export class AlbumsOnMemoryRepository {
     });
   }
 }
+
+type CreateManyDto = {
+  albumId: number;
+  memoryId: number;
+};
 
 type CountByAlbumIdsDto = {
   albumIds: number[];

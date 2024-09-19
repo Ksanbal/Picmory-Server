@@ -41,6 +41,21 @@ export class MemoryRepository {
   }
 
   /**
+   * ids로 기억 목록 조회
+   */
+  async findAllByIds(dto: FindAllByIdsDto): Promise<Memory[]> {
+    return await this.prismaService.memory.findMany({
+      where: {
+        id: {
+          in: dto.ids,
+        },
+        memberId: dto.memberId,
+        deletedAt: null,
+      },
+    });
+  }
+
+  /**
    * 앨범에 속한 기억 목록 조회
    */
   async findAllInAlbum(
@@ -126,6 +141,11 @@ type FindAllDto = {
   like: boolean | null;
   page: number;
   limit: number;
+};
+
+type FindAllByIdsDto = {
+  memberId: number;
+  ids: number[];
 };
 
 type FindAllInAlbumDto = {

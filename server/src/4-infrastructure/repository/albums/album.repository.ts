@@ -42,6 +42,7 @@ export class AlbumRepository {
       where: {
         memberId: dto.memberId,
         id: dto.id,
+        deletedAt: null,
       },
     });
   }
