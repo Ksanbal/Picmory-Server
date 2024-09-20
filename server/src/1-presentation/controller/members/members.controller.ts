@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { MembersRegisterReqDto } from 'src/1-presentation/dto/members/request/register.dto';
-import { MembersGetMeResDto } from 'src/1-presentation/dto/members/response/getMe.dto';
+import { MembersGetMeResDto } from 'src/1-presentation/dto/members/response/get-me.dto';
 import { JwtAuthGuard } from 'src/1-presentation/guard/auth/auth.guard';
 import { MembersFacade } from 'src/2-application/facade/members/members.facade';
 import { CurrentUser } from 'src/lib/decorator/current-user.decorator';

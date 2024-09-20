@@ -6,6 +6,7 @@ import { MemoriesModule } from './module/memories/memories.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FileModule } from './module/file/file.module';
 import { AlbumsModule } from './module/albums/albums.module';
+import { QrCrawlerModule } from './module/qr-crawler/qr-crawler.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AlbumsModule } from './module/albums/albums.module';
     MemoriesModule,
     FileModule,
     AlbumsModule,
+    QrCrawlerModule,
   ],
 })
 export class AppModule {}
