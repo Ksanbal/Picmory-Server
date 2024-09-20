@@ -18,4 +18,7 @@ export const ERROR_MESSAGES = {
   // AlbumsOnMemory
   ALBUMS_ON_MEMORY_NOT_FOUND: '앨범에 속한 기억을 찾을 수 없습니다',
   ALBUMS_ON_MEMORY_ALREADY_EXISTS: '이미 앨범에 속한 기억입니다',
+  // Qr Crawler
+  QR_CRAWLER_NOT_SUPPORTED: '아직 지원하지 않는 브랜드에요',
+  QR_CRAWLER_UNKOWN_ERROR: '알 수 없는 에러가 발생했어요',
 };
