@@ -55,17 +55,17 @@ model RefreshToken {
 
 // 기억
 model Memory {
-  id             Int              @id @default(autoincrement())
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  deletedAt      DateTime?        @map("deleted_at")
-  Member         Member           @relation(fields: [memberId], references: [id])
-  memberId       Int              @map("member_id")
-  date           DateTime         @default(now())
-  brandName      String           @map("brand_name")
-  like           Boolean          @default(false)
-  MemoryFile     MemoryFile[]
-  AlbumsOnMemory AlbumsOnMemory[]
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  deletedAt   DateTime?     @map("deleted_at")
+  Member      Member        @relation(fields: [memberId], references: [id])
+  memberId    Int           @map("member_id")
+  date        DateTime      @default(now())
+  brandName   String        @map("brand_name")
+  like        Boolean       @default(false)
+  MemoryFile  MemoryFile[]
+  AlbumMemory AlbumMemory[]
 
   @@index([memberId])
   @@map("memory")
@@ -100,22 +100,22 @@ enum MemoryFileType {
 
 // 앨범
 model Album {
-  id             Int              @id @default(autoincrement())
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  deletedAt      DateTime?        @map("deleted_at")
-  Member         Member           @relation(fields: [memberId], references: [id])
-  memberId       Int              @map("member_id")
-  name           String
-  AlbumsOnMemory AlbumsOnMemory[]
-  lastAddAt      DateTime         @default(now()) @map("last_add_at")
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  deletedAt   DateTime?     @map("deleted_at")
+  Member      Member        @relation(fields: [memberId], references: [id])
+  memberId    Int           @map("member_id")
+  name        String
+  AlbumMemory AlbumMemory[]
+  lastAddAt   DateTime      @default(now()) @map("last_add_at")
 
   @@index([memberId])
   @@map("album")
 }
 
 // 앨범에 속한 기억
-model AlbumsOnMemory {
+model AlbumMemory {
   id       Int    @id @default(autoincrement())
   Album    Album  @relation(fields: [albumId], references: [id])
   albumId  Int    @map("album_id")
@@ -124,7 +124,7 @@ model AlbumsOnMemory {
 
   @@index([albumId])
   @@index([memoryId])
-  @@map("albums_on_memory")
+  @@map("album_memory")
 }
 
 // 지원하는 브랜드 목록

@@ -68,7 +68,7 @@ export class MemoryRepository {
       where: {
         memberId: dto.memberId,
         deletedAt: null,
-        AlbumsOnMemory: {
+        AlbumMemory: {
           some: {
             albumId: dto.albumId,
           },

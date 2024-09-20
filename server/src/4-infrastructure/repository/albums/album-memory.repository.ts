@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   Album,
-  AlbumsOnMemory,
+  AlbumMemory,
   Memory,
   MemoryFileType,
   PrismaClient,
@@ -10,14 +10,14 @@ import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
 
 @Injectable()
-export class AlbumsOnMemoryRepository {
+export class AlbumMemoryRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   /**
    * 앨범에 추억을 추가
    */
   async create(dto: CreateDto): Promise<void> {
-    await this.prismaService.albumsOnMemory.create({
+    await this.prismaService.albumMemory.create({
       data: {
         albumId: dto.album.id,
         memoryId: dto.memory.id,
@@ -29,7 +29,7 @@ export class AlbumsOnMemoryRepository {
    * 앨범별 추억 개수를 조회합니다.
    */
   async countByAlbumIds(dto: CountByAlbumIdsDto) {
-    return await this.prismaService.albumsOnMemory.groupBy({
+    return await this.prismaService.albumMemory.groupBy({
       by: ['albumId'],
       where: {
         albumId: {
@@ -43,7 +43,7 @@ export class AlbumsOnMemoryRepository {
   }
 
   async findLastMemoryByAlbumIds(dto: FindLastMemoryByAlbumIdsDto) {
-    return await this.prismaService.albumsOnMemory.findMany({
+    return await this.prismaService.albumMemory.findMany({
       include: {
         Memory: {
           include: {
@@ -69,7 +69,7 @@ export class AlbumsOnMemoryRepository {
   }
 
   async deleteByAlbumId(dto: DeleteByAlbumIdDto): Promise<void> {
-    await dto.tx.albumsOnMemory.deleteMany({
+    await dto.tx.albumMemory.deleteMany({
       where: {
         albumId: dto.albumId,
       },
@@ -79,8 +79,8 @@ export class AlbumsOnMemoryRepository {
   /**
    * 앨범에 추가된 추억 조회
    */
-  async findUnique(dto: FindUniqueDto): Promise<AlbumsOnMemory | null> {
-    return await this.prismaService.albumsOnMemory.findFirst({
+  async findUnique(dto: FindUniqueDto): Promise<AlbumMemory | null> {
+    return await this.prismaService.albumMemory.findFirst({
       where: {
         albumId: dto.albumId,
         memoryId: dto.memoryId,
@@ -92,9 +92,9 @@ export class AlbumsOnMemoryRepository {
    * 앨범에서 추억 삭제
    */
   async delete(dto: DeleteDto): Promise<void> {
-    await this.prismaService.albumsOnMemory.delete({
+    await this.prismaService.albumMemory.delete({
       where: {
-        id: dto.albumOnMemory.id,
+        id: dto.albumMemory.id,
       },
     });
   }
@@ -103,7 +103,7 @@ export class AlbumsOnMemoryRepository {
    * 앨범내의 추억 ids의 개수를 조회합니다.
    */
   async countByMemoryIds(dto: CountByMemoryIdsDto): Promise<number> {
-    return await this.prismaService.albumsOnMemory.count({
+    return await this.prismaService.albumMemory.count({
       where: {
         albumId: dto.album.id,
         memoryId: {
@@ -138,7 +138,7 @@ type FindUniqueDto = {
 };
 
 type DeleteDto = {
-  albumOnMemory: AlbumsOnMemory;
+  albumMemory: AlbumMemory;
 };
 
 type CountByMemoryIdsDto = {

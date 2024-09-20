@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Album, AlbumsOnMemory, Memory } from '@prisma/client';
+import { Album, AlbumMemory, Memory } from '@prisma/client';
 import { AlbumForListModel } from 'src/3-domain/model/albums/album-for-list.model';
 import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.repository';
-import { AlbumsOnMemoryRepository } from 'src/4-infrastructure/repository/albums/albums-on-memory.repository';
+import { AlbumMemoryRepository } from 'src/4-infrastructure/repository/albums/album-memory.repository';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
 import { PrismaService } from 'src/lib/database/prisma.service';
 
@@ -14,7 +14,7 @@ import { PrismaService } from 'src/lib/database/prisma.service';
 export class AlbumsService {
   constructor(
     private readonly albumRepository: AlbumRepository,
-    private readonly albumsOnMemoryRepository: AlbumsOnMemoryRepository,
+    private readonly albumMemoryRepository: AlbumMemoryRepository,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -39,13 +39,13 @@ export class AlbumsService {
 
     // 각 앨범별 추억 개수 조회
     const memoryCountsByAlbum =
-      await this.albumsOnMemoryRepository.countByAlbumIds({
+      await this.albumMemoryRepository.countByAlbumIds({
         albumIds,
       });
 
     // 각 앨범별 대표 추억 조회
     const memoriesByAlbum =
-      await this.albumsOnMemoryRepository.findLastMemoryByAlbumIds({
+      await this.albumMemoryRepository.findLastMemoryByAlbumIds({
         albumIds,
       });
 
@@ -121,7 +121,7 @@ export class AlbumsService {
       });
 
       // 앨범에 속한 추억 삭제
-      await this.albumsOnMemoryRepository.deleteByAlbumId({
+      await this.albumMemoryRepository.deleteByAlbumId({
         tx,
         albumId: album.id,
       });
@@ -131,18 +131,18 @@ export class AlbumsService {
   // [x] 앨범에 추억 추가
   async addMemory(dto: AddMemoryDto): Promise<void> {
     // 이미 추가된 추억이 있는지 확인
-    const albumOnMemory = await this.albumsOnMemoryRepository.findUnique({
+    const albumMemory = await this.albumMemoryRepository.findUnique({
       albumId: dto.album.id,
       memoryId: dto.memory.id,
     });
 
-    if (albumOnMemory != null) {
+    if (albumMemory != null) {
       throw new BadRequestException(
         ERROR_MESSAGES.ALBUMS_ON_MEMORY_ALREADY_EXISTS,
       );
     }
 
-    await this.albumsOnMemoryRepository.create({
+    await this.albumMemoryRepository.create({
       album: dto.album,
       memory: dto.memory,
     });
@@ -155,19 +155,19 @@ export class AlbumsService {
   // [ ] 앨범에서 추억 조회
   async retrieveMemoryFromAlbum(
     dto: RetrieveMemoryFromAlbumDto,
-  ): Promise<AlbumsOnMemory> {
+  ): Promise<AlbumMemory> {
     const { albumId, memoryId } = dto;
 
-    const albumOnMemory = await this.albumsOnMemoryRepository.findUnique({
+    const albumMemory = await this.albumMemoryRepository.findUnique({
       albumId,
       memoryId,
     });
 
-    if (albumOnMemory == null) {
+    if (albumMemory == null) {
       throw new NotFoundException(ERROR_MESSAGES.ALBUMS_ON_MEMORY_NOT_FOUND);
     }
 
-    return albumOnMemory;
+    return albumMemory;
   }
 
   // [x] 앨범에서 추억 삭제
@@ -181,17 +181,17 @@ export class AlbumsService {
       id: albumId,
     });
 
-    const albumOnMemory = await this.albumsOnMemoryRepository.findUnique({
+    const albumMemory = await this.albumMemoryRepository.findUnique({
       albumId: album.id,
       memoryId,
     });
 
-    if (albumOnMemory == null) {
+    if (albumMemory == null) {
       throw new NotFoundException(ERROR_MESSAGES.ALBUMS_ON_MEMORY_NOT_FOUND);
     }
 
-    return await this.albumsOnMemoryRepository.delete({
-      albumOnMemory,
+    return await this.albumMemoryRepository.delete({
+      albumMemory,
     });
   }
 }
