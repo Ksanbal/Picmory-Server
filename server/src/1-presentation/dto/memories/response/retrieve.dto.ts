@@ -1,4 +1,4 @@
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { MemoriesFileRes } from './list.dto';
 
 export class MemoriesRetrieveResDto {
@@ -17,7 +17,8 @@ export class MemoriesRetrieveResDto {
   @Expose()
   like: boolean;
 
+  @Transform(({ obj }) => obj.MemoryFile)
   @Type(() => MemoriesFileRes)
   @Expose()
-  MemoryFile: MemoriesFileRes[];
+  files: MemoriesFileRes[];
 }

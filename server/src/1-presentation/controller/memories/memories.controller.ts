@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -66,6 +67,10 @@ export class MemoriesController {
     @CurrentUser() sub: number,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<MemoriesUploadResDto> {
+    if (!file) {
+      throw new BadRequestException(['File is required']);
+    }
+
     return plainToInstance(
       MemoriesUploadResDto,
       await this.memoriesFacade.upload({ sub, file }),

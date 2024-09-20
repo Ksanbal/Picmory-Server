@@ -1,5 +1,5 @@
 import { MemoryFileType } from '@prisma/client';
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 
 export class MemoriesFileRes {
   @Expose()
@@ -31,7 +31,8 @@ export class MemoriesListResDto {
   @Expose()
   like: boolean;
 
+  @Transform(({ obj }) => obj.MemoryFile)
   @Type(() => MemoriesFileRes)
   @Expose()
-  MemoryFile: MemoriesFileRes[];
+  files: MemoriesFileRes[];
 }
