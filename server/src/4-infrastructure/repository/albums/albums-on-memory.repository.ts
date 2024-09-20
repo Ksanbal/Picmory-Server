@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { AlbumsOnMemory, MemoryFileType, PrismaClient } from '@prisma/client';
+import {
+  Album,
+  AlbumsOnMemory,
+  Memory,
+  MemoryFileType,
+  PrismaClient,
+} from '@prisma/client';
 import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
 
@@ -10,9 +16,12 @@ export class AlbumsOnMemoryRepository {
   /**
    * 앨범에 추억을 추가
    */
-  async createMany(dto: CreateManyDto[]): Promise<void> {
-    await this.prismaService.albumsOnMemory.createMany({
-      data: dto,
+  async create(dto: CreateDto): Promise<void> {
+    await this.prismaService.albumsOnMemory.create({
+      data: {
+        albumId: dto.album.id,
+        memoryId: dto.memory.id,
+      },
     });
   }
 
@@ -89,11 +98,25 @@ export class AlbumsOnMemoryRepository {
       },
     });
   }
+
+  /**
+   * 앨범내의 추억 ids의 개수를 조회합니다.
+   */
+  async countByMemoryIds(dto: CountByMemoryIdsDto): Promise<number> {
+    return await this.prismaService.albumsOnMemory.count({
+      where: {
+        albumId: dto.album.id,
+        memoryId: {
+          in: dto.memories.map((memory) => memory.id),
+        },
+      },
+    });
+  }
 }
 
-type CreateManyDto = {
-  albumId: number;
-  memoryId: number;
+type CreateDto = {
+  album: Album;
+  memory: Memory;
 };
 
 type CountByAlbumIdsDto = {
@@ -116,4 +139,9 @@ type FindUniqueDto = {
 
 type DeleteDto = {
   albumOnMemory: AlbumsOnMemory;
+};
+
+type CountByMemoryIdsDto = {
+  album: Album;
+  memories: Memory[];
 };

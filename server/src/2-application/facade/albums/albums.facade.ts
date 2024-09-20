@@ -50,7 +50,7 @@ export class AlbumsFacade {
   }
 
   // [x] 앨범에 추억 추가
-  async addMemories(dto: AddMemoriesDto): Promise<void> {
+  async addMemory(dto: AddMemoriesDto): Promise<void> {
     const { memberId, albumId, body } = dto;
 
     // 앨범 조회
@@ -59,16 +59,16 @@ export class AlbumsFacade {
       id: albumId,
     });
 
-    // 메모리 목록 조회
-    const memories = await this.memoriesService.listByIds({
+    // 메모리 조회
+    const memory = await this.memoriesService.retrieve({
       memberId,
-      ids: body.ids,
+      id: body.memoryId,
     });
 
     // 앨범에 메모리 추가
-    return await this.albumsService.addMemories({
+    return await this.albumsService.addMemory({
       album,
-      memories,
+      memory,
     });
   }
 

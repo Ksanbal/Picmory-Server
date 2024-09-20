@@ -92,7 +92,7 @@ export class AlbumsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: AblumsAddMemoriesReqDto,
   ) {
-    return await this.albumsFacade.addMemories({
+    return await this.albumsFacade.addMemory({
       memberId: sub,
       albumId: id,
       body,

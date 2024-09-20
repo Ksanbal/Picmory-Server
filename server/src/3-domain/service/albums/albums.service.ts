@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Album, AlbumsOnMemory, Memory } from '@prisma/client';
 import { AlbumForListModel } from 'src/3-domain/model/albums/album-for-list.model';
 import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.repository';
@@ -125,13 +129,27 @@ export class AlbumsService {
   }
 
   // [x] 앨범에 추억 추가
-  async addMemories(dto: AddMemoriesDto): Promise<void> {
-    const albumOnMemories = dto.memories.map((memory) => ({
+  async addMemory(dto: AddMemoryDto): Promise<void> {
+    // 이미 추가된 추억이 있는지 확인
+    const albumOnMemory = await this.albumsOnMemoryRepository.findUnique({
       albumId: dto.album.id,
-      memoryId: memory.id,
-    }));
+      memoryId: dto.memory.id,
+    });
 
-    return await this.albumsOnMemoryRepository.createMany(albumOnMemories);
+    if (albumOnMemory != null) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.ALBUMS_ON_MEMORY_ALREADY_EXISTS,
+      );
+    }
+
+    await this.albumsOnMemoryRepository.create({
+      album: dto.album,
+      memory: dto.memory,
+    });
+
+    // 앨범의 추가된 날짜 수정
+    dto.album.lastAddAt = new Date();
+    await this.albumRepository.update({ album: dto.album });
   }
 
   // [ ] 앨범에서 추억 조회
@@ -205,9 +223,9 @@ type DeleteDto = {
   id: number;
 };
 
-type AddMemoriesDto = {
+type AddMemoryDto = {
   album: Album;
-  memories: Memory[];
+  memory: Memory;
 };
 
 type RetrieveMemoryFromAlbumDto = {
