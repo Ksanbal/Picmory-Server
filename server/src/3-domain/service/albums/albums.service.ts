@@ -126,12 +126,26 @@ export class AlbumsService {
 
   // [x] 앨범에 추억 추가
   async addMemories(dto: AddMemoriesDto): Promise<void> {
+    // 이미 추가된 추억이 있는지 확인
+    const count = await this.albumsOnMemoryRepository.countByMemoryIds({
+      album: dto.album,
+      memories: dto.memories,
+    });
+
+    if (count > 0) {
+      throw new Error(ERROR_MESSAGES.ALBUMS_ON_MEMORY_ALREADY_EXISTS);
+    }
+
     const albumOnMemories = dto.memories.map((memory) => ({
       albumId: dto.album.id,
       memoryId: memory.id,
     }));
 
-    return await this.albumsOnMemoryRepository.createMany(albumOnMemories);
+    await this.albumsOnMemoryRepository.createMany(albumOnMemories);
+
+    // 앨범의 추가된 날짜 수정
+    dto.album.lastAddAt = new Date();
+    await this.albumRepository.update({ album: dto.album });
   }
 
   // [ ] 앨범에서 추억 조회
