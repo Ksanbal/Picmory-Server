@@ -30,13 +30,24 @@ import { MemoriesUploadResDto } from 'src/1-presentation/dto/memories/response/u
 import { MemoriesCreateResDto } from 'src/1-presentation/dto/memories/response/create.dto';
 import { MemoriesRetrieveResDto } from 'src/1-presentation/dto/memories/response/retrieve.dto';
 import { MemoriesUpdateReqDto } from 'src/1-presentation/dto/memories/request/update.dto';
+import {
+  CreateDocs,
+  DeleteDocs,
+  ListDocs,
+  MemoriesControllerDocs,
+  RetrieveDocs,
+  UpdateDocs,
+  UploadDocs,
+} from 'src/1-presentation/docs/memories/memories.docs';
 
+@MemoriesControllerDocs()
 @Controller('memories')
 @UseGuards(JwtAuthGuard)
 export class MemoriesController {
   constructor(private readonly memoriesFacade: MemoriesFacade) {}
 
   // 파일 업로드
+  @UploadDocs()
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -78,6 +89,7 @@ export class MemoriesController {
   }
 
   // 생성
+  @CreateDocs()
   @Post()
   async create(
     @CurrentUser() sub: number,
@@ -90,6 +102,7 @@ export class MemoriesController {
   }
 
   // 목록 조회
+  @ListDocs()
   @Get()
   async list(
     @CurrentUser() sub: number,
@@ -102,6 +115,7 @@ export class MemoriesController {
   }
 
   // 상세 조회
+  @RetrieveDocs()
   @Get(':id')
   async retrieve(
     @CurrentUser() sub: number,
@@ -114,6 +128,7 @@ export class MemoriesController {
   }
 
   // 수정
+  @UpdateDocs()
   @Put(':id')
   async update(
     @CurrentUser() sub: number,
@@ -124,6 +139,7 @@ export class MemoriesController {
   }
 
   // 삭제
+  @DeleteDocs()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(
