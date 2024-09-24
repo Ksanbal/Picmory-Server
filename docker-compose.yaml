@@ -1,6 +1,7 @@
 services:
   api:
     platform: linux/amd64
+    container_name: picmory
     build:
       context: .
     restart: unless-stopped
@@ -15,3 +16,13 @@ services:
       "
     volumes:
       - .data/picmory/uploads:/app/uploads
+    labels:
+      - traefik.http.routers.picmory.rule=PathPrefix(`/picmory`)
+      - traefik.http.middlewares.picmory-stripprefix.stripprefix.prefixes=/picmory
+      - traefik.http.routers.picmory.middlewares=picmory-stripprefix@docker
+    networks:
+      - traefik-net
+
+networks:
+  traefik-net:
+    external: true
