@@ -10,7 +10,7 @@ abstract final class ColorsToken {
   /// Brand Primary
   ///
   /// The main brand color
-  static MaterialColor primary = MaterialColor(
+  static const MaterialColor primary = MaterialColor(
     _primaryValue,
     <int, Color>{
       50: Color(0xFFEBEFFF),
@@ -31,7 +31,7 @@ abstract final class ColorsToken {
   /// Neutral
   ///
   /// The base palette for text, border and background tokens
-  static MaterialColor neutral = MaterialColor(
+  static const MaterialColor neutral = MaterialColor(
     _neutralValue,
     <int, Color>{
       50: Color(0xFFf7f8f8),
@@ -52,7 +52,7 @@ abstract final class ColorsToken {
   /// Positive
   ///
   /// Used to communicate positive feedback and success
-  static MaterialColor positive = MaterialColor(
+  static const MaterialColor positive = MaterialColor(
     _positiveValue,
     <int, Color>{
       50: Color(0xFFE5FAF5),
@@ -73,7 +73,7 @@ abstract final class ColorsToken {
   /// Negative
   ///
   /// Used to communicate negative feedback, critical states/errors or destructive actions
-  static MaterialColor negative = MaterialColor(
+  static const MaterialColor negative = MaterialColor(
     _negativeValue,
     <int, Color>{
       50: Color(0xFFFEF1F1),
@@ -94,7 +94,7 @@ abstract final class ColorsToken {
   /// Warning
   ///
   /// Used to communicate warning states and information that needs user attention
-  static MaterialColor warning = MaterialColor(
+  static const MaterialColor warning = MaterialColor(
     _warningValue,
     <int, Color>{
       50: Color(0xFFFEFCF1),
@@ -118,17 +118,17 @@ abstract final class ColorsToken {
   static MaterialColor neutralAlpha = MaterialColor(
     _neutralAlphaValue,
     <int, Color>{
-      5: Color(_neutralAlphaValue).withOpacity(0.05),
-      10: Color(_neutralAlphaValue).withOpacity(0.10),
-      20: Color(_neutralAlphaValue).withOpacity(0.20),
-      30: Color(_neutralAlphaValue).withOpacity(0.30),
-      40: Color(_neutralAlphaValue).withOpacity(0.40),
-      50: Color(_neutralAlphaValue).withOpacity(0.50),
-      60: Color(_neutralAlphaValue).withOpacity(0.60),
-      70: Color(_neutralAlphaValue).withOpacity(0.70),
-      80: Color(_neutralAlphaValue).withOpacity(0.80),
-      90: Color(_neutralAlphaValue).withOpacity(0.90),
-      95: Color(_neutralAlphaValue).withOpacity(0.95),
+      50: Color(_neutralAlphaValue).withOpacity(0.05),
+      100: Color(_neutralAlphaValue).withOpacity(0.10),
+      200: Color(_neutralAlphaValue).withOpacity(0.20),
+      300: Color(_neutralAlphaValue).withOpacity(0.30),
+      400: Color(_neutralAlphaValue).withOpacity(0.40),
+      500: Color(_neutralAlphaValue).withOpacity(0.50),
+      600: Color(_neutralAlphaValue).withOpacity(0.60),
+      700: Color(_neutralAlphaValue).withOpacity(0.70),
+      800: Color(_neutralAlphaValue).withOpacity(0.80),
+      900: Color(_neutralAlphaValue).withOpacity(0.90),
+      950: Color(_neutralAlphaValue).withOpacity(0.95),
     },
   );
   static const _neutralAlphaValue = 0xFF33394C;
@@ -139,17 +139,17 @@ abstract final class ColorsToken {
   static MaterialColor whiteAlpha = MaterialColor(
     _whiteAlphaValue,
     <int, Color>{
-      5: Color(_whiteAlphaValue).withOpacity(0.05),
-      10: Color(_whiteAlphaValue).withOpacity(0.10),
-      20: Color(_whiteAlphaValue).withOpacity(0.20),
-      30: Color(_whiteAlphaValue).withOpacity(0.30),
-      40: Color(_whiteAlphaValue).withOpacity(0.40),
-      50: Color(_whiteAlphaValue).withOpacity(0.50),
-      60: Color(_whiteAlphaValue).withOpacity(0.60),
-      70: Color(_whiteAlphaValue).withOpacity(0.70),
-      80: Color(_whiteAlphaValue).withOpacity(0.80),
-      90: Color(_whiteAlphaValue).withOpacity(0.90),
-      95: Color(_whiteAlphaValue).withOpacity(0.95),
+      50: Color(_whiteAlphaValue).withOpacity(0.05),
+      100: Color(_whiteAlphaValue).withOpacity(0.10),
+      200: Color(_whiteAlphaValue).withOpacity(0.20),
+      300: Color(_whiteAlphaValue).withOpacity(0.30),
+      400: Color(_whiteAlphaValue).withOpacity(0.40),
+      500: Color(_whiteAlphaValue).withOpacity(0.50),
+      600: Color(_whiteAlphaValue).withOpacity(0.60),
+      700: Color(_whiteAlphaValue).withOpacity(0.70),
+      800: Color(_whiteAlphaValue).withOpacity(0.80),
+      900: Color(_whiteAlphaValue).withOpacity(0.90),
+      950: Color(_whiteAlphaValue).withOpacity(0.95),
     },
   );
   static const _whiteAlphaValue = 0xFFFFFFFF;
@@ -160,17 +160,17 @@ abstract final class ColorsToken {
   static MaterialColor blackAlpha = MaterialColor(
     _blackAlphaValue,
     <int, Color>{
-      5: Color(_blackAlphaValue).withOpacity(0.05),
-      10: Color(_blackAlphaValue).withOpacity(0.10),
-      20: Color(_blackAlphaValue).withOpacity(0.20),
-      30: Color(_blackAlphaValue).withOpacity(0.30),
-      40: Color(_blackAlphaValue).withOpacity(0.40),
-      50: Color(_blackAlphaValue).withOpacity(0.50),
-      60: Color(_blackAlphaValue).withOpacity(0.60),
-      70: Color(_blackAlphaValue).withOpacity(0.70),
-      80: Color(_blackAlphaValue).withOpacity(0.80),
-      90: Color(_blackAlphaValue).withOpacity(0.90),
-      95: Color(_blackAlphaValue).withOpacity(0.95),
+      50: Color(_blackAlphaValue).withOpacity(0.05),
+      100: Color(_blackAlphaValue).withOpacity(0.10),
+      200: Color(_blackAlphaValue).withOpacity(0.20),
+      300: Color(_blackAlphaValue).withOpacity(0.30),
+      400: Color(_blackAlphaValue).withOpacity(0.40),
+      500: Color(_blackAlphaValue).withOpacity(0.50),
+      600: Color(_blackAlphaValue).withOpacity(0.60),
+      700: Color(_blackAlphaValue).withOpacity(0.70),
+      800: Color(_blackAlphaValue).withOpacity(0.80),
+      900: Color(_blackAlphaValue).withOpacity(0.90),
+      950: Color(_blackAlphaValue).withOpacity(0.95),
     },
   );
   static const _blackAlphaValue = 0xFF070A12;
