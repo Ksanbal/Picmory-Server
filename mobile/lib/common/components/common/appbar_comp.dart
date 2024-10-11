@@ -13,6 +13,7 @@ class AppBarComp extends AppBar {
     required List<Widget> actions,
     required BuildContext context,
   }) : super(
+          scrolledUnderElevation: 0,
           automaticallyImplyLeading: false,
           leading: Navigator.canPop(context)
               ? Padding(

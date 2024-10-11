@@ -8,7 +8,7 @@ import 'package:picmory/common/tokens/typography_token.dart';
 class MessagingMdComp extends StatelessWidget {
   const MessagingMdComp({
     super.key,
-    required this.title,
+    required this.text,
     this.buttonText,
     this.textColor,
     this.backgroundColor,
@@ -16,7 +16,7 @@ class MessagingMdComp extends StatelessWidget {
     this.onPressed,
   });
 
-  final String title;
+  final String text;
   final String? buttonText;
   final Color? textColor;
   final Color? backgroundColor;
@@ -27,8 +27,8 @@ class MessagingMdComp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: SizeToken.s,
-        vertical: SizeToken.m,
+        horizontal: SizeToken.m,
+        vertical: SizeToken.s,
       ),
       decoration: BoxDecoration(
         color: backgroundColor ?? ColorsToken.neutralAlpha[800],
@@ -38,7 +38,7 @@ class MessagingMdComp extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              title,
+              text,
               style: TypographyToken.textSm.copyWith(
                 color: textColor ?? ColorsToken.white,
               ),
@@ -46,8 +46,12 @@ class MessagingMdComp extends StatelessWidget {
           ),
           Gap(SizeToken.s),
           Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: SizeToken.m,
+              vertical: 5,
+            ),
             decoration: BoxDecoration(
-              color: buttonColor ?? ColorsToken.primary,
+              color: buttonColor ?? ColorsToken.neutral[600],
               borderRadius: EffectsToken.mdRadius,
             ),
             child: Text(
