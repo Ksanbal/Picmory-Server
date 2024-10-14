@@ -31,6 +31,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await remoteConfig.fetchAndActivate();
 
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
