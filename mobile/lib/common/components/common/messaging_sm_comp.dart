@@ -70,7 +70,7 @@ class MessagingSmComp extends StatelessWidget {
             clipper: _Triangle(),
             child: Container(
               decoration: BoxDecoration(
-                color: ColorsToken.primary,
+                color: ColorsToken.white,
                 boxShadow: EffectsToken.shadow1,
               ),
               width: 12,
