@@ -26,7 +26,7 @@ import 'package:picmory/views/splash/splash_view.dart';
 import 'package:provider/provider.dart';
 
 final router = GoRouter(
-  initialLocation: '/components',
+  initialLocation: '/splash',
   routes: [
     /**
      * 스플래시 스크린
