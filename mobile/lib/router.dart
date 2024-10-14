@@ -12,6 +12,7 @@ import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dar
 import 'package:picmory/viewmodels/menu/menu_viewmodel.dart';
 import 'package:picmory/viewmodels/splash/splash_viewmodel.dart';
 import 'package:picmory/views/auth/signin_view.dart';
+import 'package:picmory/views/components_view.dart';
 import 'package:picmory/views/index/for_you/albums/albums_view.dart';
 import 'package:picmory/views/index/for_you/like_memories/like_memories_view.dart';
 import 'package:picmory/views/index/index_view.dart';
@@ -27,6 +28,13 @@ import 'package:provider/provider.dart';
 final router = GoRouter(
   initialLocation: '/splash',
   routes: [
+    /**
+     * 스플래시 스크린
+     */
+    GoRoute(
+      path: '/components',
+      builder: (_, state) => ComponentsView(),
+    ),
     /**
      * 스플래시 스크린
      */

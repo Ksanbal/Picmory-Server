@@ -9,6 +9,9 @@ abstract final class SizeToken {
   static const double xs = 8;
 
   /// 14
+  static const double s = 12;
+
+  /// 14
   static const double sm = 14;
 
   /// 16
