@@ -8,7 +8,7 @@ import 'package:picmory/common/components/common/card_comp.dart';
 import 'package:picmory/common/components/common/form_comp.dart';
 import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/common/messaging_md_comp.dart';
-import 'package:picmory/common/components/common/messaging_sm_comp.dart';
+import 'package:picmory/common/components/common/tooltip_comp.dart';
 import 'package:picmory/common/components/common/primary_button_comp.dart';
 import 'package:picmory/common/components/common/scaffold_comp.dart';
 import 'package:picmory/common/components/common/select_comp.dart';
@@ -157,12 +157,12 @@ class _ComponentsViewState extends State<ComponentsView> {
             text: "'성수역'에 저장됨",
           ),
           Gap(10),
-          MessagingSmComp(
+          TooltipComp(
             text: "가장 최근에 로그인한 계정입니다",
             direction: MessagingSmDirection.down,
           ),
           Gap(10),
-          MessagingSmComp(
+          TooltipComp(
             text: "가장 최근에 로그인한 계정입니다",
             direction: MessagingSmDirection.up,
           ),

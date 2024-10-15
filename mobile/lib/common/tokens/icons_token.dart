@@ -25,14 +25,13 @@ class IconsToken {
 
   late final SvgPicture google = SvgPicture.asset(
     'assets/icons/google.svg',
-    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
     width: _sizeMap[size],
     height: _sizeMap[size],
   );
 
   late final SvgPicture apple = SvgPicture.asset(
     'assets/icons/apple.svg',
-    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    colorFilter: ColorFilter.mode(ColorsToken.white, BlendMode.srcIn),
     width: _sizeMap[size],
     height: _sizeMap[size],
   );

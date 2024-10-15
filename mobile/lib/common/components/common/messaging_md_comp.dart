@@ -45,19 +45,22 @@ class MessagingMdComp extends StatelessWidget {
             ),
           ),
           Gap(SizeToken.s),
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: SizeToken.m,
-              vertical: 5,
-            ),
-            decoration: BoxDecoration(
-              color: buttonColor ?? ColorsToken.neutral[600],
-              borderRadius: EffectsToken.mdRadius,
-            ),
-            child: Text(
-              buttonText ?? "확인",
-              style: TypographyToken.textSm.copyWith(
-                color: ColorsToken.white,
+          InkWell(
+            onTap: onPressed,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: SizeToken.m,
+                vertical: 5,
+              ),
+              decoration: BoxDecoration(
+                color: buttonColor ?? ColorsToken.neutral[600],
+                borderRadius: EffectsToken.mdRadius,
+              ),
+              child: Text(
+                buttonText ?? "확인",
+                style: TypographyToken.textSm.copyWith(
+                  color: ColorsToken.white,
+                ),
               ),
             ),
           ),

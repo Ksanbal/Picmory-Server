@@ -13,6 +13,7 @@ class PrimaryButtonComp extends StatelessWidget {
     this.leading,
     this.textColor = ColorsToken.white,
     this.backgroundColor = ColorsToken.primary,
+    this.borderColor,
   });
 
   final void Function() onPressed;
@@ -20,6 +21,7 @@ class PrimaryButtonComp extends StatelessWidget {
   final Color textColor;
   final Color backgroundColor;
   final Widget? leading;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +36,16 @@ class PrimaryButtonComp extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: EffectsToken.pillRadius,
           color: backgroundColor,
+          border: borderColor != null
+              ? Border.all(
+                  color: borderColor!,
+                  width: 1,
+                )
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (leading != null) ...[
               leading!,
