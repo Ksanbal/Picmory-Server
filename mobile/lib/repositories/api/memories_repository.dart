@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:picmory/common/utils/dio_service.dart';
+import 'package:picmory/models/api/memory/create_memory_model.dart';
 import 'package:picmory/models/api/memory/memory_model.dart';
-import 'package:picmory/models/memory/create_memory_model.dart';
-import 'package:picmory/models/memory/upload_model.dart';
+import 'package:picmory/models/api/memory/upload_model.dart';
 import 'package:picmory/models/response_model.dart';
 
 class MemoriesRepository {
