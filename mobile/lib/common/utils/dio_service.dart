@@ -21,15 +21,15 @@ class DioService {
         ) {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        log("[${options.method}] ${options.uri}");
+        log("${options.method} ${options.path} ${options.data}");
         return handler.next(options);
       },
       onResponse: (response, handler) {
-        log('[${response.statusCode}] ${response.requestOptions.uri}');
+        log('${response.requestOptions.method} ${response.requestOptions.path} ${response.statusCode}');
         return handler.next(response);
       },
       onError: (DioException e, handler) {
-        log('dio error', error: e.error);
+        log('dio error', error: e);
         return handler.next(e);
       },
     ));

@@ -15,7 +15,7 @@ class MembersRepository {
   /// [email] 이메일
   /// [name] 이름
   /// [metadata] 메타데이터
-  Future<ResponseModel> create({
+  Future<ResponseModel> signup({
     required String provider,
     required String providerId,
     required String email,
