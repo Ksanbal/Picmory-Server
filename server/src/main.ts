@@ -4,6 +4,7 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as expressBasicAuth from 'express-basic-auth';
 import { ConfigService } from '@nestjs/config';
+import { apiReference } from '@scalar/nestjs-api-reference';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -35,22 +36,25 @@ async function bootstrap() {
     }),
   );
 
-  SwaggerModule.setup(
+  app.use(
     configService.get<string>('DOCS_PATH'),
-    app,
-    SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder()
-        .setTitle('Picmory API')
-        .setContact(
-          'dev.ksanbal',
-          'https://github.com/Ksanbal',
-          'dev.ksanbal@gmail.com',
-        )
-        .setVersion('1.0')
-        .addBearerAuth()
-        .build(),
-    ),
+    apiReference({
+      spec: {
+        content: SwaggerModule.createDocument(
+          app,
+          new DocumentBuilder()
+            .setTitle('Picmory API')
+            .setContact(
+              'dev.ksanbal',
+              'https://github.com/Ksanbal',
+              'dev.ksanbal@gmail.com',
+            )
+            .setVersion('1.0')
+            .addBearerAuth()
+            .build(),
+        ),
+      },
+    }),
   );
 
   await app.listen(3000);
