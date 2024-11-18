@@ -13,17 +13,15 @@ jobs:
     if: github.event.pull_request.merged == true
 
     steps:
-      - name: Change to project directory
-        run: |
-          cd ${{ secrets.SOURCE_PATH }}
-
       - name: Pull latest changes
         run: |
           git pull origin main
+        working-directory: ${{ secrets.SOURCE_PATH }}
 
       - name: Build and start Docker containers
         run: |
           docker compose up --build -d
+        working-directory: ${{ secrets.SOURCE_PATH }}
 
       - name: Prune Docker container, image, system
         run: |
