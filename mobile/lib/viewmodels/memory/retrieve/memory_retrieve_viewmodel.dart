@@ -9,6 +9,7 @@ import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/models/memory/memory_file_model.dart';
 import 'package:picmory/models/memory/memory_model.dart';
 import 'package:picmory/models/memory/memory_upload_model.dart';
 import 'package:picmory/repositories/album_repository.dart';
@@ -33,14 +34,15 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;
 
-  List<MemoryUploadModel> get photos {
+  List<MemoryFileModel> get photos {
     if (memory == null) return [];
-    return _memory!.uploads.where((element) => element.isPhoto).toList();
+    // return _memory!.uploads.where((element) => element.isPhoto).toList();
+    return _memory!.files.where((element) => element.type == 'IMAGE').toList();
   }
 
-  List<MemoryUploadModel> get videos {
+  List<MemoryFileModel> get videos {
     if (memory == null) return [];
-    return _memory!.uploads.where((element) => !element.isPhoto).toList();
+    return _memory!.files.where((element) => element.type == 'VIDEO').toList();
   }
 
   List<AlbumModel> _albums = [];
@@ -69,11 +71,11 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     final result = await _memoryRepository.changeLikeStatus(
       userId: supabase.auth.currentUser!.id,
       memoryId: _memory!.id,
-      isLiked: _memory!.isLiked,
+      isLiked: _memory!.like,
     );
 
     if (result) {
-      _memory!.isLiked = !_memory!.isLiked;
+      _memory!.like = !_memory!.like;
     }
 
     notifyListeners();
@@ -152,7 +154,7 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
     // 앨범 이름 입력 dialog 노출
     final TextEditingController controller = TextEditingController();
 
-    var hintText = _memory?.brand ?? DateFormat('yyyy.MM').format(DateTime.now());
+    var hintText = _memory?.brandName ?? DateFormat('yyyy.MM').format(DateTime.now());
 
     await showModalBottomSheet(
       context: context,

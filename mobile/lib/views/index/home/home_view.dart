@@ -54,6 +54,7 @@ class HomeView extends StatelessWidget {
                 ),
               )
             : MasonryGridView.count(
+                controller: vm.scrollController,
                 crossAxisCount: vm.crossAxisCount,
                 itemCount: (vm.memories ?? []).isEmpty ? 10 : (vm.memories ?? []).length,
                 crossAxisSpacing: 5,
@@ -77,12 +78,12 @@ class HomeView extends StatelessWidget {
 
                   // 사진
                   return InkWell(
-                    onTap: () => vm.goToMemoryRetrieve(context, memory),
+                    // onTap: () => vm.goToMemoryRetrieve(context, memory),
                     child: Card(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: ExtendedImage.network(
-                          memory.photoUri,
+                          memory.files.first.thumbnailUri,
                           fit: BoxFit.cover,
                           loadStateChanged: (state) {
                             if (state.extendedImageLoadState == LoadState.loading) {

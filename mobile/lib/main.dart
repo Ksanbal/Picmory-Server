@@ -60,7 +60,6 @@ final FlutterLocalNotificationsPlugin _localNotification = FlutterLocalNotificat
 // 로그인 후 얻는 accessToken
 AccessTokenModel? globalAccessToken;
 
-
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
@@ -105,40 +104,44 @@ settingFCM() async {
     sound: true,
   );
 
-  // Foreground
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    log('Got a message whilst in the foreground!');
-    log('Message data: ${message.data}');
-    log('Message id: ${message.messageId}');
+  try {
+    // Foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      log('Got a message whilst in the foreground!');
+      log('Message data: ${message.data}');
+      log('Message id: ${message.messageId}');
 
-    if (message.notification != null) {
-      log('Message also contained a notification: ${message.notification}');
-      _localNotification.show(
-        int.parse((message.messageId ?? "1").substring(10)),
-        message.notification?.title,
-        message.notification?.body,
-        NotificationDetails(
-          iOS: const DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
+      if (message.notification != null) {
+        log('Message also contained a notification: ${message.notification}');
+        _localNotification.show(
+          int.parse((message.messageId ?? "1").substring(10)),
+          message.notification?.title,
+          message.notification?.body,
+          NotificationDetails(
+            iOS: const DarwinNotificationDetails(
+              presentAlert: true,
+              presentBadge: true,
+              presentSound: true,
+            ),
+            android: AndroidNotificationDetails(
+              message.messageId ?? DateTime.now().microsecondsSinceEpoch.toString(),
+              message.messageId ?? DateTime.now().microsecondsSinceEpoch.toString(),
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
           ),
-          android: AndroidNotificationDetails(
-            message.messageId ?? DateTime.now().microsecondsSinceEpoch.toString(),
-            message.messageId ?? DateTime.now().microsecondsSinceEpoch.toString(),
-            importance: Importance.max,
-            priority: Priority.high,
-          ),
-        ),
-      );
-    }
-  });
+        );
+      }
+    });
 
-  // Background
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    // Background
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  log('fcmToken: $fcmToken');
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    log('fcmToken: $fcmToken');
+  } catch (error) {
+    log('error: $error');
+  }
 }
 
 @pragma('vm:entry-point')

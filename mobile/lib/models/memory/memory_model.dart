@@ -1,17 +1,16 @@
-import 'package:picmory/models/memory/memory_upload_model.dart';
+import 'package:picmory/models/memory/memory_file_model.dart';
 
 class MemoryModel {
   int id;
-  String? brand;
   DateTime date;
-  bool isLiked;
-  List<MemoryUploadModel> uploads;
+  String brandName;
+  bool like;
+  List<MemoryFileModel> files;
 
   MemoryModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        brand = json['brand'],
+        brandName = json['brandName'],
         date = DateTime.parse(json['date']),
-        isLiked = json['is_liked'] ?? false,
-        uploads =
-            json['upload'].map<MemoryUploadModel>((e) => MemoryUploadModel.fromJson(e)).toList();
+        like = json['like'],
+        files = json['files'].map<MemoryFileModel>((e) => MemoryFileModel.fromJson(e)).toList();
 }

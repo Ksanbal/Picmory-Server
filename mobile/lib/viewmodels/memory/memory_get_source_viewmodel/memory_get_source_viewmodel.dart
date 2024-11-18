@@ -6,17 +6,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:picmory/common/components/memory/get_source/support_brands_bottomsheet.dart';
 import 'package:picmory/main.dart';
+import 'package:picmory/repositories/api/qr_crawler_repository.dart';
 import 'package:picmory/repositories/memory_repository.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class MemoryGetSourceViewmodel extends ChangeNotifier {
   final MemoryRepository _memoryRepository = MemoryRepository();
+  final QrCrawlerRepository _qrCrawlerRepository = QrCrawlerRepository();
 
   /// 지원브랜드 bottom sheet 열기
   openSupportBrandsBottomSheet(BuildContext context) async {
-    await remoteConfig.fetchAndActivate();
-    final List<String> supportBrands =
-        remoteConfig.getString('support_brands').split(',').map((e) => e.trim()).toList();
+    final result = await _qrCrawlerRepository.brandlist();
+    if (result.data == null) return;
+
+    final brands = result.data!.map((e) => e.name).toList();
 
     showModalBottomSheet(
       context: context,
@@ -25,7 +28,7 @@ class MemoryGetSourceViewmodel extends ChangeNotifier {
       backgroundColor: Colors.transparent,
       elevation: 0,
       builder: (BuildContext _) {
-        return SupportBrandsBottomsheet(supportBrands);
+        return SupportBrandsBottomsheet(brands);
       },
     );
   }

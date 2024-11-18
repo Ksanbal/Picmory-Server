@@ -13,10 +13,8 @@ class MemoriesRepository {
 
   /// 파일 업로드
   ///
-  /// [accessToken] 액세스 토큰
   /// [file] 파일
   Future<ResponseModel<UploadModel>> upload({
-    required String accessToken,
     required XFile file,
   }) async {
     try {
@@ -24,7 +22,6 @@ class MemoriesRepository {
         '$path/upload',
         options: Options(
           headers: {
-            'Authorization': 'Bearer $accessToken',
             'Content-Type': 'multipart/form-data',
           },
         ),
@@ -58,12 +55,10 @@ class MemoriesRepository {
 
   /// 추억 생성
   ///
-  /// [accessToken] 액세스 토큰
   /// [fileIds] 파일 ID 목록
   /// [date] 날짜
   /// [brandName] 브랜드
   Future<ResponseModel<CreateMemoryModel>> create({
-    required String accessToken,
     required List<int> fileIds,
     required DateTime date,
     required String brandName,
@@ -71,11 +66,6 @@ class MemoriesRepository {
     try {
       final res = await _dio.post(
         path,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
         data: {
           'fileIds': fileIds,
           'date': date.toIso8601String(),
@@ -108,26 +98,19 @@ class MemoriesRepository {
 
   /// 추억 목록 조회
   ///
-  /// [accessToken] 액세스 토큰
   /// [page] 페이지
   /// [limit] 개수
   /// [like] 좋아요 여부
   /// [albumId] 앨범 ID
   Future<ResponseModel<List<MemoryModel>>> list({
-    required String accessToken,
     int page = 1,
     int limit = 20,
     bool? like,
     int? albumId,
   }) async {
     try {
-      final res = await _dio.post(
+      final res = await _dio.get(
         path,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
         queryParameters: {
           'page': page,
           'limit': limit,
@@ -161,20 +144,13 @@ class MemoriesRepository {
 
   /// 추억 상세 조회
   ///
-  /// [accessToken] 액세스 토큰
   /// [id] 추억 ID
   Future<ResponseModel<MemoryModel>> retrieve({
-    required String accessToken,
     required int id,
   }) async {
     try {
-      final res = await _dio.post(
+      final res = await _dio.get(
         '$path/$id',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       return ResponseModel<MemoryModel>(
@@ -202,13 +178,11 @@ class MemoriesRepository {
 
   /// 추억 수정
   ///
-  /// [accessToken] 액세스 토큰
   /// [id] 추억 ID
   /// [date] 날짜
   /// [brandName] 브랜드
   /// [like] 좋아요 여부
   Future<ResponseModel> edit({
-    required String accessToken,
     required int id,
     required DateTime date,
     required String brandName,
@@ -217,11 +191,6 @@ class MemoriesRepository {
     try {
       final res = await _dio.put(
         '$path/$id',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
         data: {
           'date': date.toIso8601String(),
           'brandName': brandName,
@@ -254,10 +223,8 @@ class MemoriesRepository {
 
   /// 추억 삭제
   ///
-  /// [accessToken] 액세스 토큰
   /// [id] 추억 ID
   Future<ResponseModel> delete({
-    required String accessToken,
     required int id,
     required DateTime date,
     required String brandName,
@@ -266,11 +233,6 @@ class MemoriesRepository {
     try {
       final res = await _dio.delete(
         '$path/$id',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       return ResponseModel(

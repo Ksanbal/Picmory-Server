@@ -1,13 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:picmory/common/buttons/icon_rounded_button.dart';
+import 'package:picmory/common/components/common/primary_button_comp.dart';
 import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/caption_md_style.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
-import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:picmory/viewmodels/memory/memory_get_source_viewmodel/memory_get_source_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -66,7 +67,7 @@ class MemoryGetSourceView extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Expanded(
+              Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 38),
                   child: Column(
@@ -74,16 +75,16 @@ class MemoryGetSourceView extends StatelessWidget {
                     children: [
                       Text(
                         "QR 스캔",
-                        style: TitleSmStyle(
-                          color: ColorFamily.backgroundGrey100,
+                        style: TypographyToken.titleMd.copyWith(
+                          color: ColorsToken.neutral[50],
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 4),
                         child: Text(
                           "QR인식을 통하여 빠르게 사진 가져오기",
-                          style: TextSmStyle(
-                            color: ColorFamily.disabledGrey500,
+                          style: TypographyToken.textSm.copyWith(
+                            color: ColorsToken.neutral,
                           ),
                         ),
                       ),
@@ -98,41 +99,30 @@ class MemoryGetSourceView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // 갤러리에서 불러오기 버튼
-                    IconRoundedButton(
+                    PrimaryButtonComp(
                       onPressed: () => vm.getImageFromGallery(context),
-                      backgroundColor: ColorFamily.primary,
-                      isDense: true,
-                      icon: const Icon(
-                        SolarIconsBold.album,
-                        color: Colors.white,
-                      ),
-                      child: const Text(
-                        "앨범에서 사진 불러오기",
-                        style: TextSmStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                      leading: IconsToken(
+                        color: ColorsToken.white,
+                      ).albumBold,
+                      text: "앨범으로 가져오기",
                     ),
                     // 서비스 브랜드
                     Padding(
                       padding: const EdgeInsets.only(top: 19.41),
                       child: InkWell(
                         onTap: () => vm.openSupportBrandsBottomSheet(context),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 4),
-                              child: Icon(
-                                SolarIconsOutline.dangerCircle,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
+                            IconsToken(
+                              color: ColorsToken.neutral[300]!,
+                              size: IconTokenSize.small,
+                            ).dangerCircleOutline,
+                            Gap(4),
                             Text(
                               "서비스 브랜드",
-                              style: CaptionMdStyle(
-                                color: Colors.white,
+                              style: TypographyToken.textSm.copyWith(
+                                color: ColorsToken.neutral[300],
                               ),
                             ),
                           ],

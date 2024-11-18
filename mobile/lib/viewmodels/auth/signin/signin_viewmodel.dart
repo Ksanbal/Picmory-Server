@@ -169,13 +169,13 @@ class SigninViewmodel extends ChangeNotifier {
     BuildContext context,
     String provider,
     AccessTokenModel token,
-  ) {
+  ) async {
     analytics.logLogin(loginMethod: provider); // 로그인 로깅
 
     globalAccessToken = token;
-    storage.write(key: 'accessToken', value: globalAccessToken?.accessToken);
-    storage.write(key: 'refreshToken', value: globalAccessToken?.refreshToken);
-    storage.write(key: 'latestSigninProvider', value: provider);
+    await storage.write(key: 'accessToken', value: globalAccessToken?.accessToken);
+    await storage.write(key: 'refreshToken', value: globalAccessToken?.refreshToken);
+    await storage.write(key: 'latestSigninProvider', value: provider);
 
     context.go('/');
   }

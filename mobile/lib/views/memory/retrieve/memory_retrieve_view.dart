@@ -136,7 +136,7 @@ class MemoryRetrieveView extends StatelessWidget {
                       // 좋아요
                       Consumer<MemoryRetrieveViewmodel>(
                         builder: (_, value, __) {
-                          final isLiked = vm.memory?.isLiked ?? false;
+                          final isLiked = vm.memory?.like ?? false;
 
                           return InkWell(
                             onTap: vm.likeMemory,

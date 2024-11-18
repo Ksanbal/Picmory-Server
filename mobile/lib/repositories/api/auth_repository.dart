@@ -75,7 +75,7 @@ class AuthRepository {
       );
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode;
-      if ([401, 403, 404].contains(statusCode)) {
+      if ([401, 404].contains(statusCode)) {
         return ResponseModel(
           statusCode: statusCode!,
           message: e.response?.data['message'],

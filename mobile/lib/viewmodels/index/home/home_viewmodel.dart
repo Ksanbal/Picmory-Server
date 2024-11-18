@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:picmory/main.dart';
 import 'package:picmory/models/memory/memory_list_model.dart';
-import 'package:picmory/repositories/memory_repository.dart';
+import 'package:picmory/models/memory/memory_model.dart';
+import 'package:picmory/repositories/api/memories_repository.dart';
 import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 
 class HomeViewmodel extends ChangeNotifier {
-  final _memoryRepository = MemoryRepository();
+  final _memoriesRepository = MemoriesRepository();
   final MemoryCreateViewmodel _memoryCreateViewmodel;
   final MemoryRetrieveViewmodel _memoryRetrieveViewmodel;
 
   HomeViewmodel(this._memoryCreateViewmodel, this._memoryRetrieveViewmodel) {
+    // 스크롤 이벤트 리스너
+    scrollController.addListener(() {
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+        _page++;
+        loadMemories();
+      }
+    });
+
     // 생성 리스너
     _memoryCreateViewmodel.addListener(() {
       if (_memoryCreateViewmodel.createComplete) {
@@ -36,15 +44,8 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   /// 저장된 기억 목록
-  List<MemoryListModel>? _memories = [];
-  List<MemoryListModel>? get memories => _memories;
-
-  /// 해시태그 목록
-  final List<String> _hashtags = [];
-  List<String> get hashtags => _hashtags;
-
-  final List<String> _selectedHashtags = [];
-  List<String> get selectedHashtags => _selectedHashtags;
+  List<MemoryModel>? _memories = [];
+  List<MemoryModel>? get memories => _memories;
 
   // 그리드 crossAxisCount (1~3)
   int _crossAxisCount = 2;
@@ -59,57 +60,36 @@ class HomeViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 로드할 페이지
+  int _page = 1;
+  ScrollController scrollController = ScrollController();
+
+  // 메모리 목록 불러오기
   loadMemories({
     List<String> hashtags = const [],
   }) async {
-    final userId = supabase.auth.currentUser!.id;
-    final items = await _memoryRepository.list(
-      userId: userId,
-      albumId: null,
-      hashtags: hashtags,
+    final result = await _memoriesRepository.list(
+      page: _page,
     );
+    if (result.data == null) return;
 
-    if (items.isEmpty) {
+    if (result.data!.isEmpty) {
       _memories = null;
     } else {
-      _memories?.addAll(items);
+      _memories?.addAll(result.data! as Iterable<MemoryModel>);
     }
+
     notifyListeners();
   }
 
   clearDatas() {
     _memories?.clear();
-    _hashtags.clear();
   }
 
   deleteMemoryFromList(int memoryId) {
     _memories?.removeWhere((element) => element.id == memoryId);
     notifyListeners();
   }
-
-  // 2024.04.16 - 해시태그 기능은 추후 추가 예정
-  // /// 해시태그 목록 불러오기
-  // loadHashtags() async {
-  //   final userId = supabase.auth.currentUser!.id;
-  //   final items = await _memoryRepository.getHashtags(userId: userId);
-
-  //   _hashtags.addAll(items);
-  //   notifyListeners();
-  // }
-
-  // /// 해시태그 선택
-  // onTapHashtags(String hashtag) async {
-  //   if (_selectedHashtags.contains(hashtag)) {
-  //     _selectedHashtags.remove(hashtag);
-  //   } else {
-  //     _selectedHashtags.add(hashtag);
-  //   }
-
-  //   _memories.clear();
-  //   loadMemories(hashtags: _selectedHashtags);
-
-  //   notifyListeners();
-  // }
 
   /// 기억 상세 페이지로 이동
   goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
