@@ -1,0 +1,32 @@
+name: Deploy with Self-Hosted Runner
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    # main 브랜치로의 PR이 머지된 경우에만 실행
+    if: github.event.pull_request.merged == true
+
+    steps:
+      - name: Change to project directory
+        run: |
+          cd ${{ secrets.SOURCE_PATH }}
+
+      - name: Pull latest changes
+        run: |
+          git pull origin main
+
+      - name: Build and start Docker containers
+        run: |
+          docker compose up --build -d
+
+      - name: Prune Docker container, image, system
+        run: |
+          docker container prune -f
+          docker image prune -f
+          docker system prune -f
