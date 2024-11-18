@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:picmory/main.dart';
-import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/models/api/albums/album_model.dart';
 
 /// 앨범 관련 서버 통신을 담당하는 클래스
 class AlbumRepository {

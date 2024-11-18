@@ -1,10 +1,16 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
 import 'package:picmory/common/components/page_indicator_widget.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/index/for_you/for_you_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -54,11 +60,11 @@ class ForYouView extends StatelessWidget {
                                   child: AspectRatio(
                                     aspectRatio: 1 / 1,
                                     child: InkWell(
-                                      onTap: () => vm.goToMemoryRetrieve(context, memory),
+                                      // onTap: () => vm.goToMemoryRetrieve(context, memory),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(5),
                                         child: ExtendedImage.network(
-                                          memory.photoUri,
+                                          memory.files.first.thumbnailUri,
                                           fit: BoxFit.cover,
                                           alignment: Alignment.topCenter,
                                           loadStateChanged: (state) {
@@ -133,24 +139,24 @@ class ForYouView extends StatelessWidget {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 4),
-                                    child: AspectRatio(
-                                      aspectRatio: 1 / 1,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(5),
-                                        child: getShimmer(index),
-                                      ),
+                                  AspectRatio(
+                                    aspectRatio: 1 / 1,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(5),
+                                      child: getShimmer(index),
                                     ),
                                   ),
-                                  const Text(
+                                  Gap(SizeToken.xxs),
+                                  Text(
                                     "-",
-                                    style: TextSmStyle(),
+                                    style: TypographyToken.textSm.copyWith(
+                                      color: ColorsToken.neutral[950],
+                                    ),
                                   ),
-                                  const Text(
+                                  Text(
                                     "-",
-                                    style: CaptionSmStyle(
-                                      color: ColorFamily.disabledGrey500,
+                                    style: TypographyToken.captionSm.copyWith(
+                                      color: ColorsToken.neutral[500],
                                     ),
                                   )
                                 ],
@@ -170,12 +176,13 @@ class ForYouView extends StatelessWidget {
                                       onTap: () => vm.routeToAlbums(context, album.id),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(5),
-                                        child: album.imageUrls.isEmpty
+                                        child: album.coverImagePath == null
                                             ? Container(
                                                 color: ColorFamily.disabledGrey400,
                                               )
                                             : ExtendedImage.network(
-                                                album.imageUrls.first,
+                                                remoteConfig.getString('storage_host') +
+                                                    album.coverImagePath!,
                                                 fit: BoxFit.cover,
                                                 loadStateChanged: (state) {
                                                   if (state.extendedImageLoadState ==
@@ -197,12 +204,14 @@ class ForYouView extends StatelessWidget {
                                 ),
                                 Text(
                                   album.name,
-                                  style: const TextSmStyle(),
+                                  style: TypographyToken.textSm.copyWith(
+                                    color: ColorsToken.neutral[950],
+                                  ),
                                 ),
                                 Text(
-                                  album.imageUrls.length.toString(),
-                                  style: const CaptionSmStyle(
-                                    color: ColorFamily.disabledGrey500,
+                                  album.memoryCount.toString(),
+                                  style: TypographyToken.captionSm.copyWith(
+                                    color: ColorsToken.neutral[500],
                                   ),
                                 )
                               ],
@@ -231,24 +240,24 @@ class ForYouView extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      CircleAvatar(
+                      IconButtonComp(
+                        onPressed: () => vm.createAlbum(context),
+                        icon: IconsToken(
+                          size: IconTokenSize.small,
+                          color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
+                        ).addFolderLinear,
                         backgroundColor:
-                            vm.isShrink ? Colors.black.withOpacity(0.3) : Colors.transparent,
-                        child: IconButton(
-                          icon: const Icon(SolarIconsOutline.addFolder),
-                          color: vm.isShrink ? Colors.white : Colors.black,
-                          onPressed: () => vm.createAlbum(context),
-                        ),
+                            vm.isShrink ? ColorsToken.neutralAlpha[500]! : Colors.transparent,
                       ),
-                      const SizedBox(width: 12),
-                      CircleAvatar(
+                      Gap(SizeToken.s),
+                      IconButtonComp(
+                        onPressed: () => vm.routeToMenu(context),
+                        icon: IconsToken(
+                          size: IconTokenSize.small,
+                          color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
+                        ).hamburgerMenuLinear,
                         backgroundColor:
-                            vm.isShrink ? Colors.black.withOpacity(0.3) : Colors.transparent,
-                        child: IconButton(
-                          icon: const Icon(SolarIconsOutline.hamburgerMenu),
-                          color: vm.isShrink ? Colors.white : Colors.black,
-                          onPressed: () => vm.routeToMenu(context),
-                        ),
+                            vm.isShrink ? ColorsToken.neutralAlpha[500]! : Colors.transparent,
                       ),
                     ],
                   ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/models/memory/memory_list_model.dart';
 import 'package:picmory/repositories/album_repository.dart';
 import 'package:picmory/repositories/memory_repository.dart';

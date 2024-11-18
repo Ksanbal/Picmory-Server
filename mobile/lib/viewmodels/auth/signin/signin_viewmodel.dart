@@ -123,7 +123,10 @@ class SigninViewmodel extends ChangeNotifier {
     String name,
     Map<String, dynamic> metadata,
   ) async {
-    final fcmToken = (await messaging.getToken()) ?? '';
+    // final fcmToken = (await messaging.getToken()) ??
+    //     'eD-F3PpzxUnhh9wU0y_hxJ:APA91bG7Husn-lxU7q9Nf226QCtUkOXoQqaRba2hD1Aspt4TimyQBBD8X4Ay9E94FL27ebCAzwTCHOPGAHb-apo4mCg-D1MPhxMOUvcZRYJ0Kukw_FBMKrQ';
+    final fcmToken =
+        'eD-F3PpzxUnhh9wU0y_hxJ:APA91bG7Husn-lxU7q9Nf226QCtUkOXoQqaRba2hD1Aspt4TimyQBBD8X4Ay9E94FL27ebCAzwTCHOPGAHb-apo4mCg-D1MPhxMOUvcZRYJ0Kukw_FBMKrQ';
 
     final res = await _authRepository.signin(
       provider: provider,

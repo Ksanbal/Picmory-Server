@@ -3,10 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/models/memory/memory_list_model.dart';
-import 'package:picmory/repositories/album_repository.dart';
-import 'package:picmory/repositories/memory_repository.dart';
+import 'package:picmory/models/memory/memory_model.dart';
+import 'package:picmory/repositories/api/albums_repository.dart';
+import 'package:picmory/repositories/api/memories_repository.dart';
 
 class ForYouViewmodel extends ChangeNotifier {
   ForYouViewmodel() {
@@ -21,18 +22,20 @@ class ForYouViewmodel extends ChangeNotifier {
   }
 
   init() {
+    _albums?.clear();
+
     getAlbumList();
     getLikeMemoryList();
   }
 
-  final AlbumRepository _albumRepository = AlbumRepository();
-  final MemoryRepository _memoryRepository = MemoryRepository();
+  final AlbumsRepository _albumsRepository = AlbumsRepository();
+  final MemoriesRepository _memoriesRepository = MemoriesRepository();
 
   List<AlbumModel>? _albums = [];
   List<AlbumModel>? get albums => _albums;
 
-  List<MemoryListModel>? _memories = [];
-  List<MemoryListModel>? get memories => _memories;
+  List<MemoryModel>? _memories = [];
+  List<MemoryModel>? get memories => _memories;
 
   // 추억함 페이지 전체 컨트롤러
   final ScrollController forYouViewController = ScrollController();
@@ -54,29 +57,40 @@ class ForYouViewmodel extends ChangeNotifier {
     getLikeMemoryList();
   }
 
+  /// 앨범 목록 페이지
+  int _page = 1;
+
   /// 앨범 목록 로드
   getAlbumList() async {
-    final items = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
+    final result = await _albumsRepository.list(
+      page: _page,
+    );
+    if (result.data == null) return;
 
-    if (items.isEmpty) {
+    if (result.data!.isEmpty) {
       _albums = null;
     } else {
-      _albums = [];
-      _albums?.addAll(items);
+      _albums?.addAll(result.data!);
     }
+
     notifyListeners();
   }
 
   /// 좋아요한 기억 목록 로드
   getLikeMemoryList() async {
-    final items = await _memoryRepository.listOnlyLike(userId: supabase.auth.currentUser!.id);
+    final result = await _memoriesRepository.list(
+      limit: 5,
+      like: true,
+    );
+    if (result.data == null) return;
 
-    if (items.isEmpty) {
+    if (result.data!.isEmpty) {
       _memories = null;
     } else {
       _memories = [];
-      _memories?.addAll(items);
+      _memories?.addAll(result.data! as List<MemoryModel>);
     }
+
     notifyListeners();
   }
 
@@ -116,12 +130,10 @@ class ForYouViewmodel extends ChangeNotifier {
       return;
     }
 
-    final int? albumId = await _albumRepository.create(
-      userId: supabase.auth.currentUser!.id,
+    final result = await _albumsRepository.create(
       name: controller.text,
     );
-
-    if (albumId == null) {
+    if (result.data == null) {
       showSnackBar(
         context,
         '앨범 생성에 실패했습니다',
@@ -132,7 +144,7 @@ class ForYouViewmodel extends ChangeNotifier {
     }
 
     // 해당 앨범 페이지로 이동
-    routeToAlbums(context, albumId);
+    routeToAlbums(context, result.data!.id);
   }
 
   /// 앨범 페이지로 이동

@@ -8,7 +8,7 @@ import 'package:picmory/common/components/memory/retrieve/video_player_dialog.da
 import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/models/memory/memory_file_model.dart';
 import 'package:picmory/models/memory/memory_model.dart';
 import 'package:picmory/models/memory/memory_upload_model.dart';

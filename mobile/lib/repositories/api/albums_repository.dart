@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:picmory/common/utils/dio_service.dart';
-import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/models/api/albums/create_album_model.dart';
 import 'package:picmory/models/response_model.dart';
 
@@ -11,20 +11,13 @@ class AlbumsRepository {
 
   /// 앨범 생성
   ///
-  /// [accessToken] 액세스 토큰
   /// [name] 이름
   Future<ResponseModel<CreateAlbumModel>> create({
-    required String accessToken,
     required String name,
   }) async {
     try {
       final res = await _dio.post(
         path,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
         data: {
           'name': name,
         },
@@ -55,22 +48,15 @@ class AlbumsRepository {
 
   /// 앨범 목록 조회
   ///
-  /// [accessToken] 액세스 토큰
   /// [page] 페이지
   /// [limit] 개수
   Future<ResponseModel<List<AlbumModel>>> list({
-    required String accessToken,
     int page = 1,
     int limit = 20,
   }) async {
     try {
       final res = await _dio.get(
         path,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
         queryParameters: {
           'page': page,
           'limit': limit,
@@ -102,22 +88,15 @@ class AlbumsRepository {
 
   /// 앨범 수정
   ///
-  /// [accessToken] 액세스 토큰
   /// [id] 앨범 ID
   /// [name] 이름
   Future<ResponseModel> edit({
-    required String accessToken,
     required int id,
     required String name,
   }) async {
     try {
       final res = await _dio.put(
         '$path/$id',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
         data: {
           'id': id,
           'name': name,
@@ -149,20 +128,13 @@ class AlbumsRepository {
 
   /// 앨범 삭제
   ///
-  /// [accessToken] 액세스 토큰
   /// [id] 앨범 ID
   Future<ResponseModel> delete({
-    required String accessToken,
     required int id,
   }) async {
     try {
       final res = await _dio.delete(
         '$path/$id',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       return ResponseModel(
@@ -192,22 +164,15 @@ class AlbumsRepository {
   ///
   /// 앨범에 추억을 추가합니다. 이미 추가된 추억은 중복으로 추가되지 않습니다.
   ///
-  /// [accessToken] 액세스 토큰
   /// [id] 앨범 ID
   /// [memoryId] 추억 ID
   Future<ResponseModel> addMemory({
-    required String accessToken,
     required int id,
     required int memoryId,
   }) async {
     try {
       final res = await _dio.post(
         '$path/$id/memories',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
         data: {
           "memoryId": memoryId,
         },
@@ -238,22 +203,15 @@ class AlbumsRepository {
 
   /// 앨범에서 추억 삭제
   ///
-  /// [accessToken] 액세스 토큰
   /// [id] 앨범 ID
   /// [memoryId] 추억 ID
   Future<ResponseModel> deleteMemory({
-    required String accessToken,
     required int id,
     required int memoryId,
   }) async {
     try {
       final res = await _dio.post(
         '$path/$id/memories/$memoryId',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       return ResponseModel(

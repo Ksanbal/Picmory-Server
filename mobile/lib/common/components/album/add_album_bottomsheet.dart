@@ -4,7 +4,8 @@ import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
-import 'package:picmory/models/album/album_model.dart';
+import 'package:picmory/main.dart';
+import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:solar_icons/solar_icons.dart';
 
 class AddAlbumBottomsheet extends StatefulWidget {
@@ -117,9 +118,12 @@ class _AddAlbumBottomsheetState extends State<AddAlbumBottomsheet> {
                                 SizedBox(
                                   width: 60,
                                   height: 60,
-                                  child: 1 < e.imageUrls.length
-                                      ? multipleImageAlbum(e.imageUrls)
-                                      : singleImageAlbum(e.imageUrls),
+                                  // child: 1 < e.imageUrls.length
+                                  //     ? multipleImageAlbum(e.imageUrls)
+                                  //     : singleImageAlbum(e.imageUrls),
+                                  // child: singleImageAlbum(
+                                  //   [remoteConfig.getString('storage_host') + e.coverImagePath],
+                                  // ),
                                 ),
                                 Expanded(
                                   child: Padding(
@@ -132,7 +136,7 @@ class _AddAlbumBottomsheetState extends State<AddAlbumBottomsheet> {
                                           style: const TextSmStyle(),
                                         ),
                                         Text(
-                                          '${e.imageUrls.length}장',
+                                          '${e.memoryCount}장',
                                           style: const CaptionSmStyle(
                                             color: ColorFamily.textGrey600,
                                           ),
