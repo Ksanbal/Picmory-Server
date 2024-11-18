@@ -14,7 +14,7 @@ COPY ./server/package.json ./server/yarn.lock ./
 RUN yarn install
 
 COPY ./server/ .
-COPY ./.env.api .env
+COPY ./.env .env
 
 RUN yarn prisma generate
 

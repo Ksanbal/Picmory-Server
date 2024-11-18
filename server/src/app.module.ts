@@ -7,6 +7,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FileModule } from './module/file/file.module';
 import { AlbumsModule } from './module/albums/albums.module';
 import { QrCrawlerModule } from './module/qr-crawler/qr-crawler.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -15,6 +17,10 @@ import { QrCrawlerModule } from './module/qr-crawler/qr-crawler.module';
       isGlobal: true,
     }),
     EventEmitterModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     AuthModule,
     MembersModule,
     MemoriesModule,

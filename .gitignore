@@ -1,4 +1,9 @@
 .keys
 .DS_Store
 .env*
+!.env.example
+
 .data
+
+# FVM Version Cache
+.fvm/

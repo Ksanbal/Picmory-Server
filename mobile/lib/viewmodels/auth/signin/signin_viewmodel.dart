@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:picmory/common/utils/show_loading.dart';
+import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/repositories/auth_repository.dart';
+import 'package:picmory/models/api/auth/access_token_model.dart';
+import 'package:picmory/repositories/api/auth_repository.dart';
+import 'package:picmory/repositories/api/members_repository.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SigninViewmodel extends ChangeNotifier {
@@ -18,6 +21,7 @@ class SigninViewmodel extends ChangeNotifier {
   }
 
   final _authRepository = AuthRepository();
+  final _memberRepository = MembersRepository();
 
   final storage = const FlutterSecureStorage();
 
@@ -32,37 +36,24 @@ class SigninViewmodel extends ChangeNotifier {
     showLoading(context);
 
     try {
-      final webClientId = dotenv.get('GOOGLE_WEB_CLIENT_ID');
+      final provider = 'GOOGLE';
 
-      final GoogleSignInAccount? googleUser = await GoogleSignIn(
-        serverClientId: webClientId,
-      ).signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       if (googleUser == null) throw 'No googleUser';
 
-      final googleAuth = await googleUser.authentication;
-      final accessToken = googleAuth.accessToken;
-      final idToken = googleAuth.idToken;
+      final providerId = googleUser.id;
+      final email = googleUser.email;
+      final name = googleUser.displayName ?? '';
+      final metadata = <String, dynamic>{};
 
-      if (idToken == null || accessToken == null) {
-        throw 'No idToken or accessToken';
-      }
-
-      await _authRepository
-          .signInWithGoogle(
-        idToken: idToken,
-        accessToken: accessToken,
-      )
-          .then(
-        (value) {
-          if (value) {
-            // 로그인 로깅
-            analytics.logLogin(loginMethod: 'google');
-
-            storage.write(key: 'latestSigninProvider', value: 'google');
-            context.go('/');
-          }
-        },
+      await _signin(
+        context,
+        provider,
+        providerId,
+        email,
+        name,
+        metadata,
       );
     } catch (error) {
       log(
@@ -79,6 +70,8 @@ class SigninViewmodel extends ChangeNotifier {
   signinWithApple(BuildContext context) async {
     showLoading(context);
     try {
+      final provider = 'APPLE';
+
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -87,26 +80,29 @@ class SigninViewmodel extends ChangeNotifier {
       );
 
       final idToken = credential.identityToken;
-      if (idToken == null) {
-        throw 'No ID Token found.';
-      }
+      if (idToken == null) throw 'No ID Token found.';
 
-      _authRepository
-          .signInWithApple(
-        idToken: idToken,
-      )
-          .then(
-        (value) {
-          removeLoading();
+      final providerId = credential.userIdentifier!;
+      var name = "${credential.familyName} ${credential.givenName}";
 
-          if (value) {
-            // 로그인 로깅
-            analytics.logLogin(loginMethod: 'apple');
+      // jwt 디코딩
+      List<String> jwt = credential.identityToken?.split('.') ?? [];
+      String payload = jwt[1];
+      payload = base64.normalize(payload);
 
-            storage.write(key: 'latestSigninProvider', value: 'apple');
-            context.go('/');
-          }
-        },
+      final List<int> jsonData = base64.decode(payload);
+      final userInfo = jsonDecode(utf8.decode(jsonData));
+
+      final email = userInfo['email'];
+      final metadata = userInfo;
+
+      await _signin(
+        context,
+        provider,
+        providerId,
+        email,
+        name,
+        metadata,
       );
     } catch (error) {
       log(
@@ -117,6 +113,71 @@ class SigninViewmodel extends ChangeNotifier {
     } finally {
       removeLoading();
     }
+  }
+
+  _signin(
+    BuildContext context,
+    String provider,
+    String providerId,
+    String email,
+    String name,
+    Map<String, dynamic> metadata,
+  ) async {
+    final fcmToken = (await messaging.getToken()) ?? '';
+
+    final res = await _authRepository.signin(
+      provider: provider,
+      providerId: providerId,
+      fcmToken: fcmToken,
+    );
+
+    if (res.statusCode == 201) {
+      // 로그인 성공
+      _afterSucessSignin(context, provider, res.data!);
+    } else if (res.statusCode == 404) {
+      // 회원가입 진행
+      final signupRes = await _memberRepository.signup(
+        provider: provider,
+        providerId: providerId,
+        email: email,
+        name: name,
+        metadata: metadata,
+      );
+
+      if (signupRes.statusCode == 201) {
+        // 회원가입 성공시 로그인 시도
+        final signinRes = await _authRepository.signin(
+          provider: provider,
+          providerId: providerId,
+          fcmToken: fcmToken,
+        );
+
+        if (signinRes.statusCode == 201) {
+          // 로그인 성공
+          _afterSucessSignin(context, provider, res.data!);
+        } else {
+          showSnackBar(context, "로그인에 실패하였습니다");
+        }
+      }
+    } else {
+      // 로그인 실패
+      showSnackBar(context, "로그인에 실패하였습니다");
+    }
+  }
+
+  _afterSucessSignin(
+    BuildContext context,
+    String provider,
+    AccessTokenModel token,
+  ) {
+    analytics.logLogin(loginMethod: provider); // 로그인 로깅
+
+    globalAccessToken = token;
+    storage.write(key: 'accessToken', value: globalAccessToken?.accessToken);
+    storage.write(key: 'refreshToken', value: globalAccessToken?.refreshToken);
+    storage.write(key: 'latestSigninProvider', value: provider);
+
+    context.go('/');
   }
 
   /// 최근 로그인한 로그인 방식 표시

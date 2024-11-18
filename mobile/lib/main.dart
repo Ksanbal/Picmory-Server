@@ -11,6 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/firebase_options.dart';
+import 'package:picmory/models/api/auth/access_token_model.dart';
 import 'package:picmory/router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -31,6 +32,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await remoteConfig.fetchAndActivate();
 
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
@@ -54,6 +56,10 @@ final remoteConfig = FirebaseRemoteConfig.instance;
 final analytics = FirebaseAnalytics.instance;
 final messaging = FirebaseMessaging.instance;
 final FlutterLocalNotificationsPlugin _localNotification = FlutterLocalNotificationsPlugin();
+
+// 로그인 후 얻는 accessToken
+AccessTokenModel? globalAccessToken;
+
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
