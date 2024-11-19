@@ -39,6 +39,7 @@ import {
   UpdateDocs,
   UploadDocs,
 } from 'src/1-presentation/docs/memories/memories.docs';
+import { MemoriesUploadReqDto } from 'src/1-presentation/dto/memories/request/upload.dto';
 
 @MemoriesControllerDocs()
 @Controller('memories')
@@ -77,6 +78,7 @@ export class MemoriesController {
   async upload(
     @CurrentUser() sub: number,
     @UploadedFile() file: Express.Multer.File,
+    @Body() body: MemoriesUploadReqDto,
   ): Promise<MemoriesUploadResDto> {
     if (!file) {
       throw new BadRequestException(['File is required']);
@@ -84,7 +86,7 @@ export class MemoriesController {
 
     return plainToInstance(
       MemoriesUploadResDto,
-      await this.memoriesFacade.upload({ sub, file }),
+      await this.memoriesFacade.upload({ sub, file, body }),
     );
   }
 
