@@ -47,7 +47,7 @@ export class MemoriesFacade {
     memoryFile.thumbnailPath = thumbnailPath;
 
     // 파일을 업데이트
-    await this.memoriesService.updateMemoryFile({
+    await this.memoriesService.updateMemoryFileThumbnailPath({
       memoryFile,
     });
   }

@@ -50,11 +50,14 @@ export class MemoriesService {
   /**
    * 파일 정보 업데이트
    */
-  async updateMemoryFile(dto: UpdateMemoryFileDto): Promise<void> {
-    const { memoryFile } = dto;
-
-    await this.memoryFileRepository.update({
-      memoryFile,
+  async updateMemoryFileThumbnailPath(
+    dto: UpdateMemoryFileThumbnailPathDto,
+  ): Promise<void> {
+    await this.memoryFileRepository.updateWithId({
+      id: dto.memoryFile.id,
+      data: {
+        thumbnailPath: dto.memoryFile.thumbnailPath,
+      },
     });
   }
 
@@ -201,7 +204,7 @@ type UploadDto = {
   type: MemoryFileType;
 };
 
-type UpdateMemoryFileDto = {
+type UpdateMemoryFileThumbnailPathDto = {
   memoryFile: MemoryFile;
 };
 
