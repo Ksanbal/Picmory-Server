@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:picmory/common/buttons/rounded_button.dart';
+import 'package:picmory/common/components/common/primary_button_comp.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -48,7 +54,7 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
             width: 70,
             height: 4,
             decoration: BoxDecoration(
-              color: ColorFamily.disabledGrey400,
+              color: ColorsToken.neutral[400],
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -68,17 +74,15 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
             daysOfWeekHeight: 30,
             headerStyle: HeaderStyle(
               titleCentered: true,
-              titleTextStyle: const TextSmStyle(),
+              titleTextStyle: TypographyToken.textSm,
               titleTextFormatter: (date, locale) => DateFormat('yyyy.MM').format(date),
               formatButtonVisible: false,
-              leftChevronIcon: const Icon(
-                SolarIconsOutline.roundAltArrowLeft,
-                color: Colors.black,
-              ),
-              rightChevronIcon: const Icon(
-                SolarIconsOutline.roundAltArrowRight,
-                color: Colors.black,
-              ),
+              leftChevronIcon: IconsToken(
+                color: ColorsToken.black,
+              ).roundAltArrowLeftLinear,
+              rightChevronIcon: IconsToken(
+                color: ColorsToken.black,
+              ).roundAltArrowRightLinear,
               headerPadding: const EdgeInsets.symmetric(vertical: 20),
             ),
             daysOfWeekStyle: DaysOfWeekStyle(
@@ -134,18 +138,14 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
             ),
           ),
           // 완료 버튼
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: RoundedButton(
-              onPressed: () => context.pop(_selectedDay),
-              child: const Text(
-                "완료",
-                style: TextSmStyle(
-                  color: Colors.white,
-                ),
-              ),
+          Gap(SizeToken.ml),
+          PrimaryButtonComp(
+            onPressed: () => context.pop(_selectedDay),
+            text: "완료",
+            textStyle: TypographyToken.textSm.copyWith(
+              color: ColorsToken.white,
             ),
-          )
+          ),
         ],
       ),
     );

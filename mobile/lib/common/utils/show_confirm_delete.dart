@@ -1,10 +1,10 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:picmory/common/buttons/rounded_button.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:picmory/common/components/common/primary_button_comp.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
 
 Future<bool?> showConfirmDelete(
   BuildContext context, {
@@ -15,41 +15,41 @@ Future<bool?> showConfirmDelete(
     useSafeArea: true,
     barrierColor: Colors.black.withOpacity(0.4),
     builder: (context) {
-      return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: RoundedButton(
-                  onPressed: () => context.pop(true),
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    title,
-                    style: const TextSmStyle(
-                      color: ColorFamily.error,
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.pop(false),
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: PrimaryButtonComp(
+                      onPressed: () => context.pop(true),
+                      text: "삭제",
+                      textColor: ColorsToken.negative[600]!,
+                      backgroundColor: ColorsToken.white,
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 5),
-              SizedBox(
-                width: double.infinity,
-                child: RoundedButton(
-                  onPressed: () => context.pop(false),
-                  backgroundColor: Colors.white,
-                  child: const Text(
-                    "취소",
-                    style: TextSmStyle(
-                      color: ColorFamily.textGrey700,
+                  Gap(SizeToken.s),
+                  SizedBox(
+                    width: double.infinity,
+                    child: PrimaryButtonComp(
+                      onPressed: () => context.pop(false),
+                      text: "취소",
+                      textColor: ColorsToken.black,
+                      backgroundColor: ColorsToken.white,
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       );

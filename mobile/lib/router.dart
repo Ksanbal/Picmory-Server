@@ -7,7 +7,7 @@ import 'package:picmory/viewmodels/index/for_you/like_memories/like_memories_vie
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
 import 'package:picmory/viewmodels/index/index_viewmodel.dart';
 import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
-import 'package:picmory/viewmodels/memory/memory_get_source_viewmodel/memory_get_source_viewmodel.dart';
+import 'package:picmory/viewmodels/memory/get_source/memory_get_source_viewmodel.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:picmory/viewmodels/menu/menu_viewmodel.dart';
 import 'package:picmory/viewmodels/splash/splash_viewmodel.dart';

@@ -38,12 +38,14 @@ class AuthRepository {
 
       if ([404].contains(statusCode)) {
         return ResponseModel<AccessTokenModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<AccessTokenModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -77,12 +79,14 @@ class AuthRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 404].contains(statusCode)) {
         return ResponseModel(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -114,12 +118,14 @@ class AuthRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403].contains(statusCode)) {
         return ResponseModel<AccessTokenModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<AccessTokenModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,

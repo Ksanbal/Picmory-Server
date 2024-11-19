@@ -47,12 +47,14 @@ class MemoriesRepository {
       final statusCode = e.response?.statusCode;
       if ([400, 401, 403].contains(statusCode)) {
         return ResponseModel<UploadModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<UploadModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -90,12 +92,14 @@ class MemoriesRepository {
       final statusCode = e.response?.statusCode;
       if ([400, 401, 403].contains(statusCode)) {
         return ResponseModel<CreateMemoryModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<CreateMemoryModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -136,12 +140,14 @@ class MemoriesRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403].contains(statusCode)) {
         return ResponseModel<List<MemoryModel>>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<List<MemoryModel>>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -170,12 +176,14 @@ class MemoriesRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403, 404].contains(statusCode)) {
         return ResponseModel<MemoryModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<MemoryModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -215,12 +223,14 @@ class MemoriesRepository {
       final statusCode = e.response?.statusCode;
       if ([400, 401, 403, 404].contains(statusCode)) {
         return ResponseModel(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -234,9 +244,6 @@ class MemoriesRepository {
   /// [id] 추억 ID
   Future<ResponseModel> delete({
     required int id,
-    required DateTime date,
-    required String brandName,
-    required bool like,
   }) async {
     try {
       final res = await _dio.delete(
@@ -252,12 +259,14 @@ class MemoriesRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403, 404].contains(statusCode)) {
         return ResponseModel(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,

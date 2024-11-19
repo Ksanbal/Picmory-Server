@@ -43,12 +43,14 @@ class MembersRepository {
       final statusCode = e.response?.statusCode;
       if ([400].contains(statusCode)) {
         return ResponseModel(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -82,12 +84,14 @@ class MembersRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403, 404].contains(statusCode)) {
         return ResponseModel<MemberModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<MemberModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -121,12 +125,14 @@ class MembersRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403, 404].contains(statusCode)) {
         return ResponseModel(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,

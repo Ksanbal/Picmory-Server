@@ -7,12 +7,10 @@ import 'package:picmory/common/components/memory/retrieve/change_date_bottomshee
 import 'package:picmory/common/components/memory/retrieve/video_player_dialog.dart';
 import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
-import 'package:picmory/main.dart';
 import 'package:picmory/models/api/albums/album_model.dart';
-import 'package:picmory/models/memory/memory_file_model.dart';
-import 'package:picmory/models/memory/memory_model.dart';
-import 'package:picmory/repositories/album_repository.dart';
-import 'package:picmory/repositories/memory_repository.dart';
+import 'package:picmory/models/api/memory/memory_model.dart';
+import 'package:picmory/repositories/api/albums_repository.dart';
+import 'package:picmory/repositories/api/memories_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MemoryRetrieveViewmodel extends ChangeNotifier {
@@ -27,8 +25,8 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
   // Named constructor
   MemoryRetrieveViewmodel._internal();
 
-  final MemoryRepository _memoryRepository = MemoryRepository();
-  final AlbumRepository _albumRepository = AlbumRepository();
+  final MemoriesRepository _memoriesRepository = MemoriesRepository();
+  final AlbumsRepository _albumsRepository = AlbumsRepository();
 
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;
@@ -49,35 +47,33 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
   bool _deleteComplete = false;
   bool get deleteComplete => _deleteComplete;
 
-  bool _isFullScreen = false;
-  bool get isFullScreen => _isFullScreen;
-
   /// 메모리 상세정보 호출
   getMemory(int memoryId) async {
-    final data = await _memoryRepository.retrieve(
-      userId: supabase.auth.currentUser!.id,
-      memoryId: memoryId,
+    final result = await _memoriesRepository.retrieve(
+      id: memoryId,
     );
 
-    if (data != null) {
-      _memory = data;
+    if (result.data != null) {
+      _memory = result.data;
       notifyListeners();
     }
   }
 
   /// 좋아요 기록
   likeMemory() async {
-    final result = await _memoryRepository.changeLikeStatus(
-      userId: supabase.auth.currentUser!.id,
-      memoryId: _memory!.id,
-      isLiked: _memory!.like,
+    if (_memory == null) return;
+
+    final result = await _memoriesRepository.edit(
+      id: _memory!.id,
+      date: _memory!.date,
+      brandName: _memory!.brandName,
+      like: !_memory!.like, // toggle
     );
 
-    if (result) {
+    if (result.success) {
       _memory!.like = !_memory!.like;
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   /// 삭제
@@ -87,33 +83,29 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
     // [x] 삭제 요청
     if (result == true) {
-      final error = await _memoryRepository.delete(
-        userId: supabase.auth.currentUser!.id,
-        memoryId: _memory!.id,
+      final result = await _memoriesRepository.delete(
+        id: _memory!.id,
       );
 
-      if (error != null) {
-        showSnackBar(context, error);
-      } else {
+      if (result.success) {
         showSnackBar(context, '삭제되었습니다.');
 
         _deleteComplete = true;
 
         // [x] 뒤로가기
         context.pop();
+      } else {
+        showSnackBar(context, result.message);
       }
     }
   }
 
-  /// 전체화면 토글
-  toggleFullScreen() {
-    _isFullScreen = !_isFullScreen;
-    notifyListeners();
-  }
-
   /// 추억함에 추가 dialog 노출
   showAddAlbumDialog(BuildContext context) async {
-    _albums = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
+    final result = await _albumsRepository.list();
+    if (result.data == null) return;
+
+    _albums = result.data!;
 
     showModalBottomSheet(
       context: context,
@@ -130,13 +122,16 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
   /// 추억함에 추가
   addAlbum(BuildContext context, List<int> albumIds) async {
-    final result = await _memoryRepository.addToAlbum(
-      userId: supabase.auth.currentUser!.id,
-      memoryId: _memory!.id,
-      albumIds: albumIds,
+    final results = await Future.wait(
+      albumIds.map(
+        (id) => _albumsRepository.addMemory(
+          id: id,
+          memoryId: _memory!.id,
+        ),
+      ),
     );
 
-    if (result) {
+    if (results.any((e) => !e.success)) {
       context.pop();
       showSnackBar(
         context,
@@ -181,12 +176,8 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
       return;
     }
 
-    final int? albumId = await _albumRepository.create(
-      userId: supabase.auth.currentUser!.id,
-      name: controller.text,
-    );
-
-    if (albumId == null) {
+    final result = await _albumsRepository.create(name: controller.text);
+    if (result.data == null) {
       showSnackBar(
         context,
         '앨범 생성에 실패했습니다',
@@ -196,14 +187,13 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
       return;
     }
 
-    addAlbum(context, [albumId]);
+    addAlbum(context, [result.data!.id]);
   }
 
   pop(BuildContext context) {
     // 변수 초기화
     _memory = null;
     _deleteComplete = false;
-    _isFullScreen = false;
 
     context.pop();
   }
@@ -226,13 +216,14 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
     if (selectedDay == null || isSameDay(_memory!.date, selectedDay)) return;
 
-    final result = await _memoryRepository.edit(
-      userId: supabase.auth.currentUser!.id,
-      memoryId: _memory!.id,
+    final result = await _memoriesRepository.edit(
+      id: _memory!.id,
       date: selectedDay,
+      brandName: _memory!.brandName,
+      like: _memory!.like,
     );
 
-    if (result) {
+    if (result.data != null) {
       _memory!.date = selectedDay;
       notifyListeners();
     }
@@ -244,7 +235,7 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
       context: context,
       builder: (_) {
         return VideoPlayerDialog(
-          uris: videos.map((e) => e.uri).toList(),
+          uris: videos.map((e) => e.path).toList(),
         );
       },
     );
