@@ -57,7 +57,7 @@ class AppBarComp extends StatelessWidget {
                       ? IconButtonComp(
                           onPressed: context.pop,
                           icon: IconsToken(
-                            color: reverse ? ColorsToken.black : ColorsToken.white,
+                            color: reverse ? ColorsToken.white : ColorsToken.black,
                           ).altArrowLeftLinear,
                           backgroundColor:
                               reverse ? ColorsToken.neutralAlpha[500]! : Colors.transparent,

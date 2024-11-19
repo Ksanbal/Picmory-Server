@@ -5,12 +5,11 @@ import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
 import 'package:picmory/common/components/page_indicator_widget.dart';
 import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/common/tokens/layout_token.dart';
 import 'package:picmory/common/tokens/typography_token.dart';
+import 'package:picmory/common/utils/get_storage_uri.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/index/for_you/for_you_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -22,9 +21,6 @@ class ForYouView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     analytics.logScreenView(screenName: "for you");
-
-    final vm = Provider.of<ForYouViewmodel>(context, listen: false);
-    vm.init();
 
     return Consumer<ForYouViewmodel>(
       builder: (_, vm, __) {
@@ -60,11 +56,12 @@ class ForYouView extends StatelessWidget {
                                   child: AspectRatio(
                                     aspectRatio: 1 / 1,
                                     child: InkWell(
-                                      // onTap: () => vm.goToMemoryRetrieve(context, memory),
+                                      onTap: () => vm.goToMemoryRetrieve(context, memory),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(5),
                                         child: ExtendedImage.network(
-                                          memory.files.first.thumbnailUri,
+                                          getStorageUri(memory.files.first.thumbnailPath ??
+                                              memory.files.first.path),
                                           fit: BoxFit.cover,
                                           alignment: Alignment.topCenter,
                                           loadStateChanged: (state) {
@@ -99,12 +96,12 @@ class ForYouView extends StatelessWidget {
                           ),
                           InkWell(
                             onTap: () => vm.routeToLikeMemories(context),
-                            child: const Row(
+                            child: Row(
                               children: [
                                 Text(
                                   "좋아요 더보기",
-                                  style: TextSmStyle(
-                                    color: ColorFamily.textGrey600,
+                                  style: TypographyToken.textSm.copyWith(
+                                    color: ColorsToken.neutral[600],
                                   ),
                                 ),
                                 Icon(
@@ -181,8 +178,7 @@ class ForYouView extends StatelessWidget {
                                                 color: ColorFamily.disabledGrey400,
                                               )
                                             : ExtendedImage.network(
-                                                remoteConfig.getString('storage_host') +
-                                                    album.coverImagePath!,
+                                                getStorageUri(album.coverImagePath!),
                                                 fit: BoxFit.cover,
                                                 loadStateChanged: (state) {
                                                   if (state.extendedImageLoadState ==

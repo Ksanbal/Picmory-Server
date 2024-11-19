@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
-import 'package:picmory/main.dart';
 import 'package:picmory/models/api/albums/album_model.dart';
-import 'package:picmory/models/memory/memory_list_model.dart';
-import 'package:picmory/models/memory/memory_model.dart';
+import 'package:picmory/models/api/memory/memory_model.dart';
 import 'package:picmory/repositories/api/albums_repository.dart';
 import 'package:picmory/repositories/api/memories_repository.dart';
 
@@ -19,9 +17,7 @@ class ForYouViewmodel extends ChangeNotifier {
         notifyListeners();
       }
     });
-  }
 
-  init() {
     _albums?.clear();
 
     getAlbumList();
@@ -76,6 +72,12 @@ class ForYouViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  _reloadAlbumList() {
+    _page = 1;
+    _albums?.clear();
+    getAlbumList();
+  }
+
   /// 좋아요한 기억 목록 로드
   getLikeMemoryList() async {
     final result = await _memoriesRepository.list(
@@ -88,14 +90,14 @@ class ForYouViewmodel extends ChangeNotifier {
       _memories = null;
     } else {
       _memories = [];
-      _memories?.addAll(result.data! as List<MemoryModel>);
+      _memories?.addAll(result.data!);
     }
 
     notifyListeners();
   }
 
   /// 기억 상세 페이지로 이동
-  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
+  goToMemoryRetrieve(BuildContext context, MemoryModel memory) {
     context.push('/memory/${memory.id}');
   }
 
@@ -119,20 +121,7 @@ class ForYouViewmodel extends ChangeNotifier {
       return;
     }
 
-    final exist = _albums?.any((e) => e.name == controller.text);
-    if (exist != null && exist) {
-      showSnackBar(
-        context,
-        '이미 존재하는 이름입니다',
-        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
-        actionTitle: '닫기',
-      );
-      return;
-    }
-
-    final result = await _albumsRepository.create(
-      name: controller.text,
-    );
+    final result = await _albumsRepository.create(name: controller.text);
     if (result.data == null) {
       showSnackBar(
         context,
@@ -143,6 +132,8 @@ class ForYouViewmodel extends ChangeNotifier {
       return;
     }
 
+    _reloadAlbumList();
+
     // 해당 앨범 페이지로 이동
     routeToAlbums(context, result.data!.id);
   }
@@ -152,6 +143,6 @@ class ForYouViewmodel extends ChangeNotifier {
     await context.push('/for-you/albums/$id');
 
     // 앨범 목록 다시 로드
-    getAlbumList();
+    _reloadAlbumList();
   }
 }

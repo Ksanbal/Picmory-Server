@@ -7,11 +7,9 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:picmory/common/components/memory/get_source/support_brands_bottomsheet.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/repositories/api/qr_crawler_repository.dart';
-import 'package:picmory/repositories/memory_repository.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class MemoryGetSourceViewmodel extends ChangeNotifier {
-  final MemoryRepository _memoryRepository = MemoryRepository();
   final QrCrawlerRepository _qrCrawlerRepository = QrCrawlerRepository();
 
   /// 지원브랜드 bottom sheet 열기
@@ -35,14 +33,15 @@ class MemoryGetSourceViewmodel extends ChangeNotifier {
 
   /// 갤러리에서 사진 불러오기
   getImageFromGallery(BuildContext context) async {
-    final result = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (result == null) return;
+    // final result = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final result = await ImagePicker().pickMultiImage();
+    if (result.isEmpty) return;
 
     analytics.logEvent(name: 'load image from gallery');
 
     context.pushReplacement('/memory/create', extra: {
       'from': 'gallery',
-      'image': [result],
+      'image': result,
       'video': [],
       'brand': null,
     });
@@ -73,20 +72,22 @@ class MemoryGetSourceViewmodel extends ChangeNotifier {
     context.pop();
 
     // api 호출로 이미지 & 영상 불러오기
-    final result = await _memoryRepository.crawlUrl(_url!);
-    if (result == null) {
+    final result = await _qrCrawlerRepository.crawl(url: _url!);
+    if (result.data == null) {
       // 인웹으로 이동
       launchUrlString(_url!);
       return;
     }
 
+    final data = result.data!;
+
     context.push(
       '/memory/create',
       extra: {
         'from': 'qr',
-        'image': result.photo,
-        'video': result.video,
-        'brand': result.brand,
+        'image': data.photoUrls,
+        'video': data.videoUrls,
+        'brand': data.brand,
       },
     );
   }

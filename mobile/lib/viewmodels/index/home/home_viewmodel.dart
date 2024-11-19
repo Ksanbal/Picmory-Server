@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:picmory/models/memory/memory_list_model.dart';
-import 'package:picmory/models/memory/memory_model.dart';
+import 'package:picmory/models/api/memory/memory_model.dart';
 import 'package:picmory/repositories/api/memories_repository.dart';
-import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
-import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 
 class HomeViewmodel extends ChangeNotifier {
   final _memoriesRepository = MemoriesRepository();
-  final MemoryCreateViewmodel _memoryCreateViewmodel;
-  final MemoryRetrieveViewmodel _memoryRetrieveViewmodel;
 
-  HomeViewmodel(this._memoryCreateViewmodel, this._memoryRetrieveViewmodel) {
-    // 스크롤 이벤트 리스너
+  HomeViewmodel() {
+    // 스크롤이 바닥에 닿았을때 다음 페이지 로드
     scrollController.addListener(() {
       if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
         _page++;
@@ -20,31 +15,12 @@ class HomeViewmodel extends ChangeNotifier {
       }
     });
 
-    // 생성 리스너
-    _memoryCreateViewmodel.addListener(() {
-      if (_memoryCreateViewmodel.createComplete) {
-        clearDatas();
-        loadMemories();
-      }
-    });
-
-    // 삭제 리스너
-    _memoryRetrieveViewmodel.addListener(() {
-      if (_memoryRetrieveViewmodel.deleteComplete) {
-        if (_memories == null) return;
-        _memories?.removeWhere((element) => element.id == _memoryRetrieveViewmodel.memory!.id);
-        notifyListeners();
-      }
-    });
-  }
-
-  init() {
     clearDatas();
     loadMemories();
   }
 
   /// 저장된 기억 목록
-  List<MemoryModel>? _memories = [];
+  List<MemoryModel>? _memories;
   List<MemoryModel>? get memories => _memories;
 
   // 그리드 crossAxisCount (1~3)
@@ -73,10 +49,8 @@ class HomeViewmodel extends ChangeNotifier {
     );
     if (result.data == null) return;
 
-    if (result.data!.isEmpty) {
-      _memories = null;
-    } else {
-      _memories?.addAll(result.data! as Iterable<MemoryModel>);
+    if (result.data!.isNotEmpty) {
+      _memories = [..._memories ?? [], ...result.data!];
     }
 
     notifyListeners();
@@ -92,7 +66,7 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   /// 기억 상세 페이지로 이동
-  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
+  goToMemoryRetrieve(BuildContext context, MemoryModel memory) {
     context.push('/memory/${memory.id}');
   }
 }

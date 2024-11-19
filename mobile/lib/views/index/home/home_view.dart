@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/common/utils/get_thumbnail_uri.dart';
 import 'package:picmory/main.dart';
 
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
@@ -15,9 +16,6 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     analytics.logScreenView(screenName: "home");
-
-    final vm = Provider.of<HomeViewmodel>(context, listen: false);
-    vm.init();
 
     return Consumer<HomeViewmodel>(builder: (_, vm, __) {
       return CustomRefreshIndicator(
@@ -78,12 +76,12 @@ class HomeView extends StatelessWidget {
 
                   // 사진
                   return InkWell(
-                    // onTap: () => vm.goToMemoryRetrieve(context, memory),
+                    onTap: () => vm.goToMemoryRetrieve(context, memory),
                     child: Card(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: ExtendedImage.network(
-                          memory.files.first.thumbnailUri,
+                          getThumbnailUri(memory.files),
                           fit: BoxFit.cover,
                           loadStateChanged: (state) {
                             if (state.extendedImageLoadState == LoadState.loading) {

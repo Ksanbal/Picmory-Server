@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:picmory/common/buttons/rounded_button.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
-import 'package:picmory/common/families/text_styles/title_md_style.dart';
-import 'package:solar_icons/solar_icons.dart';
+import 'package:picmory/common/components/common/primary_button_comp.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 
 class CreateAlbumBottomsheet extends StatelessWidget {
   const CreateAlbumBottomsheet({
@@ -38,22 +37,20 @@ class CreateAlbumBottomsheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+              padding: EdgeInsets.symmetric(vertical: SizeToken.ml),
               child: Stack(
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
                     child: InkWell(
                       onTap: context.pop,
-                      child: const Icon(
-                        SolarIconsOutline.altArrowLeft,
-                      ),
+                      child: IconsToken().altArrowLeftLinear,
                     ),
                   ),
-                  const Center(
+                  Center(
                     child: Text(
                       "새로운 추억함의 이름을 지어주세요",
-                      style: TextSmStyle(),
+                      style: TypographyToken.textSm,
                     ),
                   ),
                 ],
@@ -63,7 +60,7 @@ class CreateAlbumBottomsheet extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(39, 0, 39, 20),
               child: TextFormField(
                 controller: controller,
-                style: const TitleMdStyle(),
+                style: TypographyToken.titleMd,
                 textAlign: TextAlign.center,
                 maxLength: 20,
                 buildCounter: (
@@ -75,41 +72,44 @@ class CreateAlbumBottomsheet extends StatelessWidget {
                   return Center(
                     child: Text(
                       "$currentLength/$maxLength",
-                      style: const CaptionSmStyle(),
+                      style: TypographyToken.captionSm.copyWith(
+                        color: ColorsToken.neutral[700],
+                      ),
                     ),
                   );
                 },
-                cursorColor: ColorFamily.disabledGrey400,
+                cursorColor: ColorsToken.neutral[500],
                 autofocus: true,
                 decoration: InputDecoration(
                   hintText: hintText,
-                  enabledBorder: const UnderlineInputBorder(
+                  hintStyle: TypographyToken.titleMd.copyWith(
+                    color: ColorsToken.neutral[500],
+                  ),
+                  enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: ColorFamily.disabledGrey400,
+                      color: ColorsToken.neutral[500]!,
                     ),
                   ),
-                  focusedBorder: const UnderlineInputBorder(
+                  focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: ColorFamily.disabledGrey400,
+                      color: ColorsToken.neutral[500]!,
                     ),
                   ),
                 ),
               ),
             ),
-            RoundedButton(
+            PrimaryButtonComp(
               onPressed: () {
                 if (controller.text.isEmpty) {
                   controller.text = hintText;
                 }
                 context.pop();
               },
-              child: const Text(
-                "완료",
-                style: TextSmStyle(
-                  color: Colors.white,
-                ),
+              text: "완료",
+              textStyle: TypographyToken.textSm.copyWith(
+                color: ColorsToken.white,
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 
 class SupportBrandsBottomsheet extends StatelessWidget {
   const SupportBrandsBottomsheet(this.brands, {super.key});
@@ -36,15 +38,15 @@ class SupportBrandsBottomsheet extends StatelessWidget {
                   margin: const EdgeInsets.only(top: 14),
                   width: 70,
                   height: 4,
-                  color: ColorFamily.disabledGrey400,
+                  color: ColorsToken.neutral[400],
                 ),
                 // Title
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
                   child: Text(
                     "서비스 브랜드",
-                    style: TextSmStyle(
-                      color: ColorFamily.textGrey900,
+                    style: TypographyToken.textSm.copyWith(
+                      color: ColorsToken.neutral[950],
                     ),
                   ),
                 ),
@@ -56,7 +58,9 @@ class SupportBrandsBottomsheet extends StatelessWidget {
                       return ListTile(
                         title: Text(
                           brands[index],
-                          style: const TextSmStyle(),
+                          style: TypographyToken.textSm.copyWith(
+                            color: ColorsToken.neutral[600],
+                          ),
                         ),
                       );
                     },

@@ -18,6 +18,11 @@ class MemoriesRepository {
     required XFile file,
   }) async {
     try {
+      // 확장자로 파일이 사진인지 영상인지 확인
+      final ext = file.path.split('.').last.toLowerCase();
+      final imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+      final isImage = imageExts.contains(ext);
+
       final res = await _dio.post(
         '$path/upload',
         options: Options(
@@ -25,9 +30,12 @@ class MemoriesRepository {
             'Content-Type': 'multipart/form-data',
           },
         ),
-        data: FormData.fromMap({
-          'file': await MultipartFile.fromFile(file.path, filename: file.name),
-        }),
+        data: FormData.fromMap(
+          {
+            'file': await MultipartFile.fromFile(file.path, filename: file.name),
+            'type': isImage ? 'IMAGE' : 'VIDEO',
+          },
+        ),
       );
 
       return ResponseModel<UploadModel>(

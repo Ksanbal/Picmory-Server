@@ -11,7 +11,6 @@ import 'package:picmory/main.dart';
 import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/models/memory/memory_file_model.dart';
 import 'package:picmory/models/memory/memory_model.dart';
-import 'package:picmory/models/memory/memory_upload_model.dart';
 import 'package:picmory/repositories/album_repository.dart';
 import 'package:picmory/repositories/memory_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
