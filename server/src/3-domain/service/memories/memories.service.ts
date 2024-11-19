@@ -28,11 +28,7 @@ export class MemoriesService {
    * 파일 업로드
    */
   async upload(dto: UploadDto): Promise<MemoryFile> {
-    const { sub, file } = dto;
-
-    const type = file.mimetype.includes('image')
-      ? MemoryFileType.IMAGE
-      : MemoryFileType.VIDEO;
+    const { sub, file, type } = dto;
 
     // 파일 정보 저장
     const newFile = await this.memoryFileRepository.create({
@@ -202,6 +198,7 @@ export class MemoriesService {
 type UploadDto = {
   sub: number;
   file: Express.Multer.File;
+  type: MemoryFileType;
 };
 
 type UpdateMemoryFileDto = {
