@@ -126,8 +126,8 @@ class MemoriesRepository {
         queryParameters: {
           'page': page,
           'limit': limit,
-          'like': like,
-          'albumId': albumId,
+          if (like != null) 'like': like,
+          if (albumId != null) 'albumId': albumId,
         },
       );
 

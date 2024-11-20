@@ -84,15 +84,15 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: 'get-source',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: MemoryGetSourceViewmodel(),
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => MemoryGetSourceViewmodel(),
                 child: const MemoryGetSourceView(),
               ),
             ),
             GoRoute(
               path: 'create',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: MemoryCreateViewmodel(),
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => MemoryCreateViewmodel(),
                 child: const MemoryCreateView(),
               ),
             ),
@@ -100,11 +100,8 @@ final router = GoRouter(
               path: ':memoryId',
               builder: (_, state) => MultiProvider(
                 providers: [
-                  ChangeNotifierProvider.value(
-                    value: MemoryRetrieveViewmodel(),
-                  ),
                   ChangeNotifierProvider(
-                    create: (_) => ForYouViewmodel(),
+                    create: (_) => MemoryRetrieveViewmodel(),
                   ),
                 ],
                 child: MemoryRetrieveView(
@@ -123,15 +120,15 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: 'like-memories',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: LikeMemoriesViewmodel(),
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => LikeMemoriesViewmodel(),
                 child: const LikeMemoriesView(),
               ),
             ),
             GoRoute(
               path: 'albums/:id',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: AlbumsViewmodel(
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => AlbumsViewmodel(
                   int.parse(state.pathParameters['id']!),
                 ),
                 child: const AlbumsView(),
@@ -151,8 +148,8 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: 'user',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: MenuViewmodel(),
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => MenuViewmodel(),
                 child: const UserView(),
               ),
             ),

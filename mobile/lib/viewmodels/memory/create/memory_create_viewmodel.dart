@@ -9,6 +9,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:picmory/common/utils/show_loading.dart';
+import 'package:picmory/events/memory/create_event.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/api/memory/upload_model.dart';
 import 'package:picmory/models/response_model.dart';
@@ -246,6 +247,9 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     _createComplete = true;
 
     context.pushReplacement('/memory/$newMemoryId');
+
+    // 메모리 생성 이벤트 발행
+    eventBus.fire(MemoryCreateEvent(newMemoryId));
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

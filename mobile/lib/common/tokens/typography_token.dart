@@ -53,7 +53,7 @@ abstract final class TypographyToken {
   );
 
   static final TextStyle captionSm = TextStyle(
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w400,
     fontSize: SizeToken.sm,
     letterSpacing: 0.4,
     color: ColorsToken.black,

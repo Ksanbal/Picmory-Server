@@ -10,14 +10,24 @@ import 'package:picmory/repositories/api/memories_repository.dart';
 class ForYouViewmodel extends ChangeNotifier {
   ForYouViewmodel() {
     forYouViewController.addListener(() {
+      // 상단 앱바 스타일 변경을 위한 스크롤 이벤트
       final isScrolled = forYouViewController.hasClients && forYouViewController.offset > 0;
       // 이전 상태와 다를 경우에만 변경
       if (isShrink != isScrolled) {
         isShrink = isScrolled;
         notifyListeners();
       }
-    });
 
+      // 스크롤이 최하단에 도달하면 다음 페이지 로드
+      if (forYouViewController.position.maxScrollExtent == forYouViewController.offset) {
+        _page++;
+        getAlbumList();
+      }
+    });
+  }
+
+  init() {
+    _page = 1;
     _albums?.clear();
 
     getAlbumList();
@@ -63,10 +73,8 @@ class ForYouViewmodel extends ChangeNotifier {
     );
     if (result.data == null) return;
 
-    if (result.data!.isEmpty) {
-      _albums = null;
-    } else {
-      _albums?.addAll(result.data!);
+    if (result.data!.isNotEmpty) {
+      _albums = [..._albums ?? [], ...result.data!];
     }
 
     notifyListeners();
@@ -112,7 +120,7 @@ class ForYouViewmodel extends ChangeNotifier {
       builder: (_) {
         return CreateAlbumBottomsheet(
           controller: controller,
-          hintText: '앨범 이름',
+          hintText: '추억함 이름',
         );
       },
     );

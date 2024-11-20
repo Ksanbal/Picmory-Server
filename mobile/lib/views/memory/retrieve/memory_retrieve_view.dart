@@ -1,5 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player.dart';
@@ -12,7 +13,7 @@ import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class MemoryRetrieveView extends StatelessWidget {
+class MemoryRetrieveView extends StatefulWidget {
   const MemoryRetrieveView({
     super.key,
     required this.memoryId,
@@ -21,12 +22,21 @@ class MemoryRetrieveView extends StatelessWidget {
   final String memoryId;
 
   @override
-  Widget build(BuildContext context) {
+  State<MemoryRetrieveView> createState() => _MemoryRetrieveViewState();
+}
+
+class _MemoryRetrieveViewState extends State<MemoryRetrieveView> {
+  late final vm = Provider.of<MemoryRetrieveViewmodel>(context, listen: false);
+
+  @override
+  void initState() {
     analytics.logScreenView(screenName: "memory retrieve");
+    vm.getMemory(int.parse(widget.memoryId));
+    super.initState();
+  }
 
-    final vm = Provider.of<MemoryRetrieveViewmodel>(context, listen: false);
-    vm.getMemory(int.parse(memoryId));
-
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorsToken.black,
       body: Stack(
@@ -81,7 +91,7 @@ class MemoryRetrieveView extends StatelessWidget {
                 children: [
                   // 뒤로가기
                   IconButtonComp(
-                    onPressed: () => vm.pop(context),
+                    onPressed: context.pop,
                     icon: IconsToken(
                       color: ColorsToken.white,
                     ).altArrowLeftLinear,
@@ -113,19 +123,21 @@ class MemoryRetrieveView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 날짜 변경
-                  Consumer<MemoryRetrieveViewmodel>(builder: (_, vm, __) {
-                    return InkWell(
-                      onTap: () => vm.showChangeDateBottomsheet(context),
-                      child: Text(
-                        vm.memory?.date != null
-                            ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
-                            : '',
-                        style: TypographyToken.titleMd.copyWith(
-                          color: ColorsToken.white,
+                  Consumer<MemoryRetrieveViewmodel>(
+                    builder: (_, vm, __) {
+                      return InkWell(
+                        onTap: () => vm.showChangeDateBottomsheet(context),
+                        child: Text(
+                          vm.memory?.date != null
+                              ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
+                              : '',
+                          style: TypographyToken.titleMd.copyWith(
+                            color: ColorsToken.white,
+                          ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    },
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [

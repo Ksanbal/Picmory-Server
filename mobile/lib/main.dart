@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:event_bus/event_bus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -56,6 +57,9 @@ final remoteConfig = FirebaseRemoteConfig.instance;
 final analytics = FirebaseAnalytics.instance;
 final messaging = FirebaseMessaging.instance;
 final FlutterLocalNotificationsPlugin _localNotification = FlutterLocalNotificationsPlugin();
+
+// 이벤트 버스
+final EventBus eventBus = EventBus();
 
 // 로그인 후 얻는 accessToken
 AccessTokenModel? globalAccessToken;

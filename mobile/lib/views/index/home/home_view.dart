@@ -10,13 +10,26 @@ import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    analytics.logScreenView(screenName: "home");
+  State<HomeView> createState() => _HomeViewState();
+}
 
+class _HomeViewState extends State<HomeView> {
+  late final vm = Provider.of<HomeViewmodel>(context, listen: false);
+
+  @override
+  void initState() {
+    analytics.logScreenView(screenName: "home");
+    vm.init();
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Consumer<HomeViewmodel>(builder: (_, vm, __) {
       return CustomRefreshIndicator(
         onRefresh: () async {
@@ -53,6 +66,7 @@ class HomeView extends StatelessWidget {
               )
             : MasonryGridView.count(
                 controller: vm.scrollController,
+                physics: AlwaysScrollableScrollPhysics(),
                 crossAxisCount: vm.crossAxisCount,
                 itemCount: (vm.memories ?? []).isEmpty ? 10 : (vm.memories ?? []).length,
                 crossAxisSpacing: 5,

@@ -2,17 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:picmory/common/buttons/rounded_button.dart';
 import 'package:picmory/common/components/common/primary_button_comp.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
-import 'package:picmory/common/families/text_styles/title_sm_style.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/common/tokens/layout_token.dart';
 import 'package:picmory/common/tokens/typography_token.dart';
-import 'package:solar_icons/solar_icons.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ChangeDateBottomsheet extends StatefulWidget {
@@ -89,32 +83,32 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
               dowTextFormatter: (date, locale) {
                 return DateFormat.E().format(date).toUpperCase();
               },
-              weekdayStyle: const CaptionSmStyle(
-                color: ColorFamily.disabledGrey500,
+              weekdayStyle: TypographyToken.captionSm.copyWith(
+                color: ColorsToken.neutral,
               ),
-              weekendStyle: const CaptionSmStyle(
-                color: ColorFamily.disabledGrey500,
+              weekendStyle: TypographyToken.captionSm.copyWith(
+                color: ColorsToken.neutral,
               ),
             ),
-            calendarStyle: const CalendarStyle(
+            calendarStyle: CalendarStyle(
               cellMargin: EdgeInsets.zero,
-              defaultTextStyle: TitleSmStyle(
-                color: ColorFamily.textGrey900,
+              defaultTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.neutral[300],
               ),
-              weekendTextStyle: TitleSmStyle(
-                color: ColorFamily.textGrey900,
+              weekendTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.neutral[300],
               ),
-              disabledTextStyle: TitleSmStyle(
-                color: ColorFamily.disabledGrey300,
+              disabledTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.neutral[300],
               ),
-              outsideTextStyle: TitleSmStyle(
-                color: ColorFamily.disabledGrey300,
+              outsideTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.neutral[300],
               ),
-              selectedTextStyle: TitleSmStyle(
-                color: ColorFamily.primaryDark,
+              selectedTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.primary[600],
               ),
               selectedDecoration: BoxDecoration(
-                color: ColorFamily.primaryLight,
+                color: ColorsToken.primary[100],
                 shape: BoxShape.circle,
               ),
             ),
@@ -123,15 +117,17 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
                 return Container(
                   alignment: Alignment.center,
                   decoration: isSameDay(day, widget.focusedDay)
-                      ? const BoxDecoration(
-                          color: ColorFamily.backgroundGrey200,
+                      ? BoxDecoration(
+                          color: ColorsToken.neutral[50],
                           // color: Colors.white,
                           shape: BoxShape.circle,
                         )
                       : null,
                   child: Text(
                     day.day.toString(),
-                    style: const TitleSmStyle(),
+                    style: TypographyToken.textLg.copyWith(
+                      color: ColorsToken.black,
+                    ),
                   ),
                 );
               },

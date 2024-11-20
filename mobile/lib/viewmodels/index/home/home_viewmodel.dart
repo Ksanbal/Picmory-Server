@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:picmory/common/utils/show_snackbar.dart';
+import 'package:picmory/events/memory/create_event.dart';
+import 'package:picmory/events/memory/delete_event.dart';
+import 'package:picmory/main.dart';
 import 'package:picmory/models/api/memory/memory_model.dart';
 import 'package:picmory/repositories/api/memories_repository.dart';
 
@@ -15,6 +19,18 @@ class HomeViewmodel extends ChangeNotifier {
       }
     });
 
+    // 추억 생성 이벤트 리스너
+    eventBus.on<MemoryCreateEvent>().listen((event) {
+      init();
+    });
+
+    // 추억 삭제 이벤트 리스너
+    eventBus.on<MemoryDeleteEvent>().listen((event) {
+      _onDeleteMemory(event.memory.id);
+    });
+  }
+
+  init() {
     clearDatas();
     loadMemories();
   }
@@ -57,16 +73,24 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   clearDatas() {
+    _page = 1;
     _memories?.clear();
-  }
-
-  deleteMemoryFromList(int memoryId) {
-    _memories?.removeWhere((element) => element.id == memoryId);
-    notifyListeners();
   }
 
   /// 기억 상세 페이지로 이동
   goToMemoryRetrieve(BuildContext context, MemoryModel memory) {
     context.push('/memory/${memory.id}');
+  }
+
+  _onDeleteMemory(int memoryId) {
+    _memories?.removeWhere((element) => element.id == memoryId);
+    if (_memories?.isEmpty ?? false) {
+      _memories = null;
+    }
+
+    notifyListeners();
+
+    // TODO: 삭제 스낵바 노출
+    // showSnackBar(context, '삭제되었습니다.');
   }
 }

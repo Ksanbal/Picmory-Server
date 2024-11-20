@@ -196,6 +196,15 @@ class IconsToken {
     width: _sizeMap[size],
     height: _sizeMap[size],
   );
+
+  late final Widget circle = Padding(
+    padding: const EdgeInsets.all(2),
+    child: SvgPicture.asset(
+      'assets/icons/circle.svg',
+      width: _sizeMap[size],
+      height: _sizeMap[size],
+    ),
+  );
 }
 
 enum IconTokenSize { small, medium }

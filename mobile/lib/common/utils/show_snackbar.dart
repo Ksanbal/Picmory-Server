@@ -12,11 +12,10 @@ showSnackBar(
     SnackBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      padding: EdgeInsets.fromLTRB(
-        16,
-        0,
-        16,
-        MediaQuery.of(context).padding.bottom + bottomPadding,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).padding.bottom + bottomPadding,
       ),
       content: MessagingMdComp(
         text: message,

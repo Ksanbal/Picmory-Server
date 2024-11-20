@@ -31,7 +31,10 @@ class DioService {
           });
         }
 
-        log("${options.method} ${options.path} ${options.headers} ${options.data}", name: 'REQ');
+        log(
+          "${options.method} ${options.path} ${options.queryParameters} ${options.headers} ${options.data}",
+          name: 'REQ',
+        );
 
         return handler.next(options);
       },
