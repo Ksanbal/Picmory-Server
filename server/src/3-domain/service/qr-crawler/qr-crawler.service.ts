@@ -89,6 +89,11 @@ export class QrCrawlerService {
       name: 'PhotoHub',
       host: '13.124.189.94',
     },
+    {
+      // The Film
+      name: 'The Film',
+      host: 'thefilmadmin.co.kr',
+    },
   ];
 
   /**
@@ -157,6 +162,9 @@ export class QrCrawlerService {
         //   break;
         case 'PhotoHub':
           result = await this.photoHub(url);
+          break;
+        case 'The Film':
+          result = await this.thefilm(url);
           break;
       }
 
@@ -549,6 +557,24 @@ export class QrCrawlerService {
 
     const photoUrls = [`http://13.124.189.94/image.php?id=${id}`];
     const videoUrls = [`http://13.124.189.94/video.php?id=${id}`];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// The Film
+  private async thefilm(url): Promise<BrandCrawl> {
+    const qrcode = url.split('qrcode=')[1];
+
+    const photoUrls = [
+      `https://thefilmadmin.co.kr/api/download.php?qrcode=${qrcode}&type=P`,
+    ];
+    const videoUrls = [
+      `https://thefilmadmin.co.kr/api/download.php?qrcode=${qrcode}&type=V`,
+    ];
 
     return {
       brand: '',

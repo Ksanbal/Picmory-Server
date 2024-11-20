@@ -26,6 +26,15 @@ export class MemoryFileRepository {
     });
   }
 
+  async updateWithId(dto: UpdateWithIdDto) {
+    return await this.prisma.memoryFile.update({
+      where: { id: dto.id },
+      data: {
+        ...dto.data,
+      },
+    });
+  }
+
   /**
    * 해당 사용자가 업로드한 파일들이고 memory랑 연결되지 않은 파일들을 가져옴
    */
@@ -82,6 +91,11 @@ type CreateDto = {
 
 type UpdateDto = {
   memoryFile: MemoryFile;
+};
+
+type UpdateWithIdDto = {
+  id: number;
+  data: any;
 };
 
 type FindAllByIdsDto = {

@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install gnupg wget -y && \
   apt-get install google-chrome-stable -y --no-install-recommends && \
   rm -rf /var/lib/apt/lists/*
 
+# FFmpeg를 설치합니다.
+RUN apt-get update && apt-get install -y ffmpeg
+
 WORKDIR /usr/src/app
 
 COPY ./server/package.json ./server/yarn.lock ./

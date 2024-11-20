@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as sharp from 'sharp';
 import * as fs from 'fs';
+import { MemoryFileType } from '@prisma/client';
+import * as ffmpeg from 'fluent-ffmpeg';
 
 @Injectable()
 export class FileService {
@@ -8,7 +10,7 @@ export class FileService {
    * 썸네일 이미지 생성 및 저장
    */
   async createThumbnail(dto: CreateThumbnailDto): Promise<string | null> {
-    const { filePath } = dto;
+    const { filePath, type } = dto;
 
     try {
       const fileDir = filePath.slice(0, filePath.lastIndexOf('/'));
@@ -16,9 +18,30 @@ export class FileService {
         .slice(filePath.lastIndexOf('/') + 1)
         .split('.')[0];
 
-      const thumbnailPath = `${fileDir}/thumbnail-${fileOriginalName}.avif`;
+      let thumbnailPath = null;
 
-      await sharp(dto.filePath).toFormat('avif').toFile(thumbnailPath);
+      if (type == MemoryFileType.IMAGE) {
+        thumbnailPath = `${fileDir}/thumbnail-${fileOriginalName}.avif`;
+
+        await sharp(dto.filePath).toFormat('avif').toFile(thumbnailPath);
+      } else if (type == MemoryFileType.VIDEO) {
+        // 썸네일 이미지 생성
+        await new Promise<void>((resolve, reject) => {
+          ffmpeg(filePath)
+            .on('end', () => {
+              resolve();
+            })
+            .on('error', (err) => {
+              reject(err);
+            })
+            .screenshots({
+              timestamps: [1],
+              filename: `thumbnail-${fileOriginalName}.avif`,
+              folder: fileDir,
+            });
+        });
+        thumbnailPath = `${fileDir}/thumbnail-${fileOriginalName}.avif`;
+      }
 
       return thumbnailPath;
     } catch (error) {
@@ -44,6 +67,7 @@ export class FileService {
 
 type CreateThumbnailDto = {
   filePath: string;
+  type: MemoryFileType;
 };
 
 type DeleteDto = {

@@ -3,6 +3,7 @@ import { Memory, MemoryFile } from '@prisma/client';
 import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/create.dto';
 import { MemoriesListReqDto } from 'src/1-presentation/dto/memories/request/list.dto';
 import { MemoriesUpdateReqDto } from 'src/1-presentation/dto/memories/request/update.dto';
+import { MemoriesUploadReqDto } from 'src/1-presentation/dto/memories/request/upload.dto';
 import { FileService } from 'src/3-domain/service/file/file.service';
 import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
@@ -20,7 +21,11 @@ export class MemoriesFacade {
    * 파일 업로드
    */
   async upload(dto: UploadDto): Promise<MemoryFile> {
-    return await this.memoriesService.upload(dto);
+    return await this.memoriesService.upload({
+      sub: dto.sub,
+      file: dto.file,
+      type: dto.body.type,
+    });
   }
 
   /**
@@ -32,6 +37,7 @@ export class MemoriesFacade {
     // 파일을 읽어 썸네일 생성
     const thumbnailPath = await this.fileService.createThumbnail({
       filePath: memoryFile.path,
+      type: memoryFile.type,
     });
 
     if (thumbnailPath == null) {
@@ -41,7 +47,7 @@ export class MemoriesFacade {
     memoryFile.thumbnailPath = thumbnailPath;
 
     // 파일을 업데이트
-    await this.memoriesService.updateMemoryFile({
+    await this.memoriesService.updateMemoryFileThumbnailPath({
       memoryFile,
     });
   }
@@ -168,6 +174,7 @@ export class MemoriesFacade {
 type UploadDto = {
   sub: number;
   file: Express.Multer.File;
+  body: MemoriesUploadReqDto;
 };
 
 type CreateThumbnailDto = {

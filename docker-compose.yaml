@@ -11,7 +11,7 @@ services:
       - 3000
     command: >
       sh -c "
-      yarn prisma migrate deploy &&
+      yarn prisma db push &&
       yarn start:prod
       "
     volumes:
