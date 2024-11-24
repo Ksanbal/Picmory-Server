@@ -9,6 +9,7 @@ import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.re
 import { AlbumMemoryRepository } from 'src/4-infrastructure/repository/albums/album-memory.repository';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
 import { PrismaService } from 'src/lib/database/prisma.service';
+import { AlbumModel } from 'src/3-domain/model/albums/album.model';
 
 @Injectable()
 export class AlbumsService {
@@ -78,6 +79,41 @@ export class AlbumsService {
     }
 
     return album;
+  }
+
+  // [ ] 단일 조회 (사진 수, 대표 사진 포함)
+  async retrieveWithDetail(dto: RetrieveDto): Promise<AlbumModel> {
+    const { memberId, id } = dto;
+
+    const album = await this.albumRepository.findById({
+      memberId,
+      id,
+    });
+    if (album == null) {
+      throw new NotFoundException(ERROR_MESSAGES.ALBUMS_NOT_FOUND);
+    }
+
+    // 추억 개수 조회
+    const memoryCountsByAlbum =
+      await this.albumMemoryRepository.countByAlbumIds({
+        albumIds: [album.id],
+      });
+
+    // 대표 추억 조회
+
+    const memoriesByAlbum =
+      await this.albumMemoryRepository.findLastMemoryByAlbumIds({
+        albumIds: [album.id],
+      });
+
+    return {
+      ...album,
+      memoryCount:
+        memoryCountsByAlbum.find(
+          (memoryCount) => memoryCount.albumId === album.id,
+        )?._count._all ?? 0,
+      lastMemoryFile: memoriesByAlbum[0]?.Memory.MemoryFile[0] ?? null,
+    };
   }
 
   // [x] 수정
