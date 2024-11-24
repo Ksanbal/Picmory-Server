@@ -12,6 +12,7 @@ import {
 } from '@nestjs/swagger';
 import { AlbumsCreateResDto } from 'src/1-presentation/dto/albums/response/create.dto';
 import { AlbumsListResDto } from 'src/1-presentation/dto/albums/response/list.dto';
+import { AlbumsRetrieveResDto } from 'src/1-presentation/dto/albums/response/retrieve.dto';
 
 export function AlbumsControllerDocs() {
   return applyDecorators(
@@ -41,6 +42,17 @@ export function ListDocs() {
     }),
     ApiOkResponse({
       type: [AlbumsListResDto],
+    }),
+  );
+}
+
+export function RetrieveDocs() {
+  return applyDecorators(
+    ApiOperation({
+      summary: '앨범 상세 조회',
+    }),
+    ApiOkResponse({
+      type: AlbumsRetrieveResDto,
     }),
   );
 }

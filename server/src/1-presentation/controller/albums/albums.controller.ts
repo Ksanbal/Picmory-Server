@@ -20,6 +20,7 @@ import {
   DeleteDocs,
   DeleteMemoriesDocs,
   ListDocs,
+  RetrieveDocs,
   UpdateDocs,
 } from 'src/1-presentation/docs/albums/albums.docs';
 import { AblumsAddMemoriesReqDto } from 'src/1-presentation/dto/albums/request/add-memories.dto';
@@ -27,6 +28,7 @@ import { AlbumsCreateReqDto } from 'src/1-presentation/dto/albums/request/create
 import { AlbumsUpdateReqDto } from 'src/1-presentation/dto/albums/request/update.dto';
 import { AlbumsCreateResDto } from 'src/1-presentation/dto/albums/response/create.dto';
 import { AlbumsListResDto } from 'src/1-presentation/dto/albums/response/list.dto';
+import { AlbumsRetrieveResDto } from 'src/1-presentation/dto/albums/response/retrieve.dto';
 import { PaginationDto } from 'src/1-presentation/dto/common/pagination.dto';
 import { JwtAuthGuard } from 'src/1-presentation/guard/auth/auth.guard';
 import { AlbumsFacade } from 'src/2-application/facade/albums/albums.facade';
@@ -66,6 +68,22 @@ export class AlbumsController {
       await this.albumsFacade.list({
         memberId: sub,
         query,
+      }),
+    );
+  }
+
+  // [x] 상세 조회
+  @RetrieveDocs()
+  @Get(':id')
+  async retrieve(
+    @CurrentUser() sub: number,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<AlbumsRetrieveResDto> {
+    return plainToInstance(
+      AlbumsRetrieveResDto,
+      await this.albumsFacade.retrieve({
+        memberId: sub,
+        id,
       }),
     );
   }

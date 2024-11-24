@@ -32,6 +32,14 @@ export class AlbumsFacade {
     });
   }
 
+  // [x] 상세 조회
+  async retrieve(dto: RetrieveDto): Promise<Album> {
+    return await this.albumsService.retrieveWithDetail({
+      memberId: dto.memberId,
+      id: dto.id,
+    });
+  }
+
   // [x] 수정
   async update(dto: UpdateDto): Promise<void> {
     return await this.albumsService.update({
@@ -93,6 +101,11 @@ type CreateDto = {
 type ListDto = {
   memberId: number;
   query: PaginationDto;
+};
+
+type RetrieveDto = {
+  memberId: number;
+  id: number;
 };
 
 type UpdateDto = {
