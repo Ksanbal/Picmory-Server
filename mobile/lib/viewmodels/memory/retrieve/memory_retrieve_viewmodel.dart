@@ -5,6 +5,7 @@ import 'package:picmory/common/components/memory/retrieve/change_date_bottomshee
 import 'package:picmory/common/components/memory/retrieve/video_player_dialog.dart';
 import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
+import 'package:picmory/events/memory/edit_event.dart';
 import 'package:picmory/events/memory/delete_event.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/api/memory/memory_model.dart';
@@ -13,6 +14,14 @@ import 'package:table_calendar/table_calendar.dart';
 
 class MemoryRetrieveViewmodel extends ChangeNotifier {
   final MemoriesRepository _memoriesRepository = MemoriesRepository();
+
+  @override
+  void dispose() {
+    if (_memory != null && _memory!.like == false) {
+      eventBus.fire(MemoryEditEvent(_memory!));
+    }
+    super.dispose();
+  }
 
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;

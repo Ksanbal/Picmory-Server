@@ -11,6 +11,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:picmory/common/families/color_family.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/firebase_options.dart';
 import 'package:picmory/models/api/auth/access_token_model.dart';
 import 'package:picmory/router.dart';
@@ -71,6 +72,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       theme: ThemeData(
+        scaffoldBackgroundColor: ColorsToken.neutral[50],
         fontFamily: 'SUITE-Variable',
         primaryColor: ColorFamily.primary,
         primaryColorDark: ColorFamily.primaryDark,

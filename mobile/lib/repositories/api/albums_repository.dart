@@ -90,6 +90,42 @@ class AlbumsRepository {
     }
   }
 
+  /// 앨범 상세 조회
+  ///
+  /// [page] 페이지
+  Future<ResponseModel<AlbumModel>> retrieve({
+    required int id,
+  }) async {
+    try {
+      final res = await _dio.get(
+        '$path/$id',
+      );
+
+      return ResponseModel<AlbumModel>(
+        statusCode: res.statusCode!,
+        message: res.statusMessage!,
+        data: AlbumModel.fromJson(res.data),
+      );
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode;
+      if ([401, 403].contains(statusCode)) {
+        return ResponseModel<AlbumModel>(
+          success: false,
+          statusCode: statusCode!,
+          message: e.response?.data['message'],
+          data: null,
+        );
+      } else {
+        return ResponseModel<AlbumModel>(
+          success: false,
+          statusCode: e.response?.statusCode ?? 500,
+          message: "알 수 없는 오류",
+          data: null,
+        );
+      }
+    }
+  }
+
   /// 앨범 수정
   ///
   /// [id] 앨범 ID
@@ -220,7 +256,7 @@ class AlbumsRepository {
     required int memoryId,
   }) async {
     try {
-      final res = await _dio.post(
+      final res = await _dio.delete(
         '$path/$id/memories/$memoryId',
       );
 

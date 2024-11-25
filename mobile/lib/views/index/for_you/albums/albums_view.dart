@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
 import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/common/utils/get_thumbnail_uri.dart';
+import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/viewmodels/index/for_you/albums/albums_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -13,6 +15,9 @@ class AlbumsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AlbumsViewmodel vm = Provider.of<AlbumsViewmodel>(context, listen: false);
+    vm.album = GoRouterState.of(context).extra as AlbumModel;
+
     return Scaffold(
       body: Consumer<AlbumsViewmodel>(
         builder: (_, vm, __) {
@@ -36,7 +41,7 @@ class AlbumsView extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
                       child: ExtendedImage.network(
-                        memory.photoUri,
+                        getThumbnailUri(memory.files),
                         fit: BoxFit.cover,
                         loadStateChanged: (state) {
                           if (state.extendedImageLoadState == LoadState.loading) {

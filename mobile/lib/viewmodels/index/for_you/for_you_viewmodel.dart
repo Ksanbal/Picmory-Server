@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
+import 'package:picmory/events/album/delete_event.dart';
+import 'package:picmory/events/album/delete_memory_event.dart';
+import 'package:picmory/events/memory/edit_event.dart';
+import 'package:picmory/main.dart';
 import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/models/api/memory/memory_model.dart';
 import 'package:picmory/repositories/api/albums_repository.dart';
@@ -22,6 +26,19 @@ class ForYouViewmodel extends ChangeNotifier {
       if (forYouViewController.position.maxScrollExtent == forYouViewController.offset) {
         _page++;
         getAlbumList();
+      }
+    });
+
+    // 앨범 삭제 이벤트
+    eventBus.on<AlbumDeleteEvent>().listen((event) => _deleteAlbumFromList(event.album));
+
+    // 앨범내 추억 삭제 이벤트
+    eventBus.on<AlbumDeleteMemoryEvent>().listen((event) => _updateAlbum(event.album));
+
+    // 기억 좋아요 취소 이벤트
+    eventBus.on<MemoryEditEvent>().listen((event) {
+      if (event.memory.like == false) {
+        getLikeMemoryList();
       }
     });
   }
@@ -59,8 +76,7 @@ class ForYouViewmodel extends ChangeNotifier {
 
   /// 좋아요 페이지로 이동
   routeToLikeMemories(BuildContext context) async {
-    await context.push('/for-you/like-memories');
-    getLikeMemoryList();
+    context.push('/for-you/like-memories');
   }
 
   /// 앨범 목록 페이지
@@ -147,10 +163,27 @@ class ForYouViewmodel extends ChangeNotifier {
   }
 
   /// 앨범 페이지로 이동
-  routeToAlbums(BuildContext context, int id) async {
-    await context.push('/for-you/albums/$id');
+  routeToAlbums(BuildContext context, int index) async {
+    final album = _albums![index];
 
-    // 앨범 목록 다시 로드
-    _reloadAlbumList();
+    context.push('/for-you/albums/${album.id}', extra: album);
+  }
+
+  /// 특정 앨범을 목록에서 제거
+  _deleteAlbumFromList(AlbumModel album) {
+    _albums?.remove(album);
+    notifyListeners();
+  }
+
+  // 특정 앨범만 업데이트
+  _updateAlbum(AlbumModel album) async {
+    final result = await _albumsRepository.retrieve(id: album.id);
+    if (result.data == null) return;
+
+    final index = _albums?.indexWhere((element) => element.id == album.id);
+    if (index == null) return;
+
+    _albums?[index] = result.data!;
+    notifyListeners();
   }
 }

@@ -2,6 +2,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
+import 'package:picmory/common/utils/get_thumbnail_uri.dart';
 import 'package:picmory/viewmodels/index/for_you/like_memories/like_memories_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:solar_icons/solar_icons.dart';
@@ -29,39 +30,42 @@ class LikeMemoriesView extends StatelessWidget {
                 itemBuilder: (_, index) {
                   final memory = vm.memories[index];
 
-                  return Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: ExtendedImage.network(
-                          memory.photoUri,
-                          fit: BoxFit.cover,
-                          loadStateChanged: (state) {
-                            if (state.extendedImageLoadState == LoadState.loading) {
-                              return getShimmer(index);
-                            }
-                            if (state.extendedImageLoadState == LoadState.failed) {
-                              return const Center(
-                                child: Icon(Icons.error),
-                              );
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                          onPressed: () => vm.unlikeMemory(memory.id),
-                          padding: const EdgeInsets.all(16),
-                          icon: const Icon(
-                            SolarIconsBold.heart,
-                            color: Colors.white,
-                            size: 24,
+                  return InkWell(
+                    onTap: () => vm.goToMemoryRetrieve(context, memory),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: ExtendedImage.network(
+                            getThumbnailUri(memory.files),
+                            fit: BoxFit.cover,
+                            loadStateChanged: (state) {
+                              if (state.extendedImageLoadState == LoadState.loading) {
+                                return getShimmer(index);
+                              }
+                              if (state.extendedImageLoadState == LoadState.failed) {
+                                return const Center(
+                                  child: Icon(Icons.error),
+                                );
+                              }
+                              return null;
+                            },
                           ),
                         ),
-                      ),
-                    ],
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            onPressed: () => vm.unlikeMemory(memory),
+                            padding: const EdgeInsets.all(16),
+                            icon: const Icon(
+                              SolarIconsBold.heart,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
