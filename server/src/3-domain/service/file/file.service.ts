@@ -23,7 +23,10 @@ export class FileService {
       if (type == MemoryFileType.IMAGE) {
         thumbnailPath = `${fileDir}/thumbnail-${fileOriginalName}.avif`;
 
-        await sharp(dto.filePath).toFormat('avif').toFile(thumbnailPath);
+        await sharp(dto.filePath)
+          .withMetadata()
+          .toFormat('avif')
+          .toFile(thumbnailPath);
       } else if (type == MemoryFileType.VIDEO) {
         // 썸네일 이미지 생성
         await new Promise<void>((resolve, reject) => {
