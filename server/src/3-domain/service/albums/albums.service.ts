@@ -230,6 +230,17 @@ export class AlbumsService {
       albumMemory,
     });
   }
+
+  // [x] 추억 id로 앨범에서 추억 삭제
+  async deleteMemoriesFromAlbumWithMemoryId(
+    dto: DeleteMemoriesFromAlbumWithMemoryIdDto,
+  ): Promise<void> {
+    const { memoryId } = dto;
+
+    return await this.albumMemoryRepository.deleteByMemoryId({
+      memoryId,
+    });
+  }
 }
 
 type CreateDto = {
@@ -272,5 +283,9 @@ type RetrieveMemoryFromAlbumDto = {
 type DeleteMemoriesFromAlbumDto = {
   memberId: number;
   albumId: number;
+  memoryId: number;
+};
+
+type DeleteMemoriesFromAlbumWithMemoryIdDto = {
   memoryId: number;
 };
