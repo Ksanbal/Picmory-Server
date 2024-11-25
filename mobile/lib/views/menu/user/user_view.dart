@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:picmory/common/components/common/icon_button_comp.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:picmory/viewmodels/menu/menu_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
 class UserView extends StatelessWidget {
   const UserView({super.key});
@@ -13,29 +17,35 @@ class UserView extends StatelessWidget {
     final vm = Provider.of<MenuViewmodel>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: ColorsToken.neutral[50],
+        leading: IconButtonComp(
+          onPressed: context.pop,
+          icon: IconsToken().altArrowLeftLinear,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
             // 구분선
-            const Divider(color: ColorFamily.disabledGrey300),
+            Divider(color: ColorsToken.neutral[200]),
+            Gap(SizeToken.m),
             // 탈퇴
             ListTile(
               onTap: () => vm.withdraw(context),
               contentPadding: EdgeInsets.zero,
-              title: const Text(
+              title: Text(
                 "회원탈퇴",
-                style: TextSmStyle(),
+                style: TypographyToken.textSm,
               ),
-              trailing: const Icon(
-                SolarIconsOutline.altArrowRight,
-                color: ColorFamily.disabledGrey500,
-              ),
+              trailing: IconsToken(
+                color: ColorsToken.neutral,
+              ).altArrowRightLinear,
             ),
             // 구분선
-            const Divider(color: ColorFamily.disabledGrey300),
+            Gap(SizeToken.m),
+            Divider(color: ColorsToken.neutral[200]),
           ],
         ),
       ),

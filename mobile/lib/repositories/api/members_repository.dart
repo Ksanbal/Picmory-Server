@@ -60,19 +60,10 @@ class MembersRepository {
   }
 
   /// 내 정보 조회
-  ///
-  /// [accessToken] 액세스 토큰
-  Future<ResponseModel<MemberModel>> getMe({
-    required String accessToken,
-  }) async {
+  Future<ResponseModel<MemberModel>> getMe() async {
     try {
       final res = await _dio.get(
         '$path/me',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       return ResponseModel<MemberModel>(
@@ -103,17 +94,10 @@ class MembersRepository {
   /// 회원탈퇴
   ///
   /// [accessToken] 액세스 토큰
-  Future<ResponseModel> deleteMe({
-    required String accessToken,
-  }) async {
+  Future<ResponseModel> deleteMe() async {
     try {
       final res = await _dio.delete(
         '$path/me',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       return ResponseModel(

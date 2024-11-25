@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:picmory/common/components/menu/user/confirm_withdraw_widget.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/repositories/auth_repository.dart';
+import 'package:picmory/repositories/api/auth_repository.dart';
+import 'package:picmory/repositories/api/members_repository.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class MenuViewmodel extends ChangeNotifier {
@@ -13,6 +15,9 @@ class MenuViewmodel extends ChangeNotifier {
   }
 
   final AuthRepository _authRepository = AuthRepository();
+  final MembersRepository _membersRepository = MembersRepository();
+
+  final storage = const FlutterSecureStorage();
 
   /// 유저 정보
   String _userName = '';
@@ -27,19 +32,11 @@ class MenuViewmodel extends ChangeNotifier {
 
   /// 유저 정보 가져오기
   getUserInfo() async {
-    final user = await supabase.auth.getUser();
+    final result = await _membersRepository.getMe();
+    if (!result.success) return;
 
-    final appMetadata = user.user?.appMetadata;
-    final userMetadata = user.user?.userMetadata;
-
-    /// 로그인한 소셜로그인 정보에 따라서 분기
-    if (appMetadata?['provider'] == 'google') {
-      _provider = 'google';
-      _userName = userMetadata?['full_name'] ?? '';
-    } else if (appMetadata?['provider'] == 'apple') {
-      _provider = 'apple';
-      _userName = userMetadata?['email'].split('@')[0];
-    }
+    _userName = result.data?.name ?? '';
+    _provider = result.data?.provider ?? '';
 
     notifyListeners();
   }
@@ -59,28 +56,33 @@ class MenuViewmodel extends ChangeNotifier {
 
   /// 로그아웃
   signout(BuildContext context) async {
-    _authRepository.signOut().then(
-      (value) {
-        if (value) {
-          context.go('/auth/signin');
-        }
-      },
-    );
+    final result = await _authRepository.signout();
+    if (result.success) {
+      await storage.delete(key: 'accessToken');
+      await storage.delete(key: 'refreshToken');
+      context.go('/auth/signin');
+    }
   }
 
   /// 공지사항 페이지로 이동
-  showNotice() {
-    launchUrlString('https://alive-stick-1e6.notion.site/28e60d33f7ba40aa8ede8133a79e140a?pvs=4');
+  showNotice(BuildContext context) {
+    context.push(
+      '/webview?url=https://alive-stick-1e6.notion.site/28e60d33f7ba40aa8ede8133a79e140a?pvs=4',
+    );
   }
 
   /// 이용 약관 및 정책
-  showTermsAndPolicy() {
-    launchUrlString('https://alive-stick-1e6.notion.site/43b4e41791434542b03b1adb1ce38217?pvs=4');
+  showTermsAndPolicy(BuildContext context) {
+    context.push(
+      '/webview?url=https://alive-stick-1e6.notion.site/43b4e41791434542b03b1adb1ce38217?pvs=4',
+    );
   }
 
   /// 개인정보처리방침
-  showPrivacyPolicy() {
-    launchUrlString('https://alive-stick-1e6.notion.site/d348792bdd124bbf816ff2646b30f7a2?pvs=4');
+  showPrivacyPolicy(BuildContext context) {
+    context.push(
+      '/webview?url=https://alive-stick-1e6.notion.site/d348792bdd124bbf816ff2646b30f7a2?pvs=4',
+    );
   }
 
   /// 문의하기
@@ -112,19 +114,22 @@ class MenuViewmodel extends ChangeNotifier {
    */
   /// 회원탈퇴
   withdraw(BuildContext context) async {
-    final result = await showDialog(
+    final confirm = await showDialog(
       context: context,
       builder: (BuildContext context) {
         return const ConfirmWithdrawWidget();
       },
     );
 
-    if (result == null || !result) return;
+    if (confirm == null || !confirm) return;
 
-    // [ ] 회원탈퇴 (supabase 그지 같네...)
-    await supabase.auth.signOut();
-
-    context.go('/auth/signin');
+    // [x] 회원탈퇴
+    final result = await _membersRepository.deleteMe();
+    if (result.success) {
+      await storage.delete(key: 'accessToken');
+      await storage.delete(key: 'refreshToken');
+      context.go('/auth/signin');
+    }
   }
 
   /**

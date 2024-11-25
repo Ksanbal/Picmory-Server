@@ -23,6 +23,7 @@ import 'package:picmory/views/menu/license/license_view.dart';
 import 'package:picmory/views/menu/menu_view.dart';
 import 'package:picmory/views/menu/user/user_view.dart';
 import 'package:picmory/views/splash/splash_view.dart';
+import 'package:picmory/views/webview/web_view.dart';
 import 'package:provider/provider.dart';
 
 final router = GoRouter(
@@ -158,6 +159,15 @@ final router = GoRouter(
               builder: (_, state) => const LicenseView(),
             ),
           ],
+        ),
+        /**
+         * 웹뷰
+         */
+        GoRoute(
+          path: 'webview',
+          builder: (_, state) => WebView(
+            url: state.uri.queryParameters['url']!,
+          ),
         ),
       ],
     ),

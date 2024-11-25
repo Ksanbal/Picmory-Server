@@ -55,25 +55,16 @@ class AuthRepository {
   }
 
   /// 로그아웃
-  ///
-  /// [accessToken] 액세스 토큰
-  Future<ResponseModel> signout({
-    required String accessToken,
-  }) async {
+  Future<ResponseModel> signout() async {
     try {
       final res = await _dio.post(
         '$path/signout',
-        options: Options(
-          headers: {
-            "Authorization": "Bearer $accessToken",
-          },
-        ),
       );
 
       return ResponseModel(
         statusCode: res.statusCode!,
         message: res.statusMessage!,
-        data: AccessTokenModel.fromJson(res.data),
+        data: null,
       );
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode;
