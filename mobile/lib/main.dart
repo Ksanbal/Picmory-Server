@@ -10,12 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/firebase_options.dart';
 import 'package:picmory/models/api/auth/access_token_model.dart';
 import 'package:picmory/router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -23,12 +21,6 @@ void main() async {
 
   // .env
   await dotenv.load(fileName: ".env");
-
-  // Supabase
-  await Supabase.initialize(
-    url: dotenv.get("SUPABASE_URL"),
-    anonKey: dotenv.get("SUPABASE_KEY"),
-  );
 
   // Firebase
   await Firebase.initializeApp(
@@ -52,8 +44,6 @@ void main() async {
   runApp(const MainApp());
 }
 
-final supabase = Supabase.instance.client;
-
 final remoteConfig = FirebaseRemoteConfig.instance;
 final analytics = FirebaseAnalytics.instance;
 final messaging = FirebaseMessaging.instance;
@@ -74,19 +64,19 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: ColorsToken.neutral[50],
         fontFamily: 'SUITE-Variable',
-        primaryColor: ColorFamily.primary,
-        primaryColorDark: ColorFamily.primaryDark,
-        primaryColorLight: ColorFamily.primaryLight,
+        primaryColor: ColorsToken.primary,
+        // primaryColorDark: ColorsToken.primaryDark,
+        // primaryColorLight: ColorsToken.primaryLight,
         colorScheme: ColorScheme.fromSwatch(
-          backgroundColor: ColorFamily.backgroundGrey200,
-          errorColor: ColorFamily.error,
+          // backgroundColor: ColorFamily.backgroundGrey200,
+          errorColor: ColorsToken.warning,
         ),
         // splashColor: Colors.red,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             shadowColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
-            foregroundColor: ColorFamily.disabledGrey500,
+            // foregroundColor: ColorFamily.disabledGrey500,
           ),
         ),
       ),

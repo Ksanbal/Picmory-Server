@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/common/primary_button_comp.dart';
-import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:picmory/viewmodels/memory/get_source/memory_get_source_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
 class MemoryGetSourceView extends StatelessWidget {
   const MemoryGetSourceView({
@@ -27,16 +26,11 @@ class MemoryGetSourceView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: InkWell(
-          onTap: context.pop,
-          child: const SizedBox(
-            width: 48,
-            height: 48,
-            child: Icon(
-              SolarIconsOutline.altArrowLeft,
-              color: Colors.white,
-            ),
-          ),
+        leading: IconButtonComp(
+          onPressed: context.pop,
+          icon: IconsToken(
+            color: ColorsToken.white,
+          ).altArrowLeftLinear,
         ),
       ),
       body: Stack(
@@ -61,7 +55,7 @@ class MemoryGetSourceView extends StatelessWidget {
           ClipPath(
             clipper: HoleClipper(),
             child: Container(
-              color: ColorFamily.textGrey900.withOpacity(0.8),
+              color: ColorsToken.blackAlpha[800],
             ),
           ),
           Column(

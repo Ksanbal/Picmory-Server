@@ -1,14 +1,15 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:picmory/common/utils/get_thumbnail_uri.dart';
 import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/viewmodels/index/for_you/albums/albums_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
 class AlbumsView extends StatelessWidget {
   const AlbumsView({super.key});
@@ -48,8 +49,8 @@ class AlbumsView extends StatelessWidget {
                             return getShimmer(index);
                           }
                           if (state.extendedImageLoadState == LoadState.failed) {
-                            return const Center(
-                              child: Icon(Icons.error),
+                            return Center(
+                              child: IconsToken().dangerCircleBold,
                             );
                           }
                           return null;
@@ -67,8 +68,8 @@ class AlbumsView extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withOpacity(0.4),
-                        Colors.black.withOpacity(0),
+                        ColorsToken.blackAlpha[400]!,
+                        ColorsToken.black.withOpacity(0),
                       ],
                     ),
                   ),
@@ -81,49 +82,31 @@ class AlbumsView extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 16),
                       child: CircleAvatar(
                         backgroundColor:
-                            vm.isShrink ? Colors.black.withOpacity(0.3) : Colors.transparent,
-                        child: IconButton(
-                          icon: const Icon(
-                            SolarIconsOutline.altArrowLeft,
-                          ),
-                          color: vm.isShrink ? Colors.white : Colors.black,
+                            vm.isShrink ? ColorsToken.black.withOpacity(0.3) : Colors.transparent,
+                        child: IconButtonComp(
                           onPressed: context.pop,
+                          icon: IconsToken(
+                            color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
+                          ).altArrowLeftLinear,
                         ),
                       ),
                     ),
                     Text(
                       vm.album?.name ?? '',
-                      style: TitleSmStyle(
-                        color: vm.isShrink ? Colors.white : Colors.black,
-                        fontWeight: vm.isShrink ? FontWeight.bold : FontWeight.normal,
-                        shadows: vm.isShrink
-                            ? [
-                                Shadow(
-                                  color: const Color(0xff212529).withOpacity(0.1),
-                                  offset: const Offset(0, 4),
-                                  blurRadius: 10,
-                                ),
-                                Shadow(
-                                  color: const Color(0xff212529).withOpacity(0.32),
-                                  offset: const Offset(0, 1),
-                                  blurRadius: 1,
-                                ),
-                              ]
-                            : [],
+                      style: TypographyToken.textSm.copyWith(
+                        color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 16),
                       child: CircleAvatar(
-                        backgroundColor: vm.isShrink
-                            ? ColorFamily.textGrey700.withOpacity(0.7)
-                            : Colors.transparent,
-                        child: IconButton(
-                          icon: const Icon(
-                            SolarIconsOutline.trashBinMinimalistic,
-                          ),
-                          color: vm.isShrink ? Colors.white : Colors.black,
+                        backgroundColor:
+                            vm.isShrink ? ColorsToken.neutralAlpha : Colors.transparent,
+                        child: IconButtonComp(
                           onPressed: () => vm.delete(context),
+                          icon: IconsToken(
+                            color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
+                          ).trashBinMinimalisticLinear,
                         ),
                       ),
                     ),

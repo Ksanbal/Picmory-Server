@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/events/memory/create_event.dart';
 import 'package:picmory/events/memory/delete_event.dart';
 import 'package:picmory/main.dart';
@@ -21,11 +22,13 @@ class HomeViewmodel extends ChangeNotifier {
 
     // 추억 생성 이벤트 리스너
     eventBus.on<MemoryCreateEvent>().listen((event) {
+      log('MemoryCreateEvent', name: 'HomeViewmodel');
       init();
     });
 
     // 추억 삭제 이벤트 리스너
     eventBus.on<MemoryDeleteEvent>().listen((event) {
+      log('MemoryDeleteEvent', name: 'HomeViewmodel');
       _onDeleteMemory(event.memory.id);
     });
   }
@@ -36,7 +39,7 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   /// 저장된 기억 목록
-  List<MemoryModel>? _memories;
+  List<MemoryModel>? _memories = [];
   List<MemoryModel>? get memories => _memories;
 
   // 그리드 crossAxisCount (1~3)
@@ -65,7 +68,9 @@ class HomeViewmodel extends ChangeNotifier {
     );
     if (result.data == null) return;
 
-    if (result.data!.isNotEmpty) {
+    if (result.data!.isEmpty && (_memories ?? []).isEmpty) {
+      _memories = null;
+    } else {
       _memories = [..._memories ?? [], ...result.data!];
     }
 

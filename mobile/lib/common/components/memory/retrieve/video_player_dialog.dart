@@ -1,5 +1,6 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerDialog extends StatefulWidget {
@@ -60,7 +61,7 @@ class _VideoPlayerDialogState extends State<VideoPlayerDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.black,
+      backgroundColor: ColorsToken.black,
       elevation: 0,
       child: PageView.builder(
         itemCount: widget.uris.length,

@@ -5,7 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:picmory/common/components/common/messaging_sm_comp.dart';
 import 'package:picmory/common/components/common/tooltip_comp.dart';
 import 'package:picmory/common/components/common/primary_button_comp.dart';
-import 'package:picmory/common/families/asset_image_family.dart';
+import 'package:picmory/common/tokens/asset_image_token.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/common/tokens/layout_token.dart';
@@ -70,7 +70,7 @@ class SigninView extends StatelessWidget {
                 Gap(SizeToken.xs),
                 // 브랜드 이미지
                 ExtendedImage.asset(
-                  AssetImageFamily.brand,
+                  AssetImageToken.brand,
                 ),
               ],
             ),

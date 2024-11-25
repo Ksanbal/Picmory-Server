@@ -38,7 +38,7 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(20),
         ),
-        color: Colors.white,
+        color: ColorsToken.white,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -119,7 +119,6 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
                   decoration: isSameDay(day, widget.focusedDay)
                       ? BoxDecoration(
                           color: ColorsToken.neutral[50],
-                          // color: Colors.white,
                           shape: BoxShape.circle,
                         )
                       : null,

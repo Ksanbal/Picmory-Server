@@ -2,9 +2,8 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:picmory/common/components/common/icon_button_comp.dart';
+import 'package:picmory/common/components/common/slider_comp.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
-import 'package:picmory/common/components/page_indicator_widget.dart';
-import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/common/tokens/layout_token.dart';
@@ -14,7 +13,6 @@ import 'package:picmory/common/utils/get_thumbnail_uri.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/index/for_you/for_you_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
 class ForYouView extends StatefulWidget {
   const ForYouView({super.key});
@@ -82,8 +80,8 @@ class _ForYouViewState extends State<ForYouView> {
                                             return getShimmer(index);
                                           }
                                           if (state.extendedImageLoadState == LoadState.failed) {
-                                            return const Center(
-                                              child: Icon(Icons.error),
+                                            return Center(
+                                              child: IconsToken().dangerCircleBold,
                                             );
                                           }
                                           return null;
@@ -103,7 +101,7 @@ class _ForYouViewState extends State<ForYouView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        PageIndicatorWidget(
+                        SliderComp(
                           controller: vm.likePageController,
                           count: (vm.memories ?? []).length,
                         ),
@@ -117,11 +115,10 @@ class _ForYouViewState extends State<ForYouView> {
                                   color: ColorsToken.neutral[600],
                                 ),
                               ),
-                              Icon(
-                                SolarIconsOutline.altArrowRight,
-                                color: ColorFamily.textGrey600,
-                                size: 20,
-                              ),
+                              IconsToken(
+                                color: ColorsToken.neutral[600]!,
+                                size: IconTokenSize.small,
+                              ).altArrowRightLinear
                             ],
                           ),
                         )
@@ -188,7 +185,7 @@ class _ForYouViewState extends State<ForYouView> {
                                       borderRadius: BorderRadius.circular(5),
                                       child: album.coverImagePath == null
                                           ? Container(
-                                              color: ColorFamily.disabledGrey400,
+                                              color: ColorsToken.neutral[200]!,
                                             )
                                           : ExtendedImage.network(
                                               getStorageUri(album.coverImagePath!),
@@ -200,8 +197,8 @@ class _ForYouViewState extends State<ForYouView> {
                                                 }
                                                 if (state.extendedImageLoadState ==
                                                     LoadState.failed) {
-                                                  return const Center(
-                                                    child: Icon(Icons.error),
+                                                  return Center(
+                                                    child: IconsToken().dangerCircleBold,
                                                   );
                                                 }
                                                 return null;
@@ -237,8 +234,8 @@ class _ForYouViewState extends State<ForYouView> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withOpacity(0.4),
-                      Colors.black.withOpacity(0),
+                      ColorsToken.blackAlpha[400]!,
+                      ColorsToken.black.withOpacity(0),
                     ],
                   ),
                 ),

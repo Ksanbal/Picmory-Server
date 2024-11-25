@@ -31,7 +31,7 @@ class CreateAlbumBottomsheet extends StatelessWidget {
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(20),
           ),
-          color: Colors.white,
+          color: ColorsToken.white,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

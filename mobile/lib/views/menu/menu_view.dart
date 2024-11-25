@@ -58,7 +58,7 @@ class MenuView extends StatelessWidget {
             icon: vm.provider == 'GOOGLE'
                 ? IconsToken().google
                 : vm.provider == 'APPLE'
-                    ? IconsToken().apple
+                    ? IconsToken(color: ColorsToken.black).apple
                     : const SizedBox(),
           ),
           // 구분선

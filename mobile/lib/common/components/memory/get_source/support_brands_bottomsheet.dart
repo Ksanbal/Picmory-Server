@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/typography_token.dart';
 
@@ -26,7 +24,7 @@ class SupportBrandsBottomsheet extends StatelessWidget {
         Expanded(
           child: Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: ColorsToken.white,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(20),
               ),

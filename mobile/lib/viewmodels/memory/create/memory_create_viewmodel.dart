@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/utils/show_loading.dart';
 import 'package:picmory/events/memory/create_event.dart';
 import 'package:picmory/main.dart';
@@ -52,7 +53,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
       context: context,
       builder: (BuildContext context) => Container(
         height: 200,
-        color: Colors.white,
+        color: ColorsToken.white,
         child: CupertinoDatePicker(
           initialDateTime: date,
           mode: CupertinoDatePickerMode.date,

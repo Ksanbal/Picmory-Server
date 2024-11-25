@@ -3,7 +3,8 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
-import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:picmory/common/utils/get_thumbnail_uri.dart';
 import 'package:picmory/main.dart';
 
@@ -58,10 +59,10 @@ class _HomeViewState extends State<HomeView> {
           );
         },
         child: vm.memories == null
-            ? const Center(
+            ? Center(
                 child: Text(
                   "👇 추억을 추가해주세요 👇",
-                  style: TitleSmStyle(),
+                  style: TypographyToken.textSm,
                 ),
               )
             : MasonryGridView.count(
@@ -102,8 +103,8 @@ class _HomeViewState extends State<HomeView> {
                               return getShimmer(index);
                             }
                             if (state.extendedImageLoadState == LoadState.failed) {
-                              return const Center(
-                                child: Icon(Icons.error),
+                              return Center(
+                                child: IconsToken().dangerCircleBold,
                               );
                             }
                             return null;

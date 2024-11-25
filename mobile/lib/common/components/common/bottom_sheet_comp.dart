@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/common/icon_button_comp.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/common/tokens/layout_token.dart';
 import 'package:picmory/common/tokens/typography_token.dart';
@@ -30,7 +31,7 @@ class BottomSheetComp extends StatelessWidget {
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(20),
           ),
-          color: Colors.white,
+          color: ColorsToken.white,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

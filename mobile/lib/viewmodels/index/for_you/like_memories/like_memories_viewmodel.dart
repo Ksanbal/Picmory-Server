@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/events/memory/delete_event.dart';
@@ -26,6 +28,7 @@ class LikeMemoriesViewmodel extends ChangeNotifier {
 
     // 기억 좋아요 취소 이벤트 수신
     eventBus.on<MemoryEditEvent>().listen((event) {
+      log('MemoryEditEvent', name: 'LikeMemoriesViewmodel');
       if (event.memory.like == false) {
         _memories.removeWhere((element) => element.id == event.memory.id);
         notifyListeners();
@@ -34,6 +37,7 @@ class LikeMemoriesViewmodel extends ChangeNotifier {
 
     // 기억 삭제 이벤트 수신
     eventBus.on<MemoryDeleteEvent>().listen((event) {
+      log('MemoryDeleteEvent', name: 'LikeMemoriesViewmodel');
       _memories.removeWhere((element) => element.id == event.memory.id);
       notifyListeners();
     });

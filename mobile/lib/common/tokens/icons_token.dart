@@ -31,7 +31,7 @@ class IconsToken {
 
   late final SvgPicture apple = SvgPicture.asset(
     'assets/icons/apple.svg',
-    colorFilter: ColorFilter.mode(ColorsToken.white, BlendMode.srcIn),
+    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
     width: _sizeMap[size],
     height: _sizeMap[size],
   );

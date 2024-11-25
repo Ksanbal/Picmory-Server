@@ -3,8 +3,8 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:picmory/common/components/common/appbar_comp.dart';
 import 'package:picmory/common/components/common/primary_button_comp.dart';
+import 'package:picmory/common/components/common/slider_comp.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player.dart';
-import 'package:picmory/common/components/page_indicator_widget.dart';
 import 'package:picmory/common/tokens/effects_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/main.dart';
@@ -121,7 +121,7 @@ class MemoryCreateView extends StatelessWidget {
                           top: 16,
                           bottom: 51,
                         ),
-                        child: PageIndicatorWidget(
+                        child: SliderComp(
                           controller: vm.pageController,
                           count: vm.crawledImageUrls.length +
                               vm.galleryImages.length +

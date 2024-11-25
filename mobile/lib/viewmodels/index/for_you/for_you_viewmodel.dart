@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
@@ -30,13 +32,20 @@ class ForYouViewmodel extends ChangeNotifier {
     });
 
     // 앨범 삭제 이벤트
-    eventBus.on<AlbumDeleteEvent>().listen((event) => _deleteAlbumFromList(event.album));
+    eventBus.on<AlbumDeleteEvent>().listen((event) {
+      log('AlbumDeleteEvent', name: 'ForYouViewmodel');
+      _deleteAlbumFromList(event.album);
+    });
 
     // 앨범내 추억 삭제 이벤트
-    eventBus.on<AlbumDeleteMemoryEvent>().listen((event) => _updateAlbum(event.album));
+    eventBus.on<AlbumDeleteMemoryEvent>().listen((event) {
+      log('AlbumDeleteMemoryEvent', name: 'ForYouViewmodel');
+      _updateAlbum(event.album);
+    });
 
     // 기억 좋아요 취소 이벤트
     eventBus.on<MemoryEditEvent>().listen((event) {
+      log('MemoryEditEvent', name: 'ForYouViewmodel');
       if (event.memory.like == false) {
         getLikeMemoryList();
       }
@@ -87,9 +96,12 @@ class ForYouViewmodel extends ChangeNotifier {
     final result = await _albumsRepository.list(
       page: _page,
     );
+
     if (result.data == null) return;
 
-    if (result.data!.isNotEmpty) {
+    if (result.data!.isEmpty && (_albums ?? []).isEmpty) {
+      _albums = null;
+    } else {
       _albums = [..._albums ?? [], ...result.data!];
     }
 
@@ -113,8 +125,7 @@ class ForYouViewmodel extends ChangeNotifier {
     if (result.data!.isEmpty) {
       _memories = null;
     } else {
-      _memories = [];
-      _memories?.addAll(result.data!);
+      _memories = [...result.data!];
     }
 
     notifyListeners();

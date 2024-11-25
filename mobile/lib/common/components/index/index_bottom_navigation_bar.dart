@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:solar_icons/solar_icons.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
 
 class IndexBottomNavibationBar extends StatelessWidget {
   const IndexBottomNavibationBar({
@@ -31,7 +31,7 @@ class IndexBottomNavibationBar extends StatelessWidget {
                     height: 76,
                     constraints: const BoxConstraints(maxWidth: 300),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: ColorsToken.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -41,16 +41,13 @@ class IndexBottomNavibationBar extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(20, 8, 0, 12),
                             child: InkWell(
                               onTap: () => onTap(0),
-                              highlightColor: Colors.red,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    SolarIconsOutline.home1,
-                                    color: currentIndex == 0
-                                        ? ColorFamily.primary
-                                        : ColorFamily.textGrey700,
-                                  ),
+                                  IconsToken(
+                                    color:
+                                        currentIndex == 0 ? ColorsToken.primary : ColorsToken.black,
+                                  ).homeOutline
                                 ],
                               ),
                             ),
@@ -65,12 +62,10 @@ class IndexBottomNavibationBar extends StatelessWidget {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    SolarIconsOutline.heart,
-                                    color: currentIndex == 2
-                                        ? ColorFamily.primary
-                                        : ColorFamily.textGrey700,
-                                  ),
+                                  IconsToken(
+                                    color:
+                                        currentIndex == 2 ? ColorsToken.primary : ColorsToken.black,
+                                  ).heartLinear
                                 ],
                               ),
                             ),
@@ -90,7 +85,7 @@ class IndexBottomNavibationBar extends StatelessWidget {
                 width: 56,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: ColorFamily.primary,
+                  color: ColorsToken.primary,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: const [
                     BoxShadow(
@@ -101,10 +96,9 @@ class IndexBottomNavibationBar extends StatelessWidget {
                     )
                   ],
                 ),
-                child: const Icon(
-                  SolarIconsOutline.qrCode,
-                  color: Colors.white,
-                ),
+                child: IconsToken(
+                  color: ColorsToken.white,
+                ).qrCodeOutline,
               ),
             ),
           ],

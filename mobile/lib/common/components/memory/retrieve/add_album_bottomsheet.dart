@@ -2,7 +2,6 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:picmory/common/components/common/primary_button_comp.dart';
-import 'package:picmory/common/families/color_family.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/common/tokens/layout_token.dart';
@@ -39,7 +38,7 @@ class AddAlbumBottomsheet extends StatelessWidget {
                 });
                 return Container(
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: ColorsToken.white,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(20),
                     ),
@@ -77,7 +76,7 @@ class AddAlbumBottomsheet extends StatelessWidget {
                                     width: 60,
                                     height: 60,
                                     decoration: BoxDecoration(
-                                      color: ColorFamily.disabledGrey400,
+                                      color: ColorsToken.neutral[200],
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     child: Center(
@@ -107,7 +106,7 @@ class AddAlbumBottomsheet extends StatelessWidget {
                                       width: 60,
                                       height: 60,
                                       decoration: BoxDecoration(
-                                        color: ColorFamily.disabledGrey400,
+                                        color: ColorsToken.neutral[200],
                                         borderRadius: BorderRadius.circular(5),
                                         border: Border.all(
                                           color: ColorsToken.neutral[200]!,
@@ -172,8 +171,8 @@ class AddAlbumBottomsheet extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white.withOpacity(0),
-                    Colors.white,
+                    ColorsToken.white.withOpacity(0),
+                    ColorsToken.white,
                   ],
                 ),
               ),

@@ -13,7 +13,7 @@ Future<bool?> showConfirmDelete(
   return await showDialog(
     context: context,
     useSafeArea: true,
-    barrierColor: Colors.black.withOpacity(0.4),
+    barrierColor: ColorsToken.blackAlpha[400],
     builder: (context) {
       return Material(
         color: Colors.transparent,
