@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "1020948043600",
     "project_id": "dawn-picmory",
-    "storage_bucket": "dawn-picmory.appspot.com"
+    "storage_bucket": "dawn-picmory.firebasestorage.app"
   },
   "client": [
     {

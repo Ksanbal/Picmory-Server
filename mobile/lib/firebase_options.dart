@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:1020948043600:android:1f5c3c230468bb5d793e55',
     messagingSenderId: '1020948043600',
     projectId: 'dawn-picmory',
-    storageBucket: 'dawn-picmory.appspot.com',
+    storageBucket: 'dawn-picmory.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,8 +62,9 @@ class DefaultFirebaseOptions {
     appId: '1:1020948043600:ios:82f71ee252e703df793e55',
     messagingSenderId: '1020948043600',
     projectId: 'dawn-picmory',
-    storageBucket: 'dawn-picmory.appspot.com',
+    storageBucket: 'dawn-picmory.firebasestorage.app',
     iosClientId: '1020948043600-o8s55ior4tucspk8as2m8n9tmipnaql4.apps.googleusercontent.com',
     iosBundleId: 'com.ksanbal.picmory',
   );
+
 }
