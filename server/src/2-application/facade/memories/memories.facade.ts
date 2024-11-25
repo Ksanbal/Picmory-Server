@@ -4,6 +4,7 @@ import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/cr
 import { MemoriesListReqDto } from 'src/1-presentation/dto/memories/request/list.dto';
 import { MemoriesUpdateReqDto } from 'src/1-presentation/dto/memories/request/update.dto';
 import { MemoriesUploadReqDto } from 'src/1-presentation/dto/memories/request/upload.dto';
+import { AlbumsService } from 'src/3-domain/service/albums/albums.service';
 import { FileService } from 'src/3-domain/service/file/file.service';
 import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
@@ -13,6 +14,7 @@ import { PrismaService } from 'src/lib/database/prisma.service';
 export class MemoriesFacade {
   constructor(
     private readonly memoriesService: MemoriesService,
+    private readonly albumsService: AlbumsService,
     private readonly fileService: FileService,
     private readonly prisma: PrismaService,
   ) {}
@@ -152,6 +154,11 @@ export class MemoriesFacade {
       await this.memoriesService.delete({
         tx,
         memory,
+      });
+
+      // 앨범에 속한 기억 삭제
+      await this.albumsService.deleteMemoriesFromAlbumWithMemoryId({
+        memoryId: id,
       });
     });
 

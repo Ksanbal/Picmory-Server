@@ -100,6 +100,17 @@ export class AlbumMemoryRepository {
   }
 
   /**
+   * 추억 id로 앨범에서 추억 삭제
+   */
+  async deleteByMemoryId(dto: DeleteByMemoryIdDto): Promise<void> {
+    await this.prismaService.albumMemory.deleteMany({
+      where: {
+        memoryId: dto.memoryId,
+      },
+    });
+  }
+
+  /**
    * 앨범내의 추억 ids의 개수를 조회합니다.
    */
   async countByMemoryIds(dto: CountByMemoryIdsDto): Promise<number> {
@@ -139,6 +150,10 @@ type FindUniqueDto = {
 
 type DeleteDto = {
   albumMemory: AlbumMemory;
+};
+
+type DeleteByMemoryIdDto = {
+  memoryId: number;
 };
 
 type CountByMemoryIdsDto = {
