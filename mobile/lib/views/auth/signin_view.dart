@@ -29,7 +29,9 @@ class SigninView extends StatelessWidget {
         width: double.infinity,
         child: PrimaryButtonComp(
           onPressed: () => vm.signinWithApple(context),
-          leading: IconsToken().apple,
+          leading: IconsToken(
+            color: ColorsToken.white,
+          ).apple,
           text: "Apple로 로그인",
           textColor: ColorsToken.white,
           backgroundColor: ColorsToken.black,
@@ -108,7 +110,7 @@ class SigninView extends StatelessWidget {
                               ),
                       ),
                     // 최근 로그인한 로그인 방식 표시
-                    ...(vm.latestSigninProvider == null || vm.latestSigninProvider == 'apple'
+                    ...(vm.latestSigninProvider == null || vm.latestSigninProvider == 'APPLE'
                         ? signinButtons
                         : signinButtons.reversed),
                   ],
