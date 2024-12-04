@@ -93,6 +93,7 @@ class SigninView extends StatelessWidget {
                     if (vm.loadProvider)
                       FadeInUp(
                         duration: const Duration(milliseconds: 600),
+                        delay: const Duration(milliseconds: 500),
                         from: 18,
                         child: vm.latestSigninProvider == null
                             ? Padding(

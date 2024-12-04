@@ -1,10 +1,13 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
+import 'package:picmory/common/tokens/asset_image_token.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
 import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:picmory/common/utils/get_thumbnail_uri.dart';
 import 'package:picmory/models/api/albums/album_model.dart';
@@ -24,42 +27,70 @@ class AlbumsView extends StatelessWidget {
         builder: (_, vm, __) {
           return Stack(
             children: [
-              ListView.separated(
-                controller: vm.scrollController,
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  MediaQuery.of(context).padding.top + kToolbarHeight,
-                  16,
-                  MediaQuery.of(context).padding.bottom,
-                ),
-                itemCount: vm.memories.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 14),
-                itemBuilder: (_, index) {
-                  final memory = vm.memories[index];
-
-                  return InkWell(
-                    onLongPress: () => vm.deleteMemoryFromAlbum(context, memory.id),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: ExtendedImage.network(
-                        getThumbnailUri(memory.files),
-                        fit: BoxFit.cover,
-                        loadStateChanged: (state) {
-                          if (state.extendedImageLoadState == LoadState.loading) {
-                            return getShimmer(index);
-                          }
-                          if (state.extendedImageLoadState == LoadState.failed) {
-                            return Center(
-                              child: IconsToken().dangerCircleBold,
-                            );
-                          }
-                          return null;
-                        },
+              vm.memories.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            AssetImageToken.emptyAlbum,
+                          ),
+                          Gap(SizeToken.m),
+                          Text(
+                            "아직 저장된\n추억이 없어요",
+                            textAlign: TextAlign.center,
+                            style: TypographyToken.titleSm.copyWith(
+                              color: ColorsToken.neutral[900],
+                            ),
+                          ),
+                          Gap(SizeToken.m),
+                          Text(
+                            "소중한 순간들을\n추억함에 담아두세요",
+                            textAlign: TextAlign.center,
+                            style: TypographyToken.textSm.copyWith(
+                              color: ColorsToken.neutral[400],
+                            ),
+                          ),
+                          Gap(SizeToken.xxl),
+                        ],
                       ),
+                    )
+                  : ListView.separated(
+                      controller: vm.scrollController,
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        MediaQuery.of(context).padding.top + kToolbarHeight,
+                        16,
+                        MediaQuery.of(context).padding.bottom,
+                      ),
+                      itemCount: vm.memories.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 14),
+                      itemBuilder: (_, index) {
+                        final memory = vm.memories[index];
+
+                        return InkWell(
+                          onLongPress: () => vm.deleteMemoryFromAlbum(context, memory.id),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: ExtendedImage.network(
+                              getThumbnailUri(memory.files),
+                              fit: BoxFit.cover,
+                              loadStateChanged: (state) {
+                                if (state.extendedImageLoadState == LoadState.loading) {
+                                  return getShimmer(index);
+                                }
+                                if (state.extendedImageLoadState == LoadState.failed) {
+                                  return Center(
+                                    child: IconsToken().dangerCircleBold,
+                                  );
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
               if (vm.isShrink)
                 Container(
                   height: MediaQuery.of(context).padding.top + kToolbarHeight,
