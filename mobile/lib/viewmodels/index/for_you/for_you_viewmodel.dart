@@ -108,10 +108,10 @@ class ForYouViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  _reloadAlbumList() {
+  _reloadAlbumList() async {
     _page = 1;
     _albums?.clear();
-    getAlbumList();
+    await getAlbumList();
   }
 
   /// 좋아요한 기억 목록 로드
@@ -167,10 +167,13 @@ class ForYouViewmodel extends ChangeNotifier {
       return;
     }
 
-    _reloadAlbumList();
+    await _reloadAlbumList();
 
     // 해당 앨범 페이지로 이동
-    routeToAlbums(context, result.data!.id);
+    final index = _albums?.indexWhere((element) => element.id == result.data!.id);
+    if (index == null) return;
+
+    routeToAlbums(context, index);
   }
 
   /// 앨범 페이지로 이동
@@ -183,6 +186,9 @@ class ForYouViewmodel extends ChangeNotifier {
   /// 특정 앨범을 목록에서 제거
   _deleteAlbumFromList(AlbumModel album) {
     _albums?.remove(album);
+
+    if (_albums!.isEmpty) _albums = null;
+
     notifyListeners();
   }
 
