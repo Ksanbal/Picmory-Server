@@ -21,6 +21,7 @@ class IconsToken {
   final Map<IconTokenSize, double> _sizeMap = {
     IconTokenSize.small: 20.0,
     IconTokenSize.medium: 24.0,
+    IconTokenSize.large: 30,
   };
 
   late final SvgPicture google = SvgPicture.asset(
@@ -207,4 +208,4 @@ class IconsToken {
   );
 }
 
-enum IconTokenSize { small, medium }
+enum IconTokenSize { small, medium, large }

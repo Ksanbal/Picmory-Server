@@ -53,9 +53,12 @@ class PrimaryButtonComp extends StatelessWidget {
               leading!,
               Gap(SizeToken.s),
             ],
-            Text(
-              text,
-              style: textStyle ?? TypographyToken.textMd.copyWith(color: textColor),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: SizeToken.xs),
+              child: Text(
+                text,
+                style: textStyle ?? TypographyToken.textMd.copyWith(color: textColor),
+              ),
             )
           ],
         ),
