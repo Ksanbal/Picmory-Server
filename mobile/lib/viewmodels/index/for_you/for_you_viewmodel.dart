@@ -6,6 +6,7 @@ import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
 import 'package:picmory/events/album/delete_event.dart';
 import 'package:picmory/events/album/delete_memory_event.dart';
+import 'package:picmory/events/album/edit_event.dart';
 import 'package:picmory/events/memory/edit_event.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/api/albums/album_model.dart';
@@ -40,6 +41,12 @@ class ForYouViewmodel extends ChangeNotifier {
     // 앨범내 추억 삭제 이벤트
     eventBus.on<AlbumDeleteMemoryEvent>().listen((event) {
       log('AlbumDeleteMemoryEvent', name: 'ForYouViewmodel');
+      _updateAlbum(event.album);
+    });
+
+    // 앨범 수정 이벤트
+    eventBus.on<AlbumEditEvent>().listen((event) {
+      log('AlbumEditEvent', name: 'ForYouViewmodel');
       _updateAlbum(event.album);
     });
 

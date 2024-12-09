@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
 import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/events/album/delete_event.dart';
 import 'package:picmory/events/album/delete_memory_event.dart';
+import 'package:picmory/events/album/edit_event.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/models/api/albums/album_model.dart';
 import 'package:picmory/models/api/memory/memory_model.dart';
@@ -96,6 +98,34 @@ class AlbumsViewmodel extends ChangeNotifier {
 
         notifyListeners();
       }
+    }
+  }
+
+  /// 앨범명 수정
+  editName(BuildContext context) async {
+    if (album == null) return;
+
+    final controller = TextEditingController();
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return CreateAlbumBottomsheet(
+          controller: controller,
+          hintText: album!.name,
+        );
+      },
+    );
+
+    if (controller.text == album!.name) return;
+
+    final result = await _albumsRepository.edit(id: album!.id, name: controller.text);
+
+    if (result.success) {
+      album!.name = controller.text;
+      notifyListeners();
+
+      eventBus.fire(AlbumEditEvent(album!));
     }
   }
 }

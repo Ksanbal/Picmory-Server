@@ -122,10 +122,13 @@ class AlbumsView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      vm.album?.name ?? '',
-                      style: TypographyToken.textSm.copyWith(
-                        color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
+                    InkWell(
+                      onTap: () => vm.editName(context),
+                      child: Text(
+                        vm.album?.name ?? '',
+                        style: TypographyToken.textSm.copyWith(
+                          color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
+                        ),
                       ),
                     ),
                     Padding(
