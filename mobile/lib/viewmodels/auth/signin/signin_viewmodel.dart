@@ -45,7 +45,12 @@ class SigninViewmodel extends ChangeNotifier {
       final providerId = googleUser.id;
       final email = googleUser.email;
       final name = googleUser.displayName ?? '';
-      final metadata = <String, dynamic>{};
+      final metadata = {
+        "id": googleUser.id,
+        "displayName": googleUser.displayName,
+        "photo": googleUser.photoUrl,
+        "email": googleUser.email,
+      };
 
       await _signin(
         context,
@@ -82,8 +87,9 @@ class SigninViewmodel extends ChangeNotifier {
       final idToken = credential.identityToken;
       if (idToken == null) throw 'No ID Token found.';
 
+      if (credential.userIdentifier == null) throw 'No userIdentifier';
+
       final providerId = credential.userIdentifier!;
-      var name = "${credential.familyName} ${credential.givenName}";
 
       // jwt 디코딩
       List<String> jwt = credential.identityToken?.split('.') ?? [];
@@ -95,6 +101,11 @@ class SigninViewmodel extends ChangeNotifier {
 
       final email = userInfo['email'];
       final metadata = userInfo;
+
+      var name = email.split('@')[0];
+      if (credential.familyName != null && credential.givenName != null) {
+        name = "${credential.familyName} ${credential.givenName}";
+      }
 
       await _signin(
         context,
@@ -123,7 +134,8 @@ class SigninViewmodel extends ChangeNotifier {
     String name,
     Map<String, dynamic> metadata,
   ) async {
-    final fcmToken = (await messaging.getToken()) ?? '';
+    final fcmToken = await messaging.getToken();
+    if (fcmToken == null) throw 'No FCM Token';
 
     final res = await _authRepository.signin(
       provider: provider,
@@ -131,7 +143,7 @@ class SigninViewmodel extends ChangeNotifier {
       fcmToken: fcmToken,
     );
 
-    if (res.statusCode == 201) {
+    if (res.success) {
       // 로그인 성공
       _afterSucessSignin(context, provider, res.data!);
     } else if (res.statusCode == 404) {
@@ -144,7 +156,7 @@ class SigninViewmodel extends ChangeNotifier {
         metadata: metadata,
       );
 
-      if (signupRes.statusCode == 201) {
+      if (signupRes.success) {
         // 회원가입 성공시 로그인 시도
         final signinRes = await _authRepository.signin(
           provider: provider,
@@ -152,9 +164,9 @@ class SigninViewmodel extends ChangeNotifier {
           fcmToken: fcmToken,
         );
 
-        if (signinRes.statusCode == 201) {
+        if (signinRes.success) {
           // 로그인 성공
-          _afterSucessSignin(context, provider, res.data!);
+          _afterSucessSignin(context, provider, signinRes.data!);
         } else {
           showSnackBar(context, "로그인에 실패하였습니다");
         }
@@ -169,13 +181,13 @@ class SigninViewmodel extends ChangeNotifier {
     BuildContext context,
     String provider,
     AccessTokenModel token,
-  ) {
+  ) async {
     analytics.logLogin(loginMethod: provider); // 로그인 로깅
 
     globalAccessToken = token;
-    storage.write(key: 'accessToken', value: globalAccessToken?.accessToken);
-    storage.write(key: 'refreshToken', value: globalAccessToken?.refreshToken);
-    storage.write(key: 'latestSigninProvider', value: provider);
+    await storage.write(key: 'accessToken', value: globalAccessToken?.accessToken);
+    await storage.write(key: 'refreshToken', value: globalAccessToken?.refreshToken);
+    await storage.write(key: 'latestSigninProvider', value: provider);
 
     context.go('/');
   }

@@ -11,6 +11,7 @@ class PrimaryButtonComp extends StatelessWidget {
     required this.onPressed,
     required this.text,
     this.leading,
+    this.textStyle,
     this.textColor = ColorsToken.white,
     this.backgroundColor = ColorsToken.primary,
     this.borderColor,
@@ -18,6 +19,7 @@ class PrimaryButtonComp extends StatelessWidget {
 
   final void Function() onPressed;
   final String text;
+  final TextStyle? textStyle;
   final Color textColor;
   final Color backgroundColor;
   final Widget? leading;
@@ -51,9 +53,12 @@ class PrimaryButtonComp extends StatelessWidget {
               leading!,
               Gap(SizeToken.s),
             ],
-            Text(
-              text,
-              style: TypographyToken.textMd.copyWith(color: textColor),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: SizeToken.xs),
+              child: Text(
+                text,
+                style: textStyle ?? TypographyToken.textMd.copyWith(color: textColor),
+              ),
             )
           ],
         ),

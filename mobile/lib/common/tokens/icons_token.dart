@@ -21,6 +21,7 @@ class IconsToken {
   final Map<IconTokenSize, double> _sizeMap = {
     IconTokenSize.small: 20.0,
     IconTokenSize.medium: 24.0,
+    IconTokenSize.large: 30,
   };
 
   late final SvgPicture google = SvgPicture.asset(
@@ -31,7 +32,7 @@ class IconsToken {
 
   late final SvgPicture apple = SvgPicture.asset(
     'assets/icons/apple.svg',
-    colorFilter: ColorFilter.mode(ColorsToken.white, BlendMode.srcIn),
+    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
     width: _sizeMap[size],
     height: _sizeMap[size],
   );
@@ -196,6 +197,15 @@ class IconsToken {
     width: _sizeMap[size],
     height: _sizeMap[size],
   );
+
+  late final Widget circle = Padding(
+    padding: const EdgeInsets.all(2),
+    child: SvgPicture.asset(
+      'assets/icons/circle.svg',
+      width: _sizeMap[size],
+      height: _sizeMap[size],
+    ),
+  );
 }
 
-enum IconTokenSize { small, medium }
+enum IconTokenSize { small, medium, large }

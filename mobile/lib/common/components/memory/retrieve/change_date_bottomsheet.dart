@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:picmory/common/buttons/rounded_button.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
-import 'package:picmory/common/families/text_styles/title_sm_style.dart';
-import 'package:solar_icons/solar_icons.dart';
+import 'package:picmory/common/components/common/primary_button_comp.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ChangeDateBottomsheet extends StatefulWidget {
@@ -38,7 +38,7 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(20),
         ),
-        color: Colors.white,
+        color: ColorsToken.white,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -48,7 +48,7 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
             width: 70,
             height: 4,
             decoration: BoxDecoration(
-              color: ColorFamily.disabledGrey400,
+              color: ColorsToken.neutral[400],
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -68,49 +68,47 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
             daysOfWeekHeight: 30,
             headerStyle: HeaderStyle(
               titleCentered: true,
-              titleTextStyle: const TextSmStyle(),
+              titleTextStyle: TypographyToken.textSm,
               titleTextFormatter: (date, locale) => DateFormat('yyyy.MM').format(date),
               formatButtonVisible: false,
-              leftChevronIcon: const Icon(
-                SolarIconsOutline.roundAltArrowLeft,
-                color: Colors.black,
-              ),
-              rightChevronIcon: const Icon(
-                SolarIconsOutline.roundAltArrowRight,
-                color: Colors.black,
-              ),
+              leftChevronIcon: IconsToken(
+                color: ColorsToken.black,
+              ).roundAltArrowLeftLinear,
+              rightChevronIcon: IconsToken(
+                color: ColorsToken.black,
+              ).roundAltArrowRightLinear,
               headerPadding: const EdgeInsets.symmetric(vertical: 20),
             ),
             daysOfWeekStyle: DaysOfWeekStyle(
               dowTextFormatter: (date, locale) {
                 return DateFormat.E().format(date).toUpperCase();
               },
-              weekdayStyle: const CaptionSmStyle(
-                color: ColorFamily.disabledGrey500,
+              weekdayStyle: TypographyToken.captionSm.copyWith(
+                color: ColorsToken.neutral,
               ),
-              weekendStyle: const CaptionSmStyle(
-                color: ColorFamily.disabledGrey500,
+              weekendStyle: TypographyToken.captionSm.copyWith(
+                color: ColorsToken.neutral,
               ),
             ),
-            calendarStyle: const CalendarStyle(
+            calendarStyle: CalendarStyle(
               cellMargin: EdgeInsets.zero,
-              defaultTextStyle: TitleSmStyle(
-                color: ColorFamily.textGrey900,
+              defaultTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.neutral[300],
               ),
-              weekendTextStyle: TitleSmStyle(
-                color: ColorFamily.textGrey900,
+              weekendTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.neutral[300],
               ),
-              disabledTextStyle: TitleSmStyle(
-                color: ColorFamily.disabledGrey300,
+              disabledTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.neutral[300],
               ),
-              outsideTextStyle: TitleSmStyle(
-                color: ColorFamily.disabledGrey300,
+              outsideTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.neutral[300],
               ),
-              selectedTextStyle: TitleSmStyle(
-                color: ColorFamily.primaryDark,
+              selectedTextStyle: TypographyToken.textLg.copyWith(
+                color: ColorsToken.primary[600],
               ),
               selectedDecoration: BoxDecoration(
-                color: ColorFamily.primaryLight,
+                color: ColorsToken.primary[100],
                 shape: BoxShape.circle,
               ),
             ),
@@ -119,33 +117,30 @@ class _ChangeDateBottomsheetState extends State<ChangeDateBottomsheet> {
                 return Container(
                   alignment: Alignment.center,
                   decoration: isSameDay(day, widget.focusedDay)
-                      ? const BoxDecoration(
-                          color: ColorFamily.backgroundGrey200,
-                          // color: Colors.white,
+                      ? BoxDecoration(
+                          color: ColorsToken.neutral[50],
                           shape: BoxShape.circle,
                         )
                       : null,
                   child: Text(
                     day.day.toString(),
-                    style: const TitleSmStyle(),
+                    style: TypographyToken.textLg.copyWith(
+                      color: ColorsToken.black,
+                    ),
                   ),
                 );
               },
             ),
           ),
           // 완료 버튼
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: RoundedButton(
-              onPressed: () => context.pop(_selectedDay),
-              child: const Text(
-                "완료",
-                style: TextSmStyle(
-                  color: Colors.white,
-                ),
-              ),
+          Gap(SizeToken.ml),
+          PrimaryButtonComp(
+            onPressed: () => context.pop(_selectedDay),
+            text: "완료",
+            textStyle: TypographyToken.textSm.copyWith(
+              color: ColorsToken.white,
             ),
-          )
+          ),
         ],
       ),
     );

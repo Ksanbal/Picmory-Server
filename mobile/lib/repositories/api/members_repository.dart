@@ -43,12 +43,14 @@ class MembersRepository {
       final statusCode = e.response?.statusCode;
       if ([400].contains(statusCode)) {
         return ResponseModel(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -58,19 +60,10 @@ class MembersRepository {
   }
 
   /// 내 정보 조회
-  ///
-  /// [accessToken] 액세스 토큰
-  Future<ResponseModel<MemberModel>> getMe({
-    required String accessToken,
-  }) async {
+  Future<ResponseModel<MemberModel>> getMe() async {
     try {
       final res = await _dio.get(
         '$path/me',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       return ResponseModel<MemberModel>(
@@ -82,12 +75,14 @@ class MembersRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403, 404].contains(statusCode)) {
         return ResponseModel<MemberModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<MemberModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -99,17 +94,10 @@ class MembersRepository {
   /// 회원탈퇴
   ///
   /// [accessToken] 액세스 토큰
-  Future<ResponseModel> deleteMe({
-    required String accessToken,
-  }) async {
+  Future<ResponseModel> deleteMe() async {
     try {
       final res = await _dio.delete(
         '$path/me',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       return ResponseModel(
@@ -121,12 +109,14 @@ class MembersRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403, 404].contains(statusCode)) {
         return ResponseModel(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,

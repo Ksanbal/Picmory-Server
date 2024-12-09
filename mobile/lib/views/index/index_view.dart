@@ -19,8 +19,8 @@ class IndexView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Consumer<IndexViewmodel>(
+    return Scaffold(
+      body: Consumer<IndexViewmodel>(
         builder: (_, vm, __) {
           return Stack(
             children: [

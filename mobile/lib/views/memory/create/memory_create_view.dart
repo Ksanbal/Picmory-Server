@@ -1,16 +1,15 @@
 import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:picmory/common/buttons/rounded_button.dart';
+import 'package:picmory/common/components/common/appbar_comp.dart';
+import 'package:picmory/common/components/common/primary_button_comp.dart';
+import 'package:picmory/common/components/common/slider_comp.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player.dart';
-import 'package:picmory/common/components/page_indicator_widget.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:picmory/common/tokens/effects_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
 class MemoryCreateView extends StatelessWidget {
   const MemoryCreateView({super.key});
@@ -24,31 +23,20 @@ class MemoryCreateView extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: ColorFamily.backgroundGrey200,
-        leading: IconButton(
-          onPressed: context.pop,
-          icon: const Icon(SolarIconsOutline.altArrowLeft),
-        ),
-        actions: [
-          // 영상 추가 버튼
-          Consumer<MemoryCreateViewmodel>(
-            builder: (_, vm, __) {
-              if (vm.galleryVideos.isEmpty) {
-                return IconButton(
-                  onPressed: vm.selectVideo,
-                  icon: const Icon(SolarIconsOutline.videocameraAdd),
-                );
-              }
-
-              return Container();
-            },
-          ),
-        ],
-      ),
       body: SafeArea(
         child: Column(
           children: [
+            Consumer<MemoryCreateViewmodel>(builder: (_, vm, __) {
+              return AppBarComp(
+                actions: [
+                  if (vm.galleryVideos.isEmpty)
+                    AppBarAction(
+                      onPressed: vm.selectVideo,
+                      icon: IconsToken().videocameraAddLinear,
+                    )
+                ],
+              );
+            }),
             Expanded(
               child: Consumer<MemoryCreateViewmodel>(
                 builder: (_, vm, __) {
@@ -60,11 +48,15 @@ class MemoryCreateView extends StatelessWidget {
                           children: vm.isFromQR
                               ? [
                                   ...vm.crawledImageUrls.map(
-                                    (e) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 0,
-                                      ),
-                                      child: Center(
+                                    (e) => Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          boxShadow: EffectsToken.shadow1,
+                                          borderRadius: BorderRadius.circular(9),
+                                        ),
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(9),
                                           child: ExtendedImage.network(
@@ -90,11 +82,15 @@ class MemoryCreateView extends StatelessWidget {
                                 ]
                               : [
                                   ...vm.galleryImages.map(
-                                    (e) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 0,
-                                      ),
-                                      child: Center(
+                                    (e) => Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          boxShadow: EffectsToken.shadow1,
+                                          borderRadius: BorderRadius.circular(9),
+                                        ),
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(9),
                                           child: ExtendedImage.file(
@@ -125,11 +121,11 @@ class MemoryCreateView extends StatelessWidget {
                           top: 16,
                           bottom: 51,
                         ),
-                        child: PageIndicatorWidget(
+                        child: SliderComp(
                           controller: vm.pageController,
-                          count:
-                              (vm.isFromQR ? vm.crawledImageUrls.length : vm.galleryImages.length) +
-                                  vm.galleryVideos.length,
+                          count: vm.crawledImageUrls.length +
+                              vm.galleryImages.length +
+                              vm.galleryVideos.length,
                         ),
                       )
                     ],
@@ -137,15 +133,10 @@ class MemoryCreateView extends StatelessWidget {
                 },
               ),
             ),
-            RoundedButton(
+            PrimaryButtonComp(
               onPressed: () => vm.createMemory(context),
-              child: const Text(
-                "픽모리에 저장하기",
-                style: TextSmStyle(
-                  color: Colors.white,
-                ),
-              ),
-            )
+              text: "픽모리에 저장하기",
+            ),
           ],
         ),
       ),

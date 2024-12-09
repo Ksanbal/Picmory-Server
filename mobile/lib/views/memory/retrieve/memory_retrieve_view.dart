@@ -1,14 +1,19 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player.dart';
-import 'package:picmory/common/families/text_styles/title_sm_style.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
+import 'package:picmory/common/utils/get_storage_uri.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
-class MemoryRetrieveView extends StatelessWidget {
+class MemoryRetrieveView extends StatefulWidget {
   const MemoryRetrieveView({
     super.key,
     required this.memoryId,
@@ -17,14 +22,23 @@ class MemoryRetrieveView extends StatelessWidget {
   final String memoryId;
 
   @override
-  Widget build(BuildContext context) {
+  State<MemoryRetrieveView> createState() => _MemoryRetrieveViewState();
+}
+
+class _MemoryRetrieveViewState extends State<MemoryRetrieveView> {
+  late final vm = Provider.of<MemoryRetrieveViewmodel>(context, listen: false);
+
+  @override
+  void initState() {
     analytics.logScreenView(screenName: "memory retrieve");
+    vm.getMemory(int.parse(widget.memoryId));
+    super.initState();
+  }
 
-    final vm = Provider.of<MemoryRetrieveViewmodel>(context, listen: false);
-    vm.getMemory(int.parse(memoryId));
-
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: ColorsToken.black,
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -40,7 +54,7 @@ class MemoryRetrieveView extends StatelessWidget {
                     final photo = vm.photos[index];
 
                     return ExtendedImage.network(
-                      photo.uri,
+                      getStorageUri(photo.path),
                       mode: ExtendedImageMode.gesture,
                     );
                   } else {
@@ -53,7 +67,7 @@ class MemoryRetrieveView extends StatelessWidget {
                       ),
                       child: VideoPlayer(
                         fromNetwork: true,
-                        uri: video.uri,
+                        uri: getStorageUri(video.path),
                         file: null,
                       ),
                     );
@@ -67,37 +81,29 @@ class MemoryRetrieveView extends StatelessWidget {
             alignment: Alignment.topCenter,
             child: Padding(
               padding: EdgeInsets.fromLTRB(
-                4,
+                SizeToken.m,
                 MediaQuery.of(context).padding.top,
-                4,
+                SizeToken.m,
                 0,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 뒤로가기
-                  InkWell(
-                    onTap: () => vm.pop(context),
-                    child: const SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: Icon(
-                        SolarIconsOutline.altArrowLeft,
-                        color: Colors.white,
-                      ),
-                    ),
+                  IconButtonComp(
+                    onPressed: context.pop,
+                    icon: IconsToken(
+                      color: ColorsToken.white,
+                    ).altArrowLeftLinear,
+                    backgroundColor: ColorsToken.neutralAlpha[500]!,
                   ),
                   // 삭제
-                  InkWell(
-                    onTap: () => vm.delete(context),
-                    child: const SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: Icon(
-                        SolarIconsOutline.trashBinMinimalistic,
-                        color: Colors.white,
-                      ),
-                    ),
+                  IconButtonComp(
+                    onPressed: () => vm.delete(context),
+                    icon: IconsToken(
+                      color: ColorsToken.white,
+                    ).trashBinMinimalisticLinear,
+                    backgroundColor: ColorsToken.neutralAlpha[500]!,
                   ),
                 ],
               ),
@@ -108,60 +114,56 @@ class MemoryRetrieveView extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: EdgeInsets.fromLTRB(
-                16,
+                SizeToken.m,
                 0,
-                4,
+                SizeToken.m,
                 MediaQuery.of(context).padding.bottom,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // 날짜 변경
-                  Consumer<MemoryRetrieveViewmodel>(builder: (_, vm, __) {
-                    return InkWell(
-                      onTap: () => vm.showChangeDateBottomsheet(context),
-                      child: Text(
-                        vm.memory?.date != null
-                            ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
-                            : '',
-                        style: const TitleSmStyle(
-                          color: Colors.white,
+                  Consumer<MemoryRetrieveViewmodel>(
+                    builder: (_, vm, __) {
+                      return InkWell(
+                        onTap: () => vm.showChangeDateBottomsheet(context),
+                        child: Text(
+                          vm.memory?.date != null
+                              ? DateFormat('yyyy.MM.dd').format(vm.memory!.date)
+                              : '',
+                          style: TypographyToken.titleMd.copyWith(
+                            color: ColorsToken.white,
+                          ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    },
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       // 좋아요
                       Consumer<MemoryRetrieveViewmodel>(
                         builder: (_, value, __) {
-                          final isLiked = vm.memory?.isLiked ?? false;
+                          final isLiked = vm.memory?.like ?? false;
 
-                          return InkWell(
-                            onTap: vm.likeMemory,
-                            child: SizedBox(
-                              width: 48,
-                              height: 48,
-                              child: Icon(
-                                isLiked ? SolarIconsBold.heart : SolarIconsOutline.heart,
-                                color: Colors.white,
-                              ),
-                            ),
+                          return IconButtonComp(
+                            onPressed: vm.likeMemory,
+                            icon: isLiked
+                                ? IconsToken(
+                                    color: ColorsToken.white,
+                                  ).heartBold
+                                : IconsToken(
+                                    color: ColorsToken.white,
+                                  ).heartLinear,
                           );
                         },
                       ),
                       // 앨범 추가
-                      InkWell(
-                        onTap: () => vm.showAddAlbumDialog(context),
-                        child: const SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Icon(
-                            SolarIconsOutline.addFolder,
-                            color: Colors.white,
-                          ),
-                        ),
+                      IconButtonComp(
+                        onPressed: () => vm.showAddAlbumDialog(context),
+                        icon: IconsToken(
+                          color: ColorsToken.white,
+                        ).addFolderLinear,
                       ),
                     ],
                   ),

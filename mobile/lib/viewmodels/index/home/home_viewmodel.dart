@@ -1,32 +1,35 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:picmory/events/memory/create_event.dart';
+import 'package:picmory/events/memory/delete_event.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/models/memory/memory_list_model.dart';
-import 'package:picmory/repositories/memory_repository.dart';
-import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
-import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
+import 'package:picmory/models/api/memory/memory_model.dart';
+import 'package:picmory/repositories/api/memories_repository.dart';
 
 class HomeViewmodel extends ChangeNotifier {
-  final _memoryRepository = MemoryRepository();
-  final MemoryCreateViewmodel _memoryCreateViewmodel;
-  final MemoryRetrieveViewmodel _memoryRetrieveViewmodel;
+  final _memoriesRepository = MemoriesRepository();
 
-  HomeViewmodel(this._memoryCreateViewmodel, this._memoryRetrieveViewmodel) {
-    // 생성 리스너
-    _memoryCreateViewmodel.addListener(() {
-      if (_memoryCreateViewmodel.createComplete) {
-        clearDatas();
+  HomeViewmodel() {
+    // 스크롤이 바닥에 닿았을때 다음 페이지 로드
+    scrollController.addListener(() {
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+        _page++;
         loadMemories();
       }
     });
 
-    // 삭제 리스너
-    _memoryRetrieveViewmodel.addListener(() {
-      if (_memoryRetrieveViewmodel.deleteComplete) {
-        if (_memories == null) return;
-        _memories?.removeWhere((element) => element.id == _memoryRetrieveViewmodel.memory!.id);
-        notifyListeners();
-      }
+    // 추억 생성 이벤트 리스너
+    eventBus.on<MemoryCreateEvent>().listen((event) {
+      log('MemoryCreateEvent', name: 'HomeViewmodel');
+      init();
+    });
+
+    // 추억 삭제 이벤트 리스너
+    eventBus.on<MemoryDeleteEvent>().listen((event) {
+      log('MemoryDeleteEvent', name: 'HomeViewmodel');
+      _onDeleteMemory(event.memory.id);
     });
   }
 
@@ -36,15 +39,8 @@ class HomeViewmodel extends ChangeNotifier {
   }
 
   /// 저장된 기억 목록
-  List<MemoryListModel>? _memories = [];
-  List<MemoryListModel>? get memories => _memories;
-
-  /// 해시태그 목록
-  final List<String> _hashtags = [];
-  List<String> get hashtags => _hashtags;
-
-  final List<String> _selectedHashtags = [];
-  List<String> get selectedHashtags => _selectedHashtags;
+  List<MemoryModel>? _memories = [];
+  List<MemoryModel>? get memories => _memories;
 
   // 그리드 crossAxisCount (1~3)
   int _crossAxisCount = 2;
@@ -59,60 +55,47 @@ class HomeViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 로드할 페이지
+  int _page = 1;
+  ScrollController scrollController = ScrollController();
+
+  // 메모리 목록 불러오기
   loadMemories({
     List<String> hashtags = const [],
   }) async {
-    final userId = supabase.auth.currentUser!.id;
-    final items = await _memoryRepository.list(
-      userId: userId,
-      albumId: null,
-      hashtags: hashtags,
+    final result = await _memoriesRepository.list(
+      page: _page,
     );
+    if (result.data == null) return;
 
-    if (items.isEmpty) {
+    if (result.data!.isEmpty && (_memories ?? []).isEmpty) {
       _memories = null;
     } else {
-      _memories?.addAll(items);
+      _memories = [..._memories ?? [], ...result.data!];
     }
+
     notifyListeners();
   }
 
   clearDatas() {
+    _page = 1;
     _memories?.clear();
-    _hashtags.clear();
   }
-
-  deleteMemoryFromList(int memoryId) {
-    _memories?.removeWhere((element) => element.id == memoryId);
-    notifyListeners();
-  }
-
-  // 2024.04.16 - 해시태그 기능은 추후 추가 예정
-  // /// 해시태그 목록 불러오기
-  // loadHashtags() async {
-  //   final userId = supabase.auth.currentUser!.id;
-  //   final items = await _memoryRepository.getHashtags(userId: userId);
-
-  //   _hashtags.addAll(items);
-  //   notifyListeners();
-  // }
-
-  // /// 해시태그 선택
-  // onTapHashtags(String hashtag) async {
-  //   if (_selectedHashtags.contains(hashtag)) {
-  //     _selectedHashtags.remove(hashtag);
-  //   } else {
-  //     _selectedHashtags.add(hashtag);
-  //   }
-
-  //   _memories.clear();
-  //   loadMemories(hashtags: _selectedHashtags);
-
-  //   notifyListeners();
-  // }
 
   /// 기억 상세 페이지로 이동
-  goToMemoryRetrieve(BuildContext context, MemoryListModel memory) {
+  goToMemoryRetrieve(BuildContext context, MemoryModel memory) {
     context.push('/memory/${memory.id}');
+  }
+
+  _onDeleteMemory(int memoryId) {
+    _memories?.removeWhere((element) => element.id == memoryId);
+    if (_memories?.isEmpty ?? false) {
+      _memories = null;
+    }
+
+    notifyListeners();
+
+    // TODO: 삭제 스낵바 노출
+    // showSnackBar(context, '삭제되었습니다.');
   }
 }

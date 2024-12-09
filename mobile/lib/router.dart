@@ -7,7 +7,7 @@ import 'package:picmory/viewmodels/index/for_you/like_memories/like_memories_vie
 import 'package:picmory/viewmodels/index/home/home_viewmodel.dart';
 import 'package:picmory/viewmodels/index/index_viewmodel.dart';
 import 'package:picmory/viewmodels/memory/create/memory_create_viewmodel.dart';
-import 'package:picmory/viewmodels/memory/memory_get_source_viewmodel/memory_get_source_viewmodel.dart';
+import 'package:picmory/viewmodels/memory/get_source/memory_get_source_viewmodel.dart';
 import 'package:picmory/viewmodels/memory/retrieve/memory_retrieve_viewmodel.dart';
 import 'package:picmory/viewmodels/menu/menu_viewmodel.dart';
 import 'package:picmory/viewmodels/splash/splash_viewmodel.dart';
@@ -23,6 +23,7 @@ import 'package:picmory/views/menu/license/license_view.dart';
 import 'package:picmory/views/menu/menu_view.dart';
 import 'package:picmory/views/menu/user/user_view.dart';
 import 'package:picmory/views/splash/splash_view.dart';
+import 'package:picmory/views/webview/web_view.dart';
 import 'package:provider/provider.dart';
 
 final router = GoRouter(
@@ -66,10 +67,7 @@ final router = GoRouter(
             create: (_) => IndexViewmodel(),
           ),
           ChangeNotifierProvider(
-            create: (_) => HomeViewmodel(
-              MemoryCreateViewmodel(),
-              MemoryRetrieveViewmodel(),
-            ),
+            create: (_) => HomeViewmodel(),
           ),
           ChangeNotifierProvider(
             create: (_) => ForYouViewmodel(),
@@ -87,15 +85,15 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: 'get-source',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: MemoryGetSourceViewmodel(),
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => MemoryGetSourceViewmodel(),
                 child: const MemoryGetSourceView(),
               ),
             ),
             GoRoute(
               path: 'create',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: MemoryCreateViewmodel(),
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => MemoryCreateViewmodel(),
                 child: const MemoryCreateView(),
               ),
             ),
@@ -103,11 +101,8 @@ final router = GoRouter(
               path: ':memoryId',
               builder: (_, state) => MultiProvider(
                 providers: [
-                  ChangeNotifierProvider.value(
-                    value: MemoryRetrieveViewmodel(),
-                  ),
                   ChangeNotifierProvider(
-                    create: (_) => ForYouViewmodel(),
+                    create: (_) => MemoryRetrieveViewmodel(),
                   ),
                 ],
                 child: MemoryRetrieveView(
@@ -126,15 +121,15 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: 'like-memories',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: LikeMemoriesViewmodel(),
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => LikeMemoriesViewmodel(),
                 child: const LikeMemoriesView(),
               ),
             ),
             GoRoute(
               path: 'albums/:id',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: AlbumsViewmodel(
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => AlbumsViewmodel(
                   int.parse(state.pathParameters['id']!),
                 ),
                 child: const AlbumsView(),
@@ -154,8 +149,8 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: 'user',
-              builder: (_, state) => ChangeNotifierProvider.value(
-                value: MenuViewmodel(),
+              builder: (_, state) => ChangeNotifierProvider(
+                create: (_) => MenuViewmodel(),
                 child: const UserView(),
               ),
             ),
@@ -164,6 +159,15 @@ final router = GoRouter(
               builder: (_, state) => const LicenseView(),
             ),
           ],
+        ),
+        /**
+         * 웹뷰
+         */
+        GoRoute(
+          path: 'webview',
+          builder: (_, state) => WebView(
+            url: state.uri.queryParameters['url']!,
+          ),
         ),
       ],
     ),

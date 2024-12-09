@@ -18,7 +18,7 @@ class MemoryFileModel {
   String originalName;
   int size;
   String path;
-  String thumbnailPath;
+  String? thumbnailPath;
 
   MemoryFileModel.fromJson(Map<String, dynamic> json)
       : type = json['type'],

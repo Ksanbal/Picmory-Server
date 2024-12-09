@@ -2,7 +2,7 @@ class AlbumModel {
   int id;
   String name;
   int memoryCount;
-  String coverImagePath;
+  String? coverImagePath;
 
   AlbumModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],

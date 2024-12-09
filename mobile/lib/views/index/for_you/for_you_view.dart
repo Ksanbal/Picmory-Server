@@ -1,46 +1,83 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:picmory/common/components/common/icon_button_comp.dart';
+import 'package:picmory/common/components/common/slider_comp.dart';
 import 'package:picmory/common/components/get_shimmer.dart';
-import 'package:picmory/common/components/page_indicator_widget.dart';
-import 'package:picmory/common/families/color_family.dart';
-import 'package:picmory/common/families/text_styles/caption_sm_style.dart';
-import 'package:picmory/common/families/text_styles/text_sm_style.dart';
+import 'package:picmory/common/tokens/asset_image_token.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
+import 'package:picmory/common/tokens/icons_token.dart';
+import 'package:picmory/common/tokens/layout_token.dart';
+import 'package:picmory/common/tokens/typography_token.dart';
+import 'package:picmory/common/utils/get_storage_uri.dart';
+import 'package:picmory/common/utils/get_thumbnail_uri.dart';
 import 'package:picmory/main.dart';
 import 'package:picmory/viewmodels/index/for_you/for_you_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:solar_icons/solar_icons.dart';
 
-class ForYouView extends StatelessWidget {
+class ForYouView extends StatefulWidget {
   const ForYouView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    analytics.logScreenView(screenName: "for you");
+  State<ForYouView> createState() => _ForYouViewState();
+}
 
-    final vm = Provider.of<ForYouViewmodel>(context, listen: false);
+class _ForYouViewState extends State<ForYouView> {
+  late final vm = Provider.of<ForYouViewmodel>(context, listen: false);
+
+  @override
+  void initState() {
+    analytics.logScreenView(screenName: "for you");
     vm.init();
 
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Consumer<ForYouViewmodel>(
       builder: (_, vm, __) {
-        return Scaffold(
-          body: Stack(
-            children: [
-              ListView(
-                controller: vm.forYouViewController,
-                padding: EdgeInsets.only(
-                  top: 64 + MediaQuery.of(context).padding.top,
-                  bottom: MediaQuery.of(context).padding.bottom + 110,
-                ),
-                children: [
-                  vm.memories == null || (vm.memories ?? []).isEmpty
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 50),
-                            child: Text("하트를 누른 사진들을 보여드릴게요!"),
+        return Stack(
+          children: [
+            vm.memories == null && vm.albums == null
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          AssetImageToken.emptyForYou,
+                        ),
+                        Gap(SizeToken.m),
+                        Text(
+                          "아직 좋아하는\n추억이 없어요",
+                          textAlign: TextAlign.center,
+                          style: TypographyToken.titleSm.copyWith(
+                            color: ColorsToken.neutral[900],
                           ),
-                        )
+                        ),
+                        Gap(SizeToken.m),
+                        Text(
+                          "좋아하는 순간들을\n추억함에 담아두세요",
+                          textAlign: TextAlign.center,
+                          style: TypographyToken.textSm.copyWith(
+                            color: ColorsToken.neutral[400],
+                          ),
+                        ),
+                        Gap(SizeToken.xxl),
+                      ],
+                    ),
+                  )
+                : ListView(
+                    controller: vm.forYouViewController,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.only(
+                      top: 64 + MediaQuery.of(context).padding.top,
+                      bottom: MediaQuery.of(context).padding.bottom + 110,
+                    ),
+                    children: [
                       // 좋아요
-                      : SizedBox(
+                      if (!(vm.memories == null || (vm.memories ?? []).isEmpty))
+                        SizedBox(
                           height: MediaQuery.of(context).size.width - 32,
                           child: PageView.builder(
                             itemCount: vm.memories?.length,
@@ -58,7 +95,7 @@ class ForYouView extends StatelessWidget {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(5),
                                         child: ExtendedImage.network(
-                                          memory.photoUri,
+                                          getThumbnailUri(memory.files),
                                           fit: BoxFit.cover,
                                           alignment: Alignment.topCenter,
                                           loadStateChanged: (state) {
@@ -66,8 +103,8 @@ class ForYouView extends StatelessWidget {
                                               return getShimmer(index);
                                             }
                                             if (state.extendedImageLoadState == LoadState.failed) {
-                                              return const Center(
-                                                child: Icon(Icons.error),
+                                              return Center(
+                                                child: IconsToken().dangerCircleBold,
                                               );
                                             }
                                             return null;
@@ -81,43 +118,39 @@ class ForYouView extends StatelessWidget {
                             },
                           ),
                         ),
-                  if ((vm.memories ?? []).isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          PageIndicatorWidget(
-                            controller: vm.likePageController,
-                            count: (vm.memories ?? []).length,
+                      if ((vm.memories ?? []).isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SliderComp(
+                                controller: vm.likePageController,
+                                count: (vm.memories ?? []).length,
+                              ),
+                              InkWell(
+                                onTap: () => vm.routeToLikeMemories(context),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "좋아요 더보기",
+                                      style: TypographyToken.textSm.copyWith(
+                                        color: ColorsToken.neutral[600],
+                                      ),
+                                    ),
+                                    IconsToken(
+                                      color: ColorsToken.neutral[600]!,
+                                      size: IconTokenSize.small,
+                                    ).altArrowRightLinear
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
-                          InkWell(
-                            onTap: () => vm.routeToLikeMemories(context),
-                            child: const Row(
-                              children: [
-                                Text(
-                                  "좋아요 더보기",
-                                  style: TextSmStyle(
-                                    color: ColorFamily.textGrey600,
-                                  ),
-                                ),
-                                Icon(
-                                  SolarIconsOutline.altArrowRight,
-                                  color: ColorFamily.textGrey600,
-                                  size: 20,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  // 앨범
-                  vm.albums == null
-                      ? const Center(
-                          child: Text("앨범을 만들어서 추억을 관리해보세요!"),
-                        )
-                      : GridView.builder(
+                        ),
+                      // 앨범
+                      if (vm.albums != null)
+                        GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -133,24 +166,24 @@ class ForYouView extends StatelessWidget {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 4),
-                                    child: AspectRatio(
-                                      aspectRatio: 1 / 1,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(5),
-                                        child: getShimmer(index),
-                                      ),
+                                  AspectRatio(
+                                    aspectRatio: 1 / 1,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(5),
+                                      child: getShimmer(index),
                                     ),
                                   ),
-                                  const Text(
+                                  Gap(SizeToken.xxs),
+                                  Text(
                                     "-",
-                                    style: TextSmStyle(),
+                                    style: TypographyToken.textSm.copyWith(
+                                      color: ColorsToken.neutral[950],
+                                    ),
                                   ),
-                                  const Text(
+                                  Text(
                                     "-",
-                                    style: CaptionSmStyle(
-                                      color: ColorFamily.disabledGrey500,
+                                    style: TypographyToken.captionSm.copyWith(
+                                      color: ColorsToken.neutral[500],
                                     ),
                                   )
                                 ],
@@ -167,15 +200,15 @@ class ForYouView extends StatelessWidget {
                                   child: AspectRatio(
                                     aspectRatio: 1 / 1,
                                     child: InkWell(
-                                      onTap: () => vm.routeToAlbums(context, album.id),
+                                      onTap: () => vm.routeToAlbums(context, index),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(5),
-                                        child: album.imageUrls.isEmpty
+                                        child: album.coverImagePath == null
                                             ? Container(
-                                                color: ColorFamily.disabledGrey400,
+                                                color: ColorsToken.neutral[200]!,
                                               )
                                             : ExtendedImage.network(
-                                                album.imageUrls.first,
+                                                getStorageUri(album.coverImagePath!),
                                                 fit: BoxFit.cover,
                                                 loadStateChanged: (state) {
                                                   if (state.extendedImageLoadState ==
@@ -184,8 +217,8 @@ class ForYouView extends StatelessWidget {
                                                   }
                                                   if (state.extendedImageLoadState ==
                                                       LoadState.failed) {
-                                                    return const Center(
-                                                      child: Icon(Icons.error),
+                                                    return Center(
+                                                      child: IconsToken().dangerCircleBold,
                                                     );
                                                   }
                                                   return null;
@@ -197,65 +230,66 @@ class ForYouView extends StatelessWidget {
                                 ),
                                 Text(
                                   album.name,
-                                  style: const TextSmStyle(),
+                                  style: TypographyToken.textSm.copyWith(
+                                    color: ColorsToken.neutral[950],
+                                  ),
                                 ),
                                 Text(
-                                  album.imageUrls.length.toString(),
-                                  style: const CaptionSmStyle(
-                                    color: ColorFamily.disabledGrey500,
+                                  album.memoryCount.toString(),
+                                  style: TypographyToken.captionSm.copyWith(
+                                    color: ColorsToken.neutral[500],
                                   ),
                                 )
                               ],
                             );
                           },
                         ),
-                ],
-              ),
-              if (vm.isShrink)
-                Container(
-                  height: MediaQuery.of(context).padding.top + kToolbarHeight,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.4),
-                        Colors.black.withOpacity(0),
-                      ],
-                    ),
+                    ],
                   ),
-                ),
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor:
-                            vm.isShrink ? Colors.black.withOpacity(0.3) : Colors.transparent,
-                        child: IconButton(
-                          icon: const Icon(SolarIconsOutline.addFolder),
-                          color: vm.isShrink ? Colors.white : Colors.black,
-                          onPressed: () => vm.createAlbum(context),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      CircleAvatar(
-                        backgroundColor:
-                            vm.isShrink ? Colors.black.withOpacity(0.3) : Colors.transparent,
-                        child: IconButton(
-                          icon: const Icon(SolarIconsOutline.hamburgerMenu),
-                          color: vm.isShrink ? Colors.white : Colors.black,
-                          onPressed: () => vm.routeToMenu(context),
-                        ),
-                      ),
+            if (vm.isShrink)
+              Container(
+                height: MediaQuery.of(context).padding.top + kToolbarHeight,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      ColorsToken.blackAlpha[400]!,
+                      ColorsToken.black.withOpacity(0),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButtonComp(
+                      onPressed: () => vm.createAlbum(context),
+                      icon: IconsToken(
+                        size: IconTokenSize.small,
+                        color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
+                      ).addFolderLinear,
+                      backgroundColor:
+                          vm.isShrink ? ColorsToken.neutralAlpha[500]! : Colors.transparent,
+                    ),
+                    Gap(SizeToken.s),
+                    IconButtonComp(
+                      onPressed: () => vm.routeToMenu(context),
+                      icon: IconsToken(
+                        size: IconTokenSize.small,
+                        color: vm.isShrink ? ColorsToken.white : ColorsToken.black,
+                      ).hamburgerMenuLinear,
+                      backgroundColor:
+                          vm.isShrink ? ColorsToken.neutralAlpha[500]! : Colors.transparent,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

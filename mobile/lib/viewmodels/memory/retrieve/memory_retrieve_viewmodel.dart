@@ -1,82 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import 'package:picmory/common/components/album/add_album_bottomsheet.dart';
-import 'package:picmory/common/components/album/create_album_bottomsheet.dart';
+import 'package:picmory/common/components/memory/retrieve/add_album_bottomsheet.dart';
 import 'package:picmory/common/components/memory/retrieve/change_date_bottomsheet.dart';
 import 'package:picmory/common/components/memory/retrieve/video_player_dialog.dart';
 import 'package:picmory/common/utils/show_confirm_delete.dart';
 import 'package:picmory/common/utils/show_snackbar.dart';
+import 'package:picmory/events/memory/edit_event.dart';
+import 'package:picmory/events/memory/delete_event.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/models/album/album_model.dart';
-import 'package:picmory/models/memory/memory_model.dart';
-import 'package:picmory/models/memory/memory_upload_model.dart';
-import 'package:picmory/repositories/album_repository.dart';
-import 'package:picmory/repositories/memory_repository.dart';
+import 'package:picmory/models/api/memory/memory_model.dart';
+import 'package:picmory/repositories/api/memories_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MemoryRetrieveViewmodel extends ChangeNotifier {
-  // Singleton instance
-  static final MemoryRetrieveViewmodel _singleton = MemoryRetrieveViewmodel._internal();
+  final MemoriesRepository _memoriesRepository = MemoriesRepository();
 
-  // Factory method to return the same instance
-  factory MemoryRetrieveViewmodel() {
-    return _singleton;
+  @override
+  void dispose() {
+    if (_memory != null && _memory!.like == false) {
+      eventBus.fire(MemoryEditEvent(_memory!));
+    }
+    super.dispose();
   }
-
-  // Named constructor
-  MemoryRetrieveViewmodel._internal();
-
-  final MemoryRepository _memoryRepository = MemoryRepository();
-  final AlbumRepository _albumRepository = AlbumRepository();
 
   MemoryModel? _memory;
   MemoryModel? get memory => _memory;
 
-  List<MemoryUploadModel> get photos {
+  List<MemoryFileModel> get photos {
     if (memory == null) return [];
-    return _memory!.uploads.where((element) => element.isPhoto).toList();
+    return _memory!.files.where((element) => element.type == 'IMAGE').toList();
   }
 
-  List<MemoryUploadModel> get videos {
+  List<MemoryFileModel> get videos {
     if (memory == null) return [];
-    return _memory!.uploads.where((element) => !element.isPhoto).toList();
+    return _memory!.files.where((element) => element.type == 'VIDEO').toList();
   }
-
-  List<AlbumModel> _albums = [];
-
-  bool _deleteComplete = false;
-  bool get deleteComplete => _deleteComplete;
-
-  bool _isFullScreen = false;
-  bool get isFullScreen => _isFullScreen;
 
   /// 메모리 상세정보 호출
   getMemory(int memoryId) async {
-    final data = await _memoryRepository.retrieve(
-      userId: supabase.auth.currentUser!.id,
-      memoryId: memoryId,
+    final result = await _memoriesRepository.retrieve(
+      id: memoryId,
     );
 
-    if (data != null) {
-      _memory = data;
+    if (result.data != null) {
+      _memory = result.data;
       notifyListeners();
     }
   }
 
   /// 좋아요 기록
   likeMemory() async {
-    final result = await _memoryRepository.changeLikeStatus(
-      userId: supabase.auth.currentUser!.id,
-      memoryId: _memory!.id,
-      isLiked: _memory!.isLiked,
+    if (_memory == null) return;
+
+    final result = await _memoriesRepository.edit(
+      id: _memory!.id,
+      date: _memory!.date,
+      brandName: _memory!.brandName,
+      like: !_memory!.like, // toggle
     );
 
-    if (result) {
-      _memory!.isLiked = !_memory!.isLiked;
+    if (result.success) {
+      _memory!.like = !_memory!.like;
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   /// 삭제
@@ -86,125 +72,33 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
     // [x] 삭제 요청
     if (result == true) {
-      final error = await _memoryRepository.delete(
-        userId: supabase.auth.currentUser!.id,
-        memoryId: _memory!.id,
+      final result = await _memoriesRepository.delete(
+        id: _memory!.id,
       );
 
-      if (error != null) {
-        showSnackBar(context, error);
-      } else {
-        showSnackBar(context, '삭제되었습니다.');
-
-        _deleteComplete = true;
+      if (result.success) {
+        // 삭제 이벤트 발생
+        eventBus.fire(MemoryDeleteEvent(_memory!));
 
         // [x] 뒤로가기
         context.pop();
+      } else {
+        showSnackBar(context, result.message);
       }
     }
   }
 
-  /// 전체화면 토글
-  toggleFullScreen() {
-    _isFullScreen = !_isFullScreen;
-    notifyListeners();
-  }
-
   /// 추억함에 추가 dialog 노출
   showAddAlbumDialog(BuildContext context) async {
-    _albums = await _albumRepository.list(userId: supabase.auth.currentUser!.id);
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (_) {
         return AddAlbumBottomsheet(
-          albums: _albums,
-          onCompleted: (ids) => addAlbum(context, ids),
-          onCreateAlbum: () => createAlbumAndAdd(context),
+          memory: _memory!,
         );
       },
     );
-  }
-
-  /// 추억함에 추가
-  addAlbum(BuildContext context, List<int> albumIds) async {
-    final result = await _memoryRepository.addToAlbum(
-      userId: supabase.auth.currentUser!.id,
-      memoryId: _memory!.id,
-      albumIds: albumIds,
-    );
-
-    if (result) {
-      context.pop();
-      showSnackBar(
-        context,
-        '앨범에 추가되었습니다',
-        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
-        actionTitle: '완료',
-      );
-    }
-  }
-
-  createAlbumAndAdd(BuildContext context) async {
-    context.pop();
-
-    // 앨범 이름 입력 dialog 노출
-    final TextEditingController controller = TextEditingController();
-
-    var hintText = _memory?.brand ?? DateFormat('yyyy.MM').format(DateTime.now());
-
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) {
-        return CreateAlbumBottomsheet(
-          controller: controller,
-          hintText: hintText,
-        );
-      },
-    );
-
-    if (controller.text.isEmpty) {
-      return;
-    }
-
-    final exist = _albums.any((e) => e.name == controller.text);
-    if (exist) {
-      showSnackBar(
-        context,
-        '이미 존재하는 이름입니다',
-        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
-        actionTitle: '닫기',
-      );
-      return;
-    }
-
-    final int? albumId = await _albumRepository.create(
-      userId: supabase.auth.currentUser!.id,
-      name: controller.text,
-    );
-
-    if (albumId == null) {
-      showSnackBar(
-        context,
-        '앨범 생성에 실패했습니다',
-        bottomPadding: 96 - MediaQuery.of(context).padding.bottom,
-        actionTitle: '닫기',
-      );
-      return;
-    }
-
-    addAlbum(context, [albumId]);
-  }
-
-  pop(BuildContext context) {
-    // 변수 초기화
-    _memory = null;
-    _deleteComplete = false;
-    _isFullScreen = false;
-
-    context.pop();
   }
 
   showChangeDateBottomsheet(BuildContext context) async {
@@ -225,13 +119,14 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
 
     if (selectedDay == null || isSameDay(_memory!.date, selectedDay)) return;
 
-    final result = await _memoryRepository.edit(
-      userId: supabase.auth.currentUser!.id,
-      memoryId: _memory!.id,
+    final result = await _memoriesRepository.edit(
+      id: _memory!.id,
       date: selectedDay,
+      brandName: _memory!.brandName,
+      like: _memory!.like,
     );
 
-    if (result) {
+    if (result.success) {
       _memory!.date = selectedDay;
       notifyListeners();
     }
@@ -243,7 +138,7 @@ class MemoryRetrieveViewmodel extends ChangeNotifier {
       context: context,
       builder: (_) {
         return VideoPlayerDialog(
-          uris: videos.map((e) => e.uri).toList(),
+          uris: videos.map((e) => e.path).toList(),
         );
       },
     );

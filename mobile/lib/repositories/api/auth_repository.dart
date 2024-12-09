@@ -38,12 +38,14 @@ class AuthRepository {
 
       if ([404].contains(statusCode)) {
         return ResponseModel<AccessTokenModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<AccessTokenModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -53,36 +55,29 @@ class AuthRepository {
   }
 
   /// 로그아웃
-  ///
-  /// [accessToken] 액세스 토큰
-  Future<ResponseModel> signout({
-    required String accessToken,
-  }) async {
+  Future<ResponseModel> signout() async {
     try {
       final res = await _dio.post(
         '$path/signout',
-        options: Options(
-          headers: {
-            "Authorization": "Bearer $accessToken",
-          },
-        ),
       );
 
       return ResponseModel(
         statusCode: res.statusCode!,
         message: res.statusMessage!,
-        data: AccessTokenModel.fromJson(res.data),
+        data: null,
       );
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode;
-      if ([401, 403, 404].contains(statusCode)) {
+      if ([401, 404].contains(statusCode)) {
         return ResponseModel(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
@@ -114,12 +109,14 @@ class AuthRepository {
       final statusCode = e.response?.statusCode;
       if ([401, 403].contains(statusCode)) {
         return ResponseModel<AccessTokenModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<AccessTokenModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,

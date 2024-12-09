@@ -8,23 +8,16 @@ import 'package:go_router/go_router.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/utils/show_loading.dart';
+import 'package:picmory/events/memory/create_event.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/repositories/memory_repository.dart';
+import 'package:picmory/models/api/memory/upload_model.dart';
+import 'package:picmory/models/response_model.dart';
+import 'package:picmory/repositories/api/memories_repository.dart';
 
 class MemoryCreateViewmodel extends ChangeNotifier {
-  // Singleton instance
-  static final MemoryCreateViewmodel _singleton = MemoryCreateViewmodel._internal();
-
-  // Factory method to return the same instance
-  factory MemoryCreateViewmodel() {
-    return _singleton;
-  }
-
-  // Named constructor
-  MemoryCreateViewmodel._internal();
-
-  final MemoryRepository _memoryRepository = MemoryRepository();
+  final MemoriesRepository _memoriesRepository = MemoriesRepository();
 
   bool _createComplete = false;
   bool get createComplete => _createComplete;
@@ -60,7 +53,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
       context: context,
       builder: (BuildContext context) => Container(
         height: 200,
-        color: Colors.white,
+        color: ColorsToken.white,
         child: CupertinoDatePicker(
           initialDateTime: date,
           mode: CupertinoDatePickerMode.date,
@@ -99,7 +92,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
             url,
             savedVideoPath,
           );
-          _galleryVideos = [XFile(savedVideoPath)];
+          _galleryVideos.add(XFile(savedVideoPath));
         }
         _crawledBrand = extra['brand'];
       }
@@ -129,7 +122,8 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     if (video != null) {
       _galleryVideos.add(video);
       notifyListeners();
-      pageController.nextPage(
+      pageController.animateToPage(
+        _galleryImages.length + _galleryVideos.length + _crawledImageUrls.length - 1,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
@@ -162,14 +156,13 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     }
 
     // QR에서 가져온 경우 이미지, 영상을 다운로드 받아서 갤러리에 저장, 저장된 파일을 업로드
-    int? newMemoryId;
-
+    final List<File> downloadedImageFiles = [];
     if (_isFromQR) {
       try {
         Dio dio = Dio();
 
         // 사진 다운로드
-        final List<File> downloadedImageFiles = [];
+
         for (final url in _crawledImageUrls) {
           final response = await dio.get(
             url,
@@ -198,56 +191,71 @@ class MemoryCreateViewmodel extends ChangeNotifier {
             file.path,
           );
         }
-
-        newMemoryId = await _memoryRepository.create(
-          userId: supabase.auth.currentUser!.id,
-          photoList: downloadedImageFiles,
-          photoNameList: downloadedImageFiles.map((e) => e.path.split('/').last).toList(),
-          videoList: _galleryVideos.map((e) => File(e.path)).toList(),
-          videoNameList: _galleryVideos.map((e) => e.name).toList(),
-          date: date,
-          brand: _crawledBrand,
-        );
       } catch (e) {
         log(e.toString());
         return;
       }
-    } else {
-      newMemoryId = await _memoryRepository.create(
-        userId: supabase.auth.currentUser!.id,
-        photoList: _galleryImages.map((e) => File(e.path)).toList(),
-        photoNameList: _galleryImages.map((e) => e.name).toList(),
-        videoList: _galleryVideos.map((e) => File(e.path)).toList(),
-        videoNameList: _galleryVideos.map((e) => e.name).toList(),
-        date: date,
-        brand: null,
-      );
     }
 
-    // 로딩 표시
-    removeLoading();
+    // 사진 & 영상 업로드 실행
+    final List<Future<ResponseModel<UploadModel>>> uploadFutures = [];
 
-    analytics.logEvent(name: 'create memory', parameters: {
-      'from': _isFromQR ? 'qr' : 'gallery',
-      'brand': crawledBrand ?? '',
-    });
+    for (final image in downloadedImageFiles) {
+      uploadFutures.add(_memoriesRepository.upload(file: XFile(image.path)));
+    }
 
-    if (newMemoryId != null) {
-      _createComplete = true;
+    for (final image in _galleryImages) {
+      uploadFutures.add(_memoriesRepository.upload(file: image));
+    }
 
-      context.pushReplacement('/memory/$newMemoryId');
+    for (final video in _galleryVideos) {
+      uploadFutures.add(_memoriesRepository.upload(file: video));
+    }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("기억이 생성되었습니다 🎉"),
-        ),
-      );
-    } else {
+    final results = await Future.wait(uploadFutures);
+
+    List<int> fileIds = [];
+    for (final result in results) {
+      if (result.data != null) {
+        fileIds.add(result.data!.id);
+      }
+    }
+
+    final result = await _memoriesRepository.create(
+      fileIds: fileIds,
+      date: date,
+      brandName: _crawledBrand ?? '',
+    );
+
+    if (result.data == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("생성에 실패했습니다 😢"),
         ),
       );
     }
+
+    final newMemoryId = result.data!.id;
+
+    // 로딩 종료
+    removeLoading();
+
+    analytics.logEvent(name: 'create memory', parameters: {
+      'from': _isFromQR ? 'qr' : 'gallery',
+      'brand': _crawledBrand ?? '',
+    });
+
+    _createComplete = true;
+
+    context.pushReplacement('/memory/$newMemoryId');
+
+    // 메모리 생성 이벤트 발행
+    eventBus.fire(MemoryCreateEvent(newMemoryId));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("기억이 생성되었습니다 🎉"),
+      ),
+    );
   }
 }

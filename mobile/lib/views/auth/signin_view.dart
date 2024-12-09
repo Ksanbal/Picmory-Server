@@ -5,7 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:picmory/common/components/common/messaging_sm_comp.dart';
 import 'package:picmory/common/components/common/tooltip_comp.dart';
 import 'package:picmory/common/components/common/primary_button_comp.dart';
-import 'package:picmory/common/families/asset_image_family.dart';
+import 'package:picmory/common/tokens/asset_image_token.dart';
 import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/tokens/icons_token.dart';
 import 'package:picmory/common/tokens/layout_token.dart';
@@ -29,7 +29,9 @@ class SigninView extends StatelessWidget {
         width: double.infinity,
         child: PrimaryButtonComp(
           onPressed: () => vm.signinWithApple(context),
-          leading: IconsToken().apple,
+          leading: IconsToken(
+            color: ColorsToken.white,
+          ).apple,
           text: "Apple로 로그인",
           textColor: ColorsToken.white,
           backgroundColor: ColorsToken.black,
@@ -68,7 +70,7 @@ class SigninView extends StatelessWidget {
                 Gap(SizeToken.xs),
                 // 브랜드 이미지
                 ExtendedImage.asset(
-                  AssetImageFamily.brand,
+                  AssetImageToken.brand,
                 ),
               ],
             ),
@@ -91,6 +93,7 @@ class SigninView extends StatelessWidget {
                     if (vm.loadProvider)
                       FadeInUp(
                         duration: const Duration(milliseconds: 600),
+                        delay: const Duration(milliseconds: 500),
                         from: 18,
                         child: vm.latestSigninProvider == null
                             ? Padding(
@@ -108,7 +111,7 @@ class SigninView extends StatelessWidget {
                               ),
                       ),
                     // 최근 로그인한 로그인 방식 표시
-                    ...(vm.latestSigninProvider == null || vm.latestSigninProvider == 'apple'
+                    ...(vm.latestSigninProvider == null || vm.latestSigninProvider == 'APPLE'
                         ? signinButtons
                         : signinButtons.reversed),
                   ],

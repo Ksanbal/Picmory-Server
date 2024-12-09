@@ -23,6 +23,7 @@ class QrCrawlerRepository {
       );
     } on DioException catch (e) {
       return ResponseModel<List<BrandModel>>(
+        success: false,
         statusCode: e.response?.statusCode ?? 500,
         message: "알 수 없는 오류",
         data: null,
@@ -53,12 +54,14 @@ class QrCrawlerRepository {
       final statusCode = e.response?.statusCode;
       if ([400].contains(statusCode)) {
         return ResponseModel<CrawlModel>(
+          success: false,
           statusCode: statusCode!,
           message: e.response?.data['message'],
           data: null,
         );
       } else {
         return ResponseModel<CrawlModel>(
+          success: false,
           statusCode: e.response?.statusCode ?? 500,
           message: "알 수 없는 오류",
           data: null,
