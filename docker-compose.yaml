@@ -15,7 +15,7 @@ services:
       yarn start:prod
       "
     volumes:
-      - .data/picmory/uploads:/app/uploads
+      - .data/picmory/uploads:/usr/src/app/uploads
     labels:
       - traefik.http.routers.picmory.rule=PathPrefix(`/picmory`)
       - traefik.http.middlewares.picmory-stripprefix.stripprefix.prefixes=/picmory
