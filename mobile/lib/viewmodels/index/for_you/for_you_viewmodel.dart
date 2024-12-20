@@ -177,6 +177,14 @@ class ForYouViewmodel extends ChangeNotifier {
     final index = _albums?.indexWhere((element) => element.id == result.data!.id);
     if (index == null) return;
 
+    // 앨범 생성 이벤트
+    analytics.logEvent(
+      name: 'create_album',
+      parameters: {
+        'from': 'for_you',
+      },
+    );
+
     routeToAlbums(context, index);
   }
 

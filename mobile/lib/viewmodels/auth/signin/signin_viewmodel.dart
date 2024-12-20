@@ -166,6 +166,7 @@ class SigninViewmodel extends ChangeNotifier {
 
         if (signinRes.success) {
           // 로그인 성공
+          analytics.logSignUp(signUpMethod: provider); // 회원가입 로깅
           _afterSucessSignin(context, provider, signinRes.data!);
         } else {
           showSnackBar(context, "로그인에 실패하였습니다");

@@ -58,6 +58,9 @@ class MenuViewmodel extends ChangeNotifier {
   signout(BuildContext context) async {
     final result = await _authRepository.signout();
     if (result.success) {
+      // 로그아웃 이벤트
+      analytics.logEvent(name: 'signout');
+
       await storage.delete(key: 'accessToken');
       await storage.delete(key: 'refreshToken');
       context.go('/auth/signin');
@@ -126,6 +129,9 @@ class MenuViewmodel extends ChangeNotifier {
     // [x] 회원탈퇴
     final result = await _membersRepository.deleteMe();
     if (result.success) {
+      // 회원 탈퇴 이벤트
+      analytics.logEvent(name: 'leave');
+
       await storage.delete(key: 'accessToken');
       await storage.delete(key: 'refreshToken');
       context.go('/auth/signin');
