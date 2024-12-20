@@ -9,15 +9,16 @@ import 'package:picmory/common/tokens/typography_token.dart';
 class CreateAlbumBottomsheet extends StatelessWidget {
   const CreateAlbumBottomsheet({
     super.key,
-    required this.controller,
+    // required this.controller,
     required this.hintText,
   });
 
-  final TextEditingController controller;
   final String hintText;
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController controller = TextEditingController();
+
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: Container(
@@ -103,7 +104,7 @@ class CreateAlbumBottomsheet extends StatelessWidget {
                 if (controller.text.isEmpty) {
                   controller.text = hintText;
                 }
-                context.pop();
+                context.pop(controller.text);
               },
               text: "완료",
               textStyle: TypographyToken.textSm.copyWith(

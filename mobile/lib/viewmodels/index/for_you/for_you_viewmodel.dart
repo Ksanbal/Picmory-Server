@@ -146,24 +146,21 @@ class ForYouViewmodel extends ChangeNotifier {
   /// 앨범 생성 dialog 노출
   createAlbum(BuildContext context) async {
     // 앨범 이름 입력 dialog 노출
-    final TextEditingController controller = TextEditingController();
-
-    await showModalBottomSheet(
+    final name = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (_) {
         return CreateAlbumBottomsheet(
-          controller: controller,
           hintText: '추억함 이름',
         );
       },
     );
 
-    if (controller.text.isEmpty) {
+    if (name == null) {
       return;
     }
 
-    final result = await _albumsRepository.create(name: controller.text);
+    final result = await _albumsRepository.create(name: name);
     if (result.data == null) {
       showSnackBar(
         context,

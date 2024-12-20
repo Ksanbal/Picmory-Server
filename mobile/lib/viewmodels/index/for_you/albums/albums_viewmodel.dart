@@ -105,24 +105,22 @@ class AlbumsViewmodel extends ChangeNotifier {
   editName(BuildContext context) async {
     if (album == null) return;
 
-    final controller = TextEditingController();
-    await showModalBottomSheet(
+    final name = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (_) {
         return CreateAlbumBottomsheet(
-          controller: controller,
           hintText: album!.name,
         );
       },
     );
 
-    if (controller.text == album!.name) return;
+    if (name == null || name.isEmpty || name == album!.name) return;
 
-    final result = await _albumsRepository.edit(id: album!.id, name: controller.text);
+    final result = await _albumsRepository.edit(id: album!.id, name: name);
 
     if (result.success) {
-      album!.name = controller.text;
+      album!.name = name;
       notifyListeners();
 
       eventBus.fire(AlbumEditEvent(album!));

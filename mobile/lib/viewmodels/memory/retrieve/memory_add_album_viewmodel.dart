@@ -81,29 +81,26 @@ class MemoryAddAlbumViewmodel extends ChangeNotifier {
 
   createAlbumAndAdd(BuildContext context, MemoryModel memory) async {
     // 앨범 이름 입력 dialog 노출
-    final TextEditingController controller = TextEditingController();
-
     var hintText = DateFormat('yyyy.MM').format(memory.date);
     if (memory.brandName.isNotEmpty) {
       hintText = memory.brandName;
     }
 
-    await showModalBottomSheet(
+    final name = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (_) {
         return CreateAlbumBottomsheet(
-          controller: controller,
           hintText: hintText,
         );
       },
     );
 
-    if (controller.text.isEmpty) {
+    if (name == null) {
       return;
     }
 
-    final result = await _albumsRepository.create(name: controller.text);
+    final result = await _albumsRepository.create(name: name);
     if (result.data == null) {
       showSnackBar(
         context,
