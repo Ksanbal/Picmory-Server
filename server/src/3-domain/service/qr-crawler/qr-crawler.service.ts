@@ -8,10 +8,11 @@ import { Brand } from 'src/3-domain/model/qr-cralwer/brand.model';
 import { BrandCrawl } from 'src/3-domain/model/qr-cralwer/crawl-result.model';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
 import { JSDOM } from 'jsdom';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class QrCrawlerService {
-  constructor() {}
+  constructor(private readonly configService: ConfigService) {}
 
   brands: Brand[] = [
     {
@@ -175,6 +176,21 @@ export class QrCrawlerService {
       console.error(error);
       throw new ConflictException(ERROR_MESSAGES.QR_CRAWLER_UNKOWN_ERROR);
     }
+  }
+
+  /**
+   * QR 링크 크롤링 요청
+   */
+  demo(): BrandCrawl {
+    return {
+      brand: 'Picmory',
+      photoUrls: [
+        this.configService.get<string>('HOST_URL') + '/public/qr-demo.JPG',
+      ],
+      videoUrls: [
+        this.configService.get<string>('HOST_URL') + '/public/qr-demo.MP4',
+      ],
+    };
   }
 
   private async getBrowser() {

@@ -26,11 +26,22 @@ export function GetBrandsDocs() {
 export function CrawlQrDocs() {
   return applyDecorators(
     ApiOperation({
-      summary: '지원하는 브랜드 목록 조회',
+      summary: 'QR 링크 크롤링 요청',
     }),
     ApiOkResponse({
       type: QrCrawlerCrawlResDto,
     }),
     ApiBadRequestResponse(),
+  );
+}
+
+export function DemoDocs() {
+  return applyDecorators(
+    ApiOperation({
+      summary: '데모용 크롤링',
+    }),
+    ApiOkResponse({
+      type: QrCrawlerCrawlResDto,
+    }),
   );
 }

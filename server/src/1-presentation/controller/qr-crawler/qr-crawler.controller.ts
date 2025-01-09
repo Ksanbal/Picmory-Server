@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import {
   CrawlQrDocs,
+  DemoDocs,
   GetBrandsDocs,
   QrCrawlerControllerDocs,
 } from 'src/1-presentation/docs/qr-crawler/qr-crawler.docs';
@@ -35,5 +36,12 @@ export class QrCrawlerController {
       QrCrawlerCrawlResDto,
       await this.qrCrawlerFacade.crawlQr({ body }),
     );
+  }
+
+  // [ ] 데모용 링크 크롤러
+  @DemoDocs()
+  @Get('demo')
+  demo(): QrCrawlerCrawlResDto {
+    return plainToInstance(QrCrawlerCrawlResDto, this.qrCrawlerFacade.demo());
   }
 }

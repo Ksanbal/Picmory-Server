@@ -23,6 +23,13 @@ export class QrCrawlerFacade {
       url: dto.body.url,
     });
   }
+
+  /**
+   * 데모용 QR 링크 크롤링 요청
+   */
+  demo(): BrandCrawl {
+    return this.qrCrawlerService.demo();
+  }
 }
 
 type CrawlQrDto = {
