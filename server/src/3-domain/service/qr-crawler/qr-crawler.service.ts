@@ -16,6 +16,11 @@ export class QrCrawlerService {
 
   brands: Brand[] = [
     {
+      // 데모용
+      name: 'Picmory',
+      host: 'm.site.naver.com/1AsT',
+    },
+    {
       // 모노맨션
       name: 'Mono mansion',
       host: 'monomansion.net',
@@ -119,6 +124,9 @@ export class QrCrawlerService {
     try {
       let result: BrandCrawl;
       switch (brand.name) {
+        case 'Picmory':
+          result = this.demo();
+          break;
         case 'Mono mansion':
           result = await this.monomansion(url);
           break;
