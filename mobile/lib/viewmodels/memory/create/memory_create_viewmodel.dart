@@ -85,9 +85,12 @@ class MemoryCreateViewmodel extends ChangeNotifier {
       } else if (from == 'qr') {
         _isFromQR = true;
         _crawledImageUrls = extra['image'];
-        for (final url in extra['video']) {
+
+        for (var i = 0; i < extra['video'].length; i++) {
+          final url = extra['video'][i];
+
           final tempVideoPath = await getTemporaryDirectory();
-          final savedVideoPath = "${tempVideoPath.path}/${DateTime.now().second}.mp4";
+          final savedVideoPath = "${tempVideoPath.path}/video_$i.mp4";
 
           await Dio().download(
             url,
@@ -95,6 +98,7 @@ class MemoryCreateViewmodel extends ChangeNotifier {
           );
           _galleryVideos.add(XFile(savedVideoPath));
         }
+
         _crawledBrand = extra['brand'];
       }
 
@@ -119,130 +123,134 @@ class MemoryCreateViewmodel extends ChangeNotifier {
 
   // 생성
   Future<void> createMemory(BuildContext context) async {
-    // 로딩 표시
-    showLoading(context);
+    try {
+      // 로딩 표시
+      showLoading(context);
 
-    if (_isFromQR) {
-      if (_crawledImageUrls.isEmpty) {
+      if (_isFromQR) {
+        if (_crawledImageUrls.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("QR에서 데이터를 가져오지 못했습니다."),
+            ),
+          );
+          return;
+        }
+      } else {
+        if (_galleryImages.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("사진을 선택해주세요."),
+            ),
+          );
+          return;
+        }
+      }
+
+      // QR에서 가져온 경우 이미지, 영상을 다운로드 받아서 갤러리에 저장, 저장된 파일을 업로드
+      final List<File> downloadedImageFiles = [];
+      if (_isFromQR) {
+        try {
+          Dio dio = Dio();
+
+          // 사진 다운로드
+
+          for (final url in _crawledImageUrls) {
+            final response = await dio.get(
+              url,
+              options: Options(responseType: ResponseType.bytes),
+            );
+
+            // 갤러리에 사진 다운로드
+            final photoResult = await ImageGallerySaver.saveImage(
+              Uint8List.fromList(response.data),
+              quality: 100,
+              isReturnImagePathOfIOS: true,
+            );
+
+            final tempPhotoPath = await getTemporaryDirectory();
+            final imageFile = await File(
+              '${tempPhotoPath.path}/${photoResult['filePath'].split("/").last}',
+            ).writeAsBytes(response.data);
+
+            downloadedImageFiles.add(imageFile);
+          }
+
+          // 영상 다운로드
+          for (final file in _galleryVideos) {
+            // 갤러리에 영상 다운로드
+            await ImageGallerySaver.saveFile(
+              file.path,
+            );
+          }
+        } catch (e) {
+          log(e.toString());
+          return;
+        }
+      }
+
+      // 사진 & 영상 업로드 실행
+      final List<Future<ResponseModel<UploadModel>>> uploadFutures = [];
+
+      for (final image in downloadedImageFiles) {
+        uploadFutures.add(_memoriesRepository.upload(file: XFile(image.path)));
+      }
+
+      for (final image in _galleryImages) {
+        uploadFutures.add(_memoriesRepository.upload(file: image));
+      }
+
+      for (final video in _galleryVideos) {
+        uploadFutures.add(_memoriesRepository.upload(file: video));
+      }
+
+      final results = await Future.wait(uploadFutures);
+
+      List<int> fileIds = [];
+      for (final result in results) {
+        if (result.data != null) {
+          fileIds.add(result.data!.id);
+        }
+      }
+
+      final result = await _memoriesRepository.create(
+        fileIds: fileIds,
+        date: date,
+        brandName: _crawledBrand ?? '',
+      );
+
+      if (result.data == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("QR에서 데이터를 가져오지 못했습니다."),
+            content: Text("생성에 실패했습니다 😢"),
           ),
         );
-        return;
       }
-    } else {
-      if (_galleryImages.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("사진을 선택해주세요."),
-          ),
-        );
-        return;
-      }
-    }
 
-    // QR에서 가져온 경우 이미지, 영상을 다운로드 받아서 갤러리에 저장, 저장된 파일을 업로드
-    final List<File> downloadedImageFiles = [];
-    if (_isFromQR) {
-      try {
-        Dio dio = Dio();
+      final newMemoryId = result.data!.id;
 
-        // 사진 다운로드
+      analytics.logEvent(name: 'create memory', parameters: {
+        'from': _isFromQR ? 'qr' : 'gallery',
+        'brand': _crawledBrand ?? '',
+      });
 
-        for (final url in _crawledImageUrls) {
-          final response = await dio.get(
-            url,
-            options: Options(responseType: ResponseType.bytes),
-          );
+      _createComplete = true;
 
-          // 갤러리에 사진 다운로드
-          final photoResult = await ImageGallerySaver.saveImage(
-            Uint8List.fromList(response.data),
-            quality: 100,
-            isReturnImagePathOfIOS: true,
-          );
+      context.pushReplacement('/memory/$newMemoryId');
 
-          final tempPhotoPath = await getTemporaryDirectory();
-          final imageFile = await File(
-            '${tempPhotoPath.path}/${photoResult['filePath'].split("/").last}',
-          ).writeAsBytes(response.data);
+      // 메모리 생성 이벤트 발행
+      eventBus.fire(MemoryCreateEvent(newMemoryId));
 
-          downloadedImageFiles.add(imageFile);
-        }
-
-        // 영상 다운로드
-        for (final file in _galleryVideos) {
-          // 갤러리에 영상 다운로드
-          await ImageGallerySaver.saveFile(
-            file.path,
-          );
-        }
-      } catch (e) {
-        log(e.toString());
-        return;
-      }
-    }
-
-    // 사진 & 영상 업로드 실행
-    final List<Future<ResponseModel<UploadModel>>> uploadFutures = [];
-
-    for (final image in downloadedImageFiles) {
-      uploadFutures.add(_memoriesRepository.upload(file: XFile(image.path)));
-    }
-
-    for (final image in _galleryImages) {
-      uploadFutures.add(_memoriesRepository.upload(file: image));
-    }
-
-    for (final video in _galleryVideos) {
-      uploadFutures.add(_memoriesRepository.upload(file: video));
-    }
-
-    final results = await Future.wait(uploadFutures);
-
-    List<int> fileIds = [];
-    for (final result in results) {
-      if (result.data != null) {
-        fileIds.add(result.data!.id);
-      }
-    }
-
-    final result = await _memoriesRepository.create(
-      fileIds: fileIds,
-      date: date,
-      brandName: _crawledBrand ?? '',
-    );
-
-    if (result.data == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("생성에 실패했습니다 😢"),
+          content: Text("기억이 생성되었습니다 🎉"),
         ),
       );
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      // 로딩 종료
+      removeLoading();
     }
-
-    final newMemoryId = result.data!.id;
-
-    // 로딩 종료
-    removeLoading();
-
-    analytics.logEvent(name: 'create memory', parameters: {
-      'from': _isFromQR ? 'qr' : 'gallery',
-      'brand': _crawledBrand ?? '',
-    });
-
-    _createComplete = true;
-
-    context.pushReplacement('/memory/$newMemoryId');
-
-    // 메모리 생성 이벤트 발행
-    eventBus.fire(MemoryCreateEvent(newMemoryId));
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("기억이 생성되었습니다 🎉"),
-      ),
-    );
   }
 }
