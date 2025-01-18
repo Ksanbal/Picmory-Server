@@ -9,10 +9,15 @@ import { BrandCrawl } from 'src/3-domain/model/qr-cralwer/crawl-result.model';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
 import { JSDOM } from 'jsdom';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class QrCrawlerService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
+  ) {}
 
   brands: Brand[] = [
     {
@@ -68,7 +73,7 @@ export class QrCrawlerService {
     {
       // 픽닷
       name: 'picdot',
-      host: 'picdot.kr',
+      host: 'qr.picdot.co.kr',
     },
     {
       // 폴라 스튜디오
@@ -455,14 +460,22 @@ export class QrCrawlerService {
 
   /// 픽닷
   private async picdot(url): Promise<BrandCrawl> {
-    const qrcode = url.split('qrcode=')[1];
+    const transactionUid = url.split('transactionUid=')[1];
 
-    const photoUrls = [
-      `https://picdot.kr/api/download.php?qrcode=${qrcode}&type=P`,
-    ];
-    const videoUrls = [
-      `https://picdot.kr/api/download.php?qrcode=${qrcode}&type=V`,
-    ];
+    const res = await firstValueFrom(
+      this.httpService.get(
+        `https://api.picdot.co.kr/api/v1/transaction/qr/file/${transactionUid}`,
+      ),
+    );
+
+    if (res.status !== 200) {
+      throw new Error();
+    }
+
+    const data = res.data.data;
+
+    const photoUrls = [data['pathList'][0]['path']];
+    const videoUrls = [data['video']['path'], data['timeVideo']['path']];
 
     return {
       brand: '',
