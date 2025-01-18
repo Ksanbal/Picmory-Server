@@ -14,6 +14,8 @@ class SliderComp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (count == 0) return const SizedBox();
+
     return SmoothPageIndicator(
       controller: controller,
       count: count,
