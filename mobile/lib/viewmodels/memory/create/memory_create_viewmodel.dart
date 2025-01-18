@@ -66,12 +66,13 @@ class MemoryCreateViewmodel extends ChangeNotifier {
     );
   }
 
-  // 해시태그
-  TextEditingController hashtagController = TextEditingController();
-  List<String> hashtags = [];
+  /// 호출 여부
+  bool _isCalled = false;
 
   /// 소스 선택 페이지에서 가져온 데이터 처리
   getDataFromExtra(BuildContext context) {
+    if (_isCalled) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
 
@@ -97,23 +98,9 @@ class MemoryCreateViewmodel extends ChangeNotifier {
         _crawledBrand = extra['brand'];
       }
 
+      _isCalled = true;
       notifyListeners();
     });
-  }
-
-  hastagOnCSumbitted(String value) {
-    if (!hashtags.contains(value)) {
-      hashtags.add(value);
-    }
-    hashtagController.clear();
-
-    notifyListeners();
-  }
-
-  removeFromHashtags(String value) {
-    hashtags.remove(value);
-
-    notifyListeners();
   }
 
   /// 영상 선택 호출
