@@ -154,7 +154,6 @@ class MemoryCreateViewmodel extends ChangeNotifier {
           Dio dio = Dio();
 
           // 사진 다운로드
-
           for (final url in _crawledImageUrls) {
             final response = await dio.get(
               url,
@@ -208,6 +207,17 @@ class MemoryCreateViewmodel extends ChangeNotifier {
 
       List<int> fileIds = [];
       for (final result in results) {
+        // 하나라도 오류가 있으면 오류 메세지 출력
+        if (result.success == false) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("사진이나 영상이 업로드 되지 않았어요 😢"),
+            ),
+          );
+
+          return;
+        }
+
         if (result.data != null) {
           fileIds.add(result.data!.id);
         }
@@ -225,6 +235,8 @@ class MemoryCreateViewmodel extends ChangeNotifier {
             content: Text("생성에 실패했습니다 😢"),
           ),
         );
+
+        return;
       }
 
       final newMemoryId = result.data!.id;
@@ -248,6 +260,12 @@ class MemoryCreateViewmodel extends ChangeNotifier {
       );
     } catch (e) {
       log(e.toString());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("오류가 발생했습니다 😵"),
+        ),
+      );
     } finally {
       // 로딩 종료
       removeLoading();
