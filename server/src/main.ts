@@ -1,6 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as expressBasicAuth from 'express-basic-auth';
 import { ConfigService } from '@nestjs/config';
@@ -57,7 +61,17 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3000);
+  await app.listen(3000, () => {
+    if (process.send) {
+      process.send('ready');
+      Logger.log(`application is listening on port 3000...`);
+    }
+  });
+
+  process.on('SIGINT', () => {
+    Logger.error('server closed');
+    app.close();
+  });
 }
 
 bootstrap();

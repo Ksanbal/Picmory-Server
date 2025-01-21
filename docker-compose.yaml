@@ -22,6 +22,12 @@ services:
       - traefik.http.routers.picmory.middlewares=picmory-stripprefix@docker
     networks:
       - traefik-net
+    logging:
+      driver: "local"
+      options:
+        max-size: "10m"
+        max-file: "7"
+        compress: "true"
 
 networks:
   traefik-net:

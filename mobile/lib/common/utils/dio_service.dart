@@ -16,9 +16,9 @@ class DioService {
       : _dio = Dio(
           BaseOptions(
             baseUrl: remoteConfig.getString('api_host'),
-            connectTimeout: const Duration(milliseconds: 10000),
-            receiveTimeout: const Duration(milliseconds: 10000),
-            sendTimeout: const Duration(milliseconds: 10000),
+            connectTimeout: const Duration(milliseconds: 60000),
+            receiveTimeout: const Duration(milliseconds: 60000),
+            sendTimeout: const Duration(milliseconds: 60000),
           ),
         ) {
     _dio.interceptors.add(InterceptorsWrapper(
@@ -46,6 +46,8 @@ class DioService {
       onError: (DioException e, handler) {
         log('dio error', error: e, name: 'ERR');
         log(e.response.toString());
+
+        crashlytics.recordError(e, e.stackTrace, reason: 'dio error');
 
         return handler.next(e);
       },

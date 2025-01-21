@@ -69,8 +69,6 @@ class MemoryGetSourceViewmodel extends ChangeNotifier {
 
     if (_url == null) return;
 
-    context.pop();
-
     // api 호출로 이미지 & 영상 불러오기
     final result = await _qrCrawlerRepository.crawl(url: _url!);
     if (result.data == null) {
@@ -81,7 +79,7 @@ class MemoryGetSourceViewmodel extends ChangeNotifier {
 
     final data = result.data!;
 
-    context.push(
+    context.replace(
       '/memory/create',
       extra: {
         'from': 'qr',

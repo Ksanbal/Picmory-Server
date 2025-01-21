@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:event_bus/event_bus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -28,7 +29,14 @@ void main() async {
   );
   await remoteConfig.fetchAndActivate();
 
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  FlutterError.onError = (errorDetails) {
+    crashlytics.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    crashlytics.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   await remoteConfig.setConfigSettings(RemoteConfigSettings(
     fetchTimeout: const Duration(minutes: 1),
@@ -47,6 +55,7 @@ void main() async {
 final remoteConfig = FirebaseRemoteConfig.instance;
 final analytics = FirebaseAnalytics.instance;
 final messaging = FirebaseMessaging.instance;
+final crashlytics = FirebaseCrashlytics.instance;
 final FlutterLocalNotificationsPlugin _localNotification = FlutterLocalNotificationsPlugin();
 
 // 이벤트 버스
