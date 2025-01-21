@@ -64,7 +64,7 @@ async function bootstrap() {
   await app.listen(3000, () => {
     if (process.send) {
       process.send('ready');
-      Logger.log(`application is listening on port ${process.env.PORT}...`);
+      Logger.log(`application is listening on port 3000...`);
     }
   });
 
