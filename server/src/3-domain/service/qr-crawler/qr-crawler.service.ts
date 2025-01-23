@@ -11,12 +11,20 @@ import { JSDOM } from 'jsdom';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EVENT_NAMES } from 'src/lib/constants/event-names';
+import {
+  WebhookClient,
+  WebhookColor,
+} from 'src/4-infrastructure/client/webhook/webhook.client';
 
 @Injectable()
 export class QrCrawlerService {
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly webhookClient: WebhookClient,
   ) {}
 
   brands: Brand[] = [
@@ -123,6 +131,10 @@ export class QrCrawlerService {
     // 지원하는 브랜드인지 확인
     const brand = this.brands.find((brand) => url.includes(brand.host));
     if (brand == undefined) {
+      // 파일 생성 이벤트 발행
+      this.eventEmitter.emit(EVENT_NAMES.QR_CRAWLER_FAILED, {
+        url,
+      });
       throw new BadRequestException(ERROR_MESSAGES.QR_CRAWLER_NOT_SUPPORTED);
     }
 
@@ -187,6 +199,9 @@ export class QrCrawlerService {
       return result;
     } catch (error) {
       console.error(error);
+      this.eventEmitter.emit(EVENT_NAMES.QR_CRAWLER_FAILED, {
+        url,
+      });
       throw new ConflictException(ERROR_MESSAGES.QR_CRAWLER_UNKOWN_ERROR);
     }
   }
@@ -204,6 +219,18 @@ export class QrCrawlerService {
         this.configService.get<string>('HOST_URL') + '/public/qr-demo.MP4',
       ],
     };
+  }
+
+  async notifyCrawlFailed(dto: NotifyCrawlFailedDto): Promise<void> {
+    const { url } = dto;
+
+    const result = await this.webhookClient.send({
+      title: '🔥 크롤링 실패했어요!',
+      content: `지원하지 않는 브랜드거나, 실행중 오류가 있었을 수도 있어요\n${url}`,
+      color: WebhookColor.NEGATIVE,
+    });
+
+    if (!result) console.error('Webhook 전송 실패');
   }
 
   private async getBrowser() {
@@ -622,5 +649,9 @@ export class QrCrawlerService {
 }
 
 type CrawlQrDto = {
+  url: string;
+};
+
+type NotifyCrawlFailedDto = {
   url: string;
 };
