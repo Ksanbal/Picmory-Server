@@ -30,8 +30,23 @@ export class QrCrawlerFacade {
   demo(): BrandCrawl {
     return this.qrCrawlerService.demo();
   }
+
+  /**
+   * 크롤링 실패시 디스코드 webhook으로 알림
+   */
+  async notifyCrawlFailed(dto: NotifyCrawlFailedDto): Promise<void> {
+    const { url } = dto;
+
+    await this.qrCrawlerService.notifyCrawlFailed({
+      url,
+    });
+  }
 }
 
 type CrawlQrDto = {
   body: QrCrawlerCrawlReqDto;
+};
+
+type NotifyCrawlFailedDto = {
+  url: string;
 };
