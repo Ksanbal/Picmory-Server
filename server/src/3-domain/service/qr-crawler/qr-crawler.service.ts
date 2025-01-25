@@ -41,7 +41,7 @@ export class QrCrawlerService {
     {
       // 하루필름
       name: 'HARUFILM',
-      host: 'haru12.mx2.co.kr',
+      host: 'mx2.co.kr',
     },
     {
       // 포토 시그니처
@@ -148,7 +148,7 @@ export class QrCrawlerService {
           result = await this.monomansion(url);
           break;
         case 'HARUFILM':
-          result = await this.haruFilm(brand, url);
+          result = await this.haruFilm(url);
           break;
         case 'PHOTO SIGNATURE':
           result = await this.photoqr2(url);
@@ -279,7 +279,7 @@ export class QrCrawlerService {
   }
 
   /// 하루필름
-  private async haruFilm(brand: Brand, url: string): Promise<BrandCrawl> {
+  private async haruFilm(url: string): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
     const dom = new JSDOM('');
@@ -290,17 +290,21 @@ export class QrCrawlerService {
 
     const aList = document.querySelectorAll('a');
 
+    const regex = /http:\/\/\w+\.mx2\.co\.kr/;
+    const result = url.match(regex);
+    if (result == null) throw new Error();
+
     // 영상 다운로드 링크
-    const videoHref = 'http://' + brand.host + aList[0].getAttribute('href');
+    const videoHref = result[0] + aList[0].getAttribute('href');
     const videoUrls = [videoHref];
 
     // 사진 다운로드 링크
-    const photoHref = 'http://' + brand.host + aList[1].getAttribute('href');
+    const photoHref = result[0] + aList[1].getAttribute('href');
     const photoUrls = [photoHref];
 
     // 보너스 이미지 다운로드
     if (2 < aList.length) {
-      const bonusHref = 'http://' + brand.host + aList[2].getAttribute('href');
+      const bonusHref = result[0] + aList[2].getAttribute('href');
       photoUrls.push(bonusHref);
     }
 
