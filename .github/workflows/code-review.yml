@@ -1,15 +1,17 @@
 name: Gemini AI Code Reviewer
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  issue_comment:
+    types: [created]
 
 permissions: write-all
 
 jobs:
   gemini-code-review:
     runs-on: ubuntu-latest
-
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/gemini-review')
     steps:
       - name: PR Info
         run: |
@@ -31,7 +33,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: truongnh1992/gemini-ai-code-reviewer@v6.2.0
+      - uses: truongnh1992/gemini-ai-code-reviewer@latest
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
