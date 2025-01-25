@@ -9,9 +9,7 @@ permissions: write-all
 jobs:
   gemini-code-review:
     runs-on: ubuntu-latest
-    if: |
-      github.event.issue.pull_request
-      
+
     steps:
       - name: PR Info
         run: |
