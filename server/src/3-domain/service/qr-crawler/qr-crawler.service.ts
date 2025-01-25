@@ -251,9 +251,11 @@ export class QrCrawlerService {
   private async monomansion(url): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new JSDOM('').window
-      .DOMParser()
-      .parseFromString(html, 'text/html');
+    const dom = new JSDOM('');
+    const document = new dom.window.DOMParser().parseFromString(
+      html,
+      'text/html',
+    );
 
     const aList = document.querySelectorAll('a');
 
@@ -280,9 +282,11 @@ export class QrCrawlerService {
   private async haruFilm(brand: Brand, url: string): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new JSDOM('').window
-      .DOMParser()
-      .parseFromString(html, 'text/html');
+    const dom = new JSDOM('');
+    const document = new dom.window.DOMParser().parseFromString(
+      html,
+      'text/html',
+    );
 
     const aList = document.querySelectorAll('a');
 
@@ -349,9 +353,11 @@ export class QrCrawlerService {
   private async vividmuseum(url): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new JSDOM('').window
-      .DOMParser()
-      .parseFromString(html, 'text/html');
+    const dom = new JSDOM('');
+    const document = new dom.window.DOMParser().parseFromString(
+      html,
+      'text/html',
+    );
 
     const aList = document.querySelectorAll('a');
 
@@ -528,9 +534,11 @@ export class QrCrawlerService {
   private async dontLookUp(url): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new JSDOM('').window
-      .DOMParser()
-      .parseFromString(html, 'text/html');
+    const dom = new JSDOM('');
+    const document = new dom.window.DOMParser().parseFromString(
+      html,
+      'text/html',
+    );
 
     const aList = document.querySelectorAll('a');
 
@@ -553,9 +561,11 @@ export class QrCrawlerService {
   private async oldmoon(url): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new JSDOM('').window
-      .DOMParser()
-      .parseFromString(html, 'text/html');
+    const dom = new JSDOM('');
+    const document = new dom.window.DOMParser().parseFromString(
+      html,
+      'text/html',
+    );
 
     const aList = document.querySelectorAll('a');
 
