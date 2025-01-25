@@ -41,7 +41,7 @@ export class QrCrawlerService {
     {
       // 하루필름
       name: 'HARUFILM',
-      host: 'haru2.mx2.co.kr',
+      host: 'haru12.mx2.co.kr',
     },
     {
       // 포토 시그니처
@@ -148,7 +148,7 @@ export class QrCrawlerService {
           result = await this.monomansion(url);
           break;
         case 'HARUFILM':
-          result = await this.haruFilm(url);
+          result = await this.haruFilm(brand, url);
           break;
         case 'PHOTO SIGNATURE':
           result = await this.photoqr2(url);
@@ -251,10 +251,9 @@ export class QrCrawlerService {
   private async monomansion(url): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new new JSDOM('').window.DOMParser().parseFromString(
-      html,
-      'text/html',
-    );
+    const document = new JSDOM('').window
+      .DOMParser()
+      .parseFromString(html, 'text/html');
 
     const aList = document.querySelectorAll('a');
 
@@ -278,28 +277,26 @@ export class QrCrawlerService {
   }
 
   /// 하루필름
-  private async haruFilm(url): Promise<BrandCrawl> {
+  private async haruFilm(brand: Brand, url: string): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new new JSDOM('').window.DOMParser().parseFromString(
-      html,
-      'text/html',
-    );
+    const document = new JSDOM('').window
+      .DOMParser()
+      .parseFromString(html, 'text/html');
 
     const aList = document.querySelectorAll('a');
 
     // 영상 다운로드 링크
-    const videoHref = 'http://haru2.mx2.co.kr' + aList[0].getAttribute('href');
+    const videoHref = 'http://' + brand.host + aList[0].getAttribute('href');
     const videoUrls = [videoHref];
 
     // 사진 다운로드 링크
-    const photoHref = 'http://haru2.mx2.co.kr' + aList[1].getAttribute('href');
+    const photoHref = 'http://' + brand.host + aList[1].getAttribute('href');
     const photoUrls = [photoHref];
 
     // 보너스 이미지 다운로드
     if (2 < aList.length) {
-      const bonusHref =
-        'http://haru2.mx2.co.kr' + aList[2].getAttribute('href');
+      const bonusHref = 'http://' + brand.host + aList[2].getAttribute('href');
       photoUrls.push(bonusHref);
     }
 
@@ -352,10 +349,9 @@ export class QrCrawlerService {
   private async vividmuseum(url): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new new JSDOM('').window.DOMParser().parseFromString(
-      html,
-      'text/html',
-    );
+    const document = new JSDOM('').window
+      .DOMParser()
+      .parseFromString(html, 'text/html');
 
     const aList = document.querySelectorAll('a');
 
@@ -532,10 +528,9 @@ export class QrCrawlerService {
   private async dontLookUp(url): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new new JSDOM('').window.DOMParser().parseFromString(
-      html,
-      'text/html',
-    );
+    const document = new JSDOM('').window
+      .DOMParser()
+      .parseFromString(html, 'text/html');
 
     const aList = document.querySelectorAll('a');
 
@@ -558,10 +553,9 @@ export class QrCrawlerService {
   private async oldmoon(url): Promise<BrandCrawl> {
     const res = await fetch(url);
     const html = await res.text();
-    const document = new new JSDOM('').window.DOMParser().parseFromString(
-      html,
-      'text/html',
-    );
+    const document = new JSDOM('').window
+      .DOMParser()
+      .parseFromString(html, 'text/html');
 
     const aList = document.querySelectorAll('a');
 
