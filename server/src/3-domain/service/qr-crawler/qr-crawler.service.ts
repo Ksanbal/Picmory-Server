@@ -113,6 +113,11 @@ export class QrCrawlerService {
       name: 'The Film',
       host: 'thefilmadmin.co.kr',
     },
+    {
+      // Q2Center
+      name: 'Q2Center',
+      host: 'q2center.kr',
+    },
   ];
 
   /**
@@ -191,6 +196,9 @@ export class QrCrawlerService {
           break;
         case 'The Film':
           result = await this.thefilm(url);
+          break;
+        case 'Q2Center':
+          result = await this.q2Center(url);
           break;
       }
 
@@ -647,6 +655,43 @@ export class QrCrawlerService {
     const videoUrls = [
       `https://thefilmadmin.co.kr/api/download.php?qrcode=${qrcode}&type=V`,
     ];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// Q2Center
+  private async q2Center(url): Promise<BrandCrawl> {
+    const res = await fetch(url);
+    const html = await res.text();
+    const dom = new JSDOM('');
+    const document = new dom.window.DOMParser().parseFromString(
+      html,
+      'text/html',
+    );
+
+    const aList = document.querySelectorAll('a');
+
+    const regex = /http:\/\/\w+\.q2center\.kr/;
+    const result = url.match(regex);
+    if (result == null) throw new Error();
+
+    // 영상 다운로드 링크
+    const videoHref = result[0] + aList[0].getAttribute('href');
+    const videoUrls = [videoHref];
+
+    // 사진 다운로드 링크
+    const photoHref = result[0] + aList[1].getAttribute('href');
+    const photoUrls = [photoHref];
+
+    // 보너스 이미지 다운로드
+    if (2 < aList.length) {
+      const bonusHref = result[0] + aList[2].getAttribute('href');
+      photoUrls.push(bonusHref);
+    }
 
     return {
       brand: '',
