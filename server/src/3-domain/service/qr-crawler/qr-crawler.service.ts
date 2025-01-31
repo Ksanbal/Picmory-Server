@@ -11,6 +11,8 @@ import { JSDOM } from 'jsdom';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import * as AdmZip from 'adm-zip';
+import * as fs from 'fs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_NAMES } from 'src/lib/constants/event-names';
 import {
@@ -118,6 +120,11 @@ export class QrCrawlerService {
       name: 'Q2Center',
       host: 'q2center.kr',
     },
+    {
+      // PhotoHani
+      name: 'PhotoHani',
+      host: 'photo.cellbig.net',
+    },
   ];
 
   /**
@@ -199,6 +206,9 @@ export class QrCrawlerService {
           break;
         case 'Q2Center':
           result = await this.q2Center(url);
+          break;
+        case 'PhotoHani':
+          result = await this.photoHani(url);
           break;
       }
 
@@ -692,6 +702,58 @@ export class QrCrawlerService {
       const bonusHref = result[0] + aList[2].getAttribute('href');
       photoUrls.push(bonusHref);
     }
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// PhotoHani
+  private async photoHani(url): Promise<BrandCrawl> {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const arrayBuffer = await blob.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // zip 파일을 풀어서 임시경로에 저장
+    const zip = new AdmZip(buffer);
+    const zipEntries = zip.getEntries(); // an array of ZipEntry records
+
+    const filePath = `/uploads/temp/${new Date().getTime()}`;
+
+    const photoUrls = [];
+    const videoUrls = [];
+
+    zipEntries.forEach((entry) => {
+      zip.extractEntryTo(entry, '.' + filePath, false, true);
+      if (entry.entryName.includes('.jpg')) {
+        photoUrls.push(
+          this.configService.get<string>('HOST_URL') +
+            filePath +
+            '/' +
+            entry.entryName,
+        );
+      } else {
+        videoUrls.push(
+          this.configService.get<string>('HOST_URL') +
+            filePath +
+            '/' +
+            entry.entryName,
+        );
+      }
+    });
+
+    // 1시간 후 임시 파일 삭제 예약
+    setTimeout(
+      () => {
+        fs.rm('.' + filePath, { recursive: true }, (err) => {
+          if (err) console.error(`임시 파일 삭제 실패: ${filePath}`, err);
+        });
+      },
+      60 * 60 * 1000,
+    );
 
     return {
       brand: '',
