@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import * as AdmZip from 'adm-zip';
+import * as fs from 'fs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_NAMES } from 'src/lib/constants/event-names';
 import {
@@ -721,6 +722,7 @@ export class QrCrawlerService {
     const zipEntries = zip.getEntries(); // an array of ZipEntry records
 
     const filePath = `/uploads/temp/${new Date().getTime()}`;
+
     const photoUrls = [];
     const videoUrls = [];
 
@@ -742,6 +744,16 @@ export class QrCrawlerService {
         );
       }
     });
+
+    // 1시간 후 임시 파일 삭제 예약
+    setTimeout(
+      () => {
+        fs.rm('.' + filePath, { recursive: true }, (err) => {
+          if (err) console.error(`임시 파일 삭제 실패: ${filePath}`, err);
+        });
+      },
+      60 * 60 * 1000,
+    );
 
     return {
       brand: '',
