@@ -125,6 +125,11 @@ export class QrCrawlerService {
       name: 'PhotoHani',
       host: 'photo.cellbig.net',
     },
+    {
+      // Mirart Studio
+      name: 'Mirart Studio',
+      host: 'mirart.me',
+    },
   ];
 
   /**
@@ -209,6 +214,9 @@ export class QrCrawlerService {
           break;
         case 'PhotoHani':
           result = await this.photoHani(url);
+          break;
+        case 'Mirart Studio':
+          result = await this.mirartStudio(url);
           break;
       }
 
@@ -754,6 +762,48 @@ export class QrCrawlerService {
       },
       60 * 60 * 1000,
     );
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// Mirart Studio
+  private async mirartStudio(url): Promise<BrandCrawl> {
+    const res = await fetch(url);
+    const html = await res.text();
+    const dom = new JSDOM('');
+    const document = new dom.window.DOMParser().parseFromString(
+      html,
+      'text/html',
+    );
+
+    // 이미지 링크 가져오기
+    const img = document.querySelector('img');
+    const imgSrc = img.getAttribute('src');
+    const baseUrl = imgSrc.split('/').slice(0, -1).join('/');
+
+    const photoUrls = [
+      imgSrc.replace('_thumbnail', ''),
+      baseUrl + '/bonus.jpg',
+    ];
+    const videoUrls = [baseUrl + '/video.mp4'];
+
+    // 원본 사진 다운로드
+    const aList = document.querySelectorAll('a');
+    const regex = /https:\/\/.+\.jpg/;
+    for (let i = 0; i < aList.length; i++) {
+      if (i % 2 == 0) continue;
+
+      const a = aList[i];
+      const onclick = a.getAttribute('onclick');
+      const result = onclick.match(regex);
+      if (result == null) continue;
+
+      photoUrls.push(result[0]);
+    }
 
     return {
       brand: '',
