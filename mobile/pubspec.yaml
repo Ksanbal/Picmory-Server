@@ -1,7 +1,7 @@
 name: picmory
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.0.3+17
+version: 1.0.3+18
 
 environment:
   sdk: ">=3.2.3 <4.0.0"
