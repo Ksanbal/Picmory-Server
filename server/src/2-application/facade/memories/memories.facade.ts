@@ -50,24 +50,30 @@ export class MemoriesFacade {
    * 썸네일 생성
    */
   async createThumbnail(dto: CreateThumbnailDto): Promise<void> {
-    const { memoryFile } = dto;
+    const { memory: newMemory } = dto;
 
-    // 파일을 읽어 썸네일 생성
-    const thumbnailPath = await this.fileService.createThumbnail({
-      filePath: memoryFile.path,
-      type: memoryFile.type as MemoryFileType,
+    // 추억 파일 목록 조회
+    const memory = await this.memoriesService.retrieve({
+      memberId: newMemory.memberId,
+      id: newMemory.id,
     });
 
-    if (thumbnailPath == null) {
-      return;
-    }
+    // 각 추억 파일의 썸네일 생성
+    const thumbnailPathsPromises = memory.MemoryFile.filter(
+      (memoryFile) => memoryFile.type == MemoryFileType.IMAGE, // 이미지 파일만 생성하도록 적용
+    ).map(async (memoryFile) => {
+      const thumbnailPath = await this.fileService.createThumbnail({
+        filePath: memoryFile.path,
+      });
 
-    memoryFile.thumbnailPath = thumbnailPath;
-
-    // 파일을 업데이트
-    await this.memoriesService.updateMemoryFileThumbnailPath({
-      memoryFile,
+      // 파일 업데이트
+      memoryFile.thumbnailPath = thumbnailPath;
+      await this.memoriesService.updateMemoryFileThumbnailPath({
+        memoryFile,
+      });
     });
+
+    await Promise.all(thumbnailPathsPromises);
   }
 
   /**
@@ -206,7 +212,7 @@ type GetUploadUrlDto = {
 };
 
 type CreateThumbnailDto = {
-  memoryFile: MemoryFile;
+  memory: Memory;
 };
 
 type CreateDto = {

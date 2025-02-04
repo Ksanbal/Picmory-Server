@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -31,10 +35,48 @@ export class StorageClient {
     });
     return url;
   }
+
+  // 파일 가져오기
+  async getObject(dto: GetObjectDto) {
+    const client = this.getS3Client();
+    const command = new GetObjectCommand({
+      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Key: dto.key,
+    });
+
+    const response = await client.send(command);
+    return response.Body;
+  }
+
+  // 파일 업로드
+  async putObjectWithBuffer(dto: PutObjectWithBufferDto) {
+    const { key, buffer, contentType } = dto;
+
+    const client = this.getS3Client();
+    const command = new PutObjectCommand({
+      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Key: key,
+      Body: buffer,
+      ContentType: contentType,
+    });
+
+    const response = await client.send(command);
+    return response;
+  }
 }
 
 type GeneratePresignedUrlDto = {
   key: string;
   contentType: string;
   expiresIn: number;
+};
+
+type GetObjectDto = {
+  key: string;
+};
+
+type PutObjectWithBufferDto = {
+  key: string;
+  buffer: Buffer;
+  contentType: string;
 };

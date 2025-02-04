@@ -1,55 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import * as sharp from 'sharp';
 import * as fs from 'fs';
-import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
-import * as ffmpeg from 'fluent-ffmpeg';
+import { StorageClient } from 'src/4-infrastructure/client/storage/storage.client';
 
 @Injectable()
 export class FileService {
+  constructor(private readonly storageClient: StorageClient) {}
+
   /**
    * 썸네일 이미지 생성 및 저장
    */
   async createThumbnail(dto: CreateThumbnailDto): Promise<string | null> {
-    const { filePath, type } = dto;
+    const { filePath } = dto;
 
     try {
+      // 스토리지에서 이미지 가져오기
+      const imgStream = await this.storageClient.getObject({ key: filePath });
+      const imgBuffer = await this.streamToBuffer(imgStream);
+
+      // 썸네일 경로
       const fileDir = filePath.slice(0, filePath.lastIndexOf('/'));
       const fileOriginalName = filePath
         .slice(filePath.lastIndexOf('/') + 1)
         .split('.')[0];
+      const thumbnailPath = `${fileDir}/thumbnail-${fileOriginalName}.avif`;
 
-      let thumbnailPath = null;
+      // 썸네일 생성
+      const thumbnailBuffer = await sharp(imgBuffer)
+        .withMetadata()
+        .toFormat('avif')
+        .toBuffer();
 
-      if (type == MemoryFileType.IMAGE) {
-        thumbnailPath = `${fileDir}/thumbnail-${fileOriginalName}.avif`;
-
-        await sharp(dto.filePath)
-          .withMetadata()
-          .toFormat('avif')
-          .toFile(thumbnailPath);
-      } else if (type == MemoryFileType.VIDEO) {
-        // 썸네일 이미지 생성
-        await new Promise<void>((resolve, reject) => {
-          ffmpeg(filePath)
-            .on('end', () => {
-              resolve();
-            })
-            .on('error', (err) => {
-              reject(err);
-            })
-            .screenshots({
-              timestamps: [1],
-              filename: `thumbnail-${fileOriginalName}.avif`,
-              folder: fileDir,
-            });
-        });
-        thumbnailPath = `${fileDir}/thumbnail-${fileOriginalName}.avif`;
-      }
+      await this.storageClient.putObjectWithBuffer({
+        key: thumbnailPath,
+        buffer: thumbnailBuffer,
+        contentType: 'image/avif',
+      });
 
       return thumbnailPath;
     } catch (error) {
       return null;
     }
+  }
+
+  // 스트림을 버퍼로 변환
+  private async streamToBuffer(stream: any): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+      stream.on('data', (chunk: any) => chunks.push(chunk));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+      stream.on('error', reject);
+    });
   }
 
   /**
@@ -70,7 +71,6 @@ export class FileService {
 
 type CreateThumbnailDto = {
   filePath: string;
-  type: MemoryFileType;
 };
 
 type DeleteDto = {
