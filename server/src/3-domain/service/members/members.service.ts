@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Member, UserProvider } from '@prisma/client';
+import { Member } from '@prisma/client';
 import { MemberRepository } from 'src/4-infrastructure/repository/member/member.repository';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
+import { UserProvider } from 'src/lib/enums/user-provider.enum';
 
 @Injectable()
 export class MembersService {

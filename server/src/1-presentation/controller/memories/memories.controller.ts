@@ -29,6 +29,7 @@ import { MemoriesRetrieveResDto } from 'src/1-presentation/dto/memories/response
 import { MemoriesUpdateReqDto } from 'src/1-presentation/dto/memories/request/update.dto';
 import {
   CreateDocs,
+  CreateUploadUrlDocs,
   DeleteDocs,
   ListDocs,
   MemoriesControllerDocs,
@@ -38,6 +39,8 @@ import {
 } from 'src/1-presentation/docs/memories/memories.docs';
 import { MemoriesUploadReqDto } from 'src/1-presentation/dto/memories/request/upload.dto';
 import { multerOptions } from 'src/lib/utils/multer.options';
+import { MemoriesCreateUploadUrlResDto } from 'src/1-presentation/dto/memories/response/get-upload-url.dto';
+import { MemioresCreateUploadUrlReqDto } from 'src/1-presentation/dto/memories/request/get-upload-url.dto';
 
 @MemoriesControllerDocs()
 @Controller('memories')
@@ -61,6 +64,19 @@ export class MemoriesController {
     return plainToInstance(
       MemoriesUploadResDto,
       await this.memoriesFacade.upload({ sub, file, body }),
+    );
+  }
+
+  // 파일 업로드 URL 생성
+  @CreateUploadUrlDocs()
+  @Post('upload-url')
+  async createUploadUrl(
+    @CurrentUser() sub: number,
+    @Body() body: MemioresCreateUploadUrlReqDto,
+  ): Promise<MemoriesCreateUploadUrlResDto> {
+    return plainToInstance(
+      MemoriesCreateUploadUrlResDto,
+      await this.memoriesFacade.createUploadUrl({ sub, body }),
     );
   }
 

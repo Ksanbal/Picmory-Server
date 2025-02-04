@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MemoryFileType } from '@prisma/client';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 import { Expose, Transform, Type } from 'class-transformer';
 
 export class MemoriesFileRes {

@@ -3,13 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Album, AlbumMemory, Memory } from '@prisma/client';
+import { Album, AlbumMemory, Memory, PrismaClient } from '@prisma/client';
 import { AlbumForListModel } from 'src/3-domain/model/albums/album-for-list.model';
 import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.repository';
 import { AlbumMemoryRepository } from 'src/4-infrastructure/repository/albums/album-memory.repository';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
 import { PrismaService } from 'src/lib/database/prisma.service';
 import { AlbumModel } from 'src/3-domain/model/albums/album.model';
+import { ITXClientDenyList } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AlbumsService {
@@ -235,9 +236,10 @@ export class AlbumsService {
   async deleteMemoriesFromAlbumWithMemoryId(
     dto: DeleteMemoriesFromAlbumWithMemoryIdDto,
   ): Promise<void> {
-    const { memoryId } = dto;
+    const { tx, memoryId } = dto;
 
     return await this.albumMemoryRepository.deleteByMemoryId({
+      tx,
       memoryId,
     });
   }
@@ -287,5 +289,6 @@ type DeleteMemoriesFromAlbumDto = {
 };
 
 type DeleteMemoriesFromAlbumWithMemoryIdDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
   memoryId: number;
 };

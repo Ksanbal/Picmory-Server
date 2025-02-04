@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import {
-  Album,
-  AlbumMemory,
-  Memory,
-  MemoryFileType,
-  PrismaClient,
-} from '@prisma/client';
+import { Album, AlbumMemory, Memory, PrismaClient } from '@prisma/client';
 import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
 @Injectable()
 export class AlbumMemoryRepository {
@@ -103,7 +98,7 @@ export class AlbumMemoryRepository {
    * 추억 id로 앨범에서 추억 삭제
    */
   async deleteByMemoryId(dto: DeleteByMemoryIdDto): Promise<void> {
-    await this.prismaService.albumMemory.deleteMany({
+    await dto.tx.albumMemory.deleteMany({
       where: {
         memoryId: dto.memoryId,
       },
@@ -153,6 +148,7 @@ type DeleteDto = {
 };
 
 type DeleteByMemoryIdDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
   memoryId: number;
 };
 

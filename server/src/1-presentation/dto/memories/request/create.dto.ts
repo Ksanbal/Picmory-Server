@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsInt, IsString } from 'class-validator';
+import { IsDate, IsString } from 'class-validator';
 
 export class MemoriesCreateReqDto {
   @ApiProperty({
-    type: [Number],
+    type: [String],
   })
-  @IsInt({ each: true })
-  fileIds: number[];
+  @IsString({ each: true })
+  fileKeys: string[];
 
   @ApiProperty()
   @IsDate()

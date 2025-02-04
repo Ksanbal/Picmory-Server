@@ -10,6 +10,7 @@ import { MemoryRepository } from 'src/4-infrastructure/repository/memories/memor
 import { AlbumsService } from 'src/3-domain/service/albums/albums.service';
 import { AlbumRepository } from 'src/4-infrastructure/repository/albums/album.repository';
 import { AlbumMemoryRepository } from 'src/4-infrastructure/repository/albums/album-memory.repository';
+import { StorageClient } from 'src/4-infrastructure/client/storage/storage.client';
 
 @Module({
   imports: [FileModule],
@@ -24,6 +25,7 @@ import { AlbumMemoryRepository } from 'src/4-infrastructure/repository/albums/al
     AlbumsService,
     AlbumRepository,
     AlbumMemoryRepository,
+    StorageClient,
   ],
   exports: [MemoriesService],
 })
