@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { MemoryFile, MemoryFileType, PrismaClient } from '@prisma/client';
+import { MemoryFile, PrismaClient } from '@prisma/client';
 import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
 @Injectable()
 export class MemoryFileRepository {

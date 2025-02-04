@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Member, UserProvider } from '@prisma/client';
+import { Member } from '@prisma/client';
 import { PrismaService } from 'src/lib/database/prisma.service';
+import { UserProvider } from 'src/lib/enums/user-provider.enum';
 
 @Injectable()
 export class MemberRepository {
@@ -51,9 +52,11 @@ export class MemberRepository {
    * 사용자 생성
    */
   async create(dto: CreateDto): Promise<Member | null> {
+    const { metadata, ...rest } = dto;
     return await this.prisma.member.create({
       data: {
-        ...dto,
+        ...rest,
+        metadata: JSON.stringify(metadata),
       },
     });
   }

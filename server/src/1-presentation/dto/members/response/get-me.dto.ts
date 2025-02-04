@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserProvider } from '@prisma/client';
+import { UserProvider } from 'src/lib/enums/user-provider.enum';
 import { Expose } from 'class-transformer';
 
 export class MembersGetMeResDto {

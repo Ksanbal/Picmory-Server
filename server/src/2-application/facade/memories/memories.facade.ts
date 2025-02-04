@@ -9,6 +9,7 @@ import { FileService } from 'src/3-domain/service/file/file.service';
 import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
 import { PrismaService } from 'src/lib/database/prisma.service';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
 @Injectable()
 export class MemoriesFacade {
@@ -39,7 +40,7 @@ export class MemoriesFacade {
     // 파일을 읽어 썸네일 생성
     const thumbnailPath = await this.fileService.createThumbnail({
       filePath: memoryFile.path,
-      type: memoryFile.type,
+      type: memoryFile.type as MemoryFileType,
     });
 
     if (thumbnailPath == null) {

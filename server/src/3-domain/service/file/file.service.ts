@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as sharp from 'sharp';
 import * as fs from 'fs';
-import { MemoryFileType } from '@prisma/client';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 import * as ffmpeg from 'fluent-ffmpeg';
 
 @Injectable()

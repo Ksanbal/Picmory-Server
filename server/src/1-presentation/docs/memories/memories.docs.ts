@@ -12,11 +12,11 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { MemoryFileType } from '@prisma/client';
 import { MemoriesCreateResDto } from 'src/1-presentation/dto/memories/response/create.dto';
 import { MemoriesListResDto } from 'src/1-presentation/dto/memories/response/list.dto';
 import { MemoriesRetrieveResDto } from 'src/1-presentation/dto/memories/response/retrieve.dto';
 import { MemoriesUploadResDto } from 'src/1-presentation/dto/memories/response/upload.dto';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
 export function MemoriesControllerDocs() {
   return applyDecorators(

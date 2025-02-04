@@ -4,17 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import {
-  Memory,
-  MemoryFile,
-  MemoryFileType,
-  PrismaClient,
-} from '@prisma/client';
+import { Memory, MemoryFile, PrismaClient } from '@prisma/client';
 import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { MemoryFileRepository } from 'src/4-infrastructure/repository/memories/memory-file.repository';
 import { MemoryRepository } from 'src/4-infrastructure/repository/memories/memory.repository';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
 import { EVENT_NAMES } from 'src/lib/constants/event-names';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
 @Injectable()
 export class MemoriesService {
