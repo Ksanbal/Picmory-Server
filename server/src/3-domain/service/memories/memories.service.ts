@@ -102,7 +102,8 @@ export class MemoriesService {
       tx,
       memories: fileKeys.map((key) => {
         let type = MemoryFileType.IMAGE;
-        if (key.endsWith('.mp4') || key.endsWith('.mov')) {
+        const ext = key.split('.').pop().toLowerCase();
+        if (ext == 'mp4' || ext == 'mov') {
           type = MemoryFileType.VIDEO;
         }
 
