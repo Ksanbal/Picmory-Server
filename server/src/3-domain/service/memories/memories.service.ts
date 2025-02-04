@@ -6,6 +6,9 @@ import {
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Memory, MemoryFile, PrismaClient } from '@prisma/client';
 import { ITXClientDenyList } from '@prisma/client/runtime/library';
+import * as dayjs from 'dayjs';
+import { UploadUrlModel } from 'src/3-domain/model/memories/upload-url.model';
+import { StorageClient } from 'src/4-infrastructure/client/storage/storage.client';
 import { MemoryFileRepository } from 'src/4-infrastructure/repository/memories/memory-file.repository';
 import { MemoryRepository } from 'src/4-infrastructure/repository/memories/memory.repository';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
@@ -18,6 +21,7 @@ export class MemoriesService {
     private readonly memoryFileRepository: MemoryFileRepository,
     private readonly memoryRepository: MemoryRepository,
     private readonly eventEmitter: EventEmitter2,
+    private readonly storageClient: StorageClient,
   ) {}
 
   /**
@@ -41,6 +45,50 @@ export class MemoriesService {
     });
 
     return newFile;
+  }
+
+  /**
+   * 파일 업로드 URL 생성
+   */
+  async createUploadUrl(dto: GetUploadDto): Promise<UploadUrlModel> {
+    const { sub, filename } = dto;
+
+    // 파일 경로명
+    const now = dayjs();
+    const key = `uploads/${sub}/${now.year()}/${now.month() + 1}/${now.date()}/${filename}`;
+
+    // 파일 타입
+    let contentType = '';
+    switch (filename.split('.').pop()) {
+      case 'png':
+        contentType = 'image/png';
+        break;
+      case 'jpg':
+      case 'jpeg':
+        contentType = 'image/jpeg';
+        break;
+      case 'mp4':
+        contentType = 'video/mp4';
+        break;
+      case 'mov':
+        contentType = 'video/quicktime';
+        break;
+      default:
+        throw new BadRequestException(
+          ERROR_MESSAGES.MEMORIES_INVALID_FILE_TYPE,
+        );
+    }
+
+    const url = await this.storageClient.generatePresignedUrl({
+      key,
+      contentType,
+      expiresIn: 3600, // 1시간 동안 유효한 링크 생성
+    });
+
+    return {
+      url,
+      key,
+    };
   }
 
   /**
@@ -198,6 +246,11 @@ type UploadDto = {
   sub: number;
   file: Express.Multer.File;
   type: MemoryFileType;
+};
+
+type GetUploadDto = {
+  sub: number;
+  filename: string;
 };
 
 type UpdateMemoryFileThumbnailPathDto = {

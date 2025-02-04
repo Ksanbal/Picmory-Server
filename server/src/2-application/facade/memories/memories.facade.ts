@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Memory, MemoryFile } from '@prisma/client';
 import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/create.dto';
+import { MemioresCreateUploadUrlReqDto } from 'src/1-presentation/dto/memories/request/get-upload-url.dto';
 import { MemoriesListReqDto } from 'src/1-presentation/dto/memories/request/list.dto';
 import { MemoriesUpdateReqDto } from 'src/1-presentation/dto/memories/request/update.dto';
 import { MemoriesUploadReqDto } from 'src/1-presentation/dto/memories/request/upload.dto';
+import { UploadUrlModel } from 'src/3-domain/model/memories/upload-url.model';
 import { AlbumsService } from 'src/3-domain/service/albums/albums.service';
 import { FileService } from 'src/3-domain/service/file/file.service';
 import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
@@ -28,6 +30,16 @@ export class MemoriesFacade {
       sub: dto.sub,
       file: dto.file,
       type: dto.body.type,
+    });
+  }
+
+  /**
+   * 파일 업로드 URL 생성
+   */
+  async createUploadUrl(dto: GetUploadUrlDto): Promise<UploadUrlModel> {
+    return await this.memoriesService.createUploadUrl({
+      sub: dto.sub,
+      filename: dto.body.filename,
     });
   }
 
@@ -183,6 +195,11 @@ type UploadDto = {
   sub: number;
   file: Express.Multer.File;
   body: MemoriesUploadReqDto;
+};
+
+type GetUploadUrlDto = {
+  sub: number;
+  body: MemioresCreateUploadUrlReqDto;
 };
 
 type CreateThumbnailDto = {
