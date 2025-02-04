@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as sharp from 'sharp';
-import * as fs from 'fs';
 import { StorageClient } from 'src/4-infrastructure/client/storage/storage.client';
 
 @Injectable()
@@ -59,13 +58,7 @@ export class FileService {
   async delete(dto: DeleteDto): Promise<void> {
     const { filePaths } = dto;
 
-    for (const filePath of filePaths) {
-      try {
-        fs.rmSync(filePath);
-      } catch (error) {
-        console.error('Error during delete files: ', error, filePath);
-      }
-    }
+    await this.storageClient.deleteObjects({ keys: filePaths });
   }
 }
 

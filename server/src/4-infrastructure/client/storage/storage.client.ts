@@ -1,4 +1,5 @@
 import {
+  DeleteObjectsCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -24,13 +25,14 @@ export class StorageClient {
 
   // 업로드 URL 생성
   async generatePresignedUrl(dto: GeneratePresignedUrlDto) {
+    const client = this.getS3Client();
     const command = new PutObjectCommand({
       Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
       Key: dto.key,
       ContentType: dto.contentType,
     });
 
-    const url = await getSignedUrl(this.getS3Client(), command, {
+    const url = await getSignedUrl(client, command, {
       expiresIn: dto.expiresIn,
     });
     return url;
@@ -63,6 +65,22 @@ export class StorageClient {
     const response = await client.send(command);
     return response;
   }
+
+  // 파일 삭제
+  async deleteObjects(dto: DeleteObjectsDto) {
+    const { keys } = dto;
+
+    const client = this.getS3Client();
+    const command = new DeleteObjectsCommand({
+      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Delete: {
+        Objects: keys.map((Key) => ({ Key })),
+      },
+    });
+
+    const response = await client.send(command);
+    return response;
+  }
 }
 
 type GeneratePresignedUrlDto = {
@@ -79,4 +97,8 @@ type PutObjectWithBufferDto = {
   key: string;
   buffer: Buffer;
   contentType: string;
+};
+
+type DeleteObjectsDto = {
+  keys: string[];
 };

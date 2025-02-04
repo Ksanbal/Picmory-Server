@@ -180,13 +180,26 @@ export class MemoriesFacade {
 
       // 앨범에 속한 기억 삭제
       await this.albumsService.deleteMemoriesFromAlbumWithMemoryId({
+        tx,
         memoryId: id,
       });
     });
 
+    // 기억 삭제 이벤트 발행
+    this.eventEmitter.emit(EVENT_NAMES.MEMORY_DELETED, {
+      memoryFiles: memory.MemoryFile,
+    });
+  }
+
+  /**
+   * 파일 삭제
+   */
+  async deleteStorageFiles(dto: DeleteStorageFilesDto): Promise<void> {
+    const { memoryFiles } = dto;
+
     // 기억 파일들 삭제
     const filePaths = [];
-    memory.MemoryFile.forEach((file) => {
+    memoryFiles.forEach((file) => {
       filePaths.push(file.path);
 
       if (file.thumbnailPath != null) {
@@ -239,4 +252,8 @@ type UpdateDto = {
 type DeleteDto = {
   sub: number;
   id: number;
+};
+
+type DeleteStorageFilesDto = {
+  memoryFiles: MemoryFile[];
 };

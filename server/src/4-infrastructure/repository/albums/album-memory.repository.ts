@@ -98,7 +98,7 @@ export class AlbumMemoryRepository {
    * 추억 id로 앨범에서 추억 삭제
    */
   async deleteByMemoryId(dto: DeleteByMemoryIdDto): Promise<void> {
-    await this.prismaService.albumMemory.deleteMany({
+    await dto.tx.albumMemory.deleteMany({
       where: {
         memoryId: dto.memoryId,
       },
@@ -148,6 +148,7 @@ type DeleteDto = {
 };
 
 type DeleteByMemoryIdDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
   memoryId: number;
 };
 
