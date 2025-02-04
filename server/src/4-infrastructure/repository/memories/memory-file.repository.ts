@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { MemoryFile, MemoryFileType, PrismaClient } from '@prisma/client';
+import { MemoryFile, PrismaClient } from '@prisma/client';
 import { ITXClientDenyList } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/lib/database/prisma.service';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
 @Injectable()
 export class MemoryFileRepository {
@@ -14,6 +15,14 @@ export class MemoryFileRepository {
         thumbnailPath: null,
         ...dto,
       },
+    });
+  }
+
+  async createMany(dto: CreateManyDto) {
+    const { tx, memories } = dto;
+
+    return await tx.memoryFile.createMany({
+      data: memories,
     });
   }
 
@@ -86,6 +95,19 @@ type CreateDto = {
   type: MemoryFileType;
   originalName: string;
   size: number;
+  path: string;
+};
+
+type CreateManyDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
+  memories: CreateManyDtoMemory[];
+};
+
+type CreateManyDtoMemory = {
+  memberId: number;
+  memoryId: number;
+  type: MemoryFileType;
+  originalName: string;
   path: string;
 };
 

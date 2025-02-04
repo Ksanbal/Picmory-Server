@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserProvider } from '@prisma/client';
+
 import { IsEmail, IsEnum, IsObject, IsString } from 'class-validator';
+import { UserProvider } from 'src/lib/enums/user-provider.enum';
 
 export class MembersRegisterReqDto {
   @ApiProperty()

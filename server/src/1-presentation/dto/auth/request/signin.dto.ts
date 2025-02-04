@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserProvider } from '@prisma/client';
 import { IsEnum, IsString } from 'class-validator';
+import { UserProvider } from 'src/lib/enums/user-provider.enum';
 
 export class AuthSigninReqDto {
   @ApiProperty({

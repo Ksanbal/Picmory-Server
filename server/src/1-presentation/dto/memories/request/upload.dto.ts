@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MemoryFileType } from '@prisma/client';
 import { IsEnum } from 'class-validator';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
 export class MemoriesUploadReqDto {
   @ApiProperty({

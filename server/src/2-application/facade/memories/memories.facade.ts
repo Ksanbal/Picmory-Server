@@ -1,14 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Memory, MemoryFile } from '@prisma/client';
 import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/create.dto';
+import { MemioresCreateUploadUrlReqDto } from 'src/1-presentation/dto/memories/request/get-upload-url.dto';
 import { MemoriesListReqDto } from 'src/1-presentation/dto/memories/request/list.dto';
 import { MemoriesUpdateReqDto } from 'src/1-presentation/dto/memories/request/update.dto';
 import { MemoriesUploadReqDto } from 'src/1-presentation/dto/memories/request/upload.dto';
+import { UploadUrlModel } from 'src/3-domain/model/memories/upload-url.model';
 import { AlbumsService } from 'src/3-domain/service/albums/albums.service';
 import { FileService } from 'src/3-domain/service/file/file.service';
 import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
+import { EVENT_NAMES } from 'src/lib/constants/event-names';
 import { PrismaService } from 'src/lib/database/prisma.service';
+import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
 @Injectable()
 export class MemoriesFacade {
@@ -17,6 +22,7 @@ export class MemoriesFacade {
     private readonly albumsService: AlbumsService,
     private readonly fileService: FileService,
     private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
@@ -31,27 +37,43 @@ export class MemoriesFacade {
   }
 
   /**
+   * 파일 업로드 URL 생성
+   */
+  async createUploadUrl(dto: GetUploadUrlDto): Promise<UploadUrlModel> {
+    return await this.memoriesService.createUploadUrl({
+      sub: dto.sub,
+      filename: dto.body.filename,
+    });
+  }
+
+  /**
    * 썸네일 생성
    */
   async createThumbnail(dto: CreateThumbnailDto): Promise<void> {
-    const { memoryFile } = dto;
+    const { memory: newMemory } = dto;
 
-    // 파일을 읽어 썸네일 생성
-    const thumbnailPath = await this.fileService.createThumbnail({
-      filePath: memoryFile.path,
-      type: memoryFile.type,
+    // 추억 파일 목록 조회
+    const memory = await this.memoriesService.retrieve({
+      memberId: newMemory.memberId,
+      id: newMemory.id,
     });
 
-    if (thumbnailPath == null) {
-      return;
-    }
+    // 각 추억 파일의 썸네일 생성
+    const thumbnailPathsPromises = memory.MemoryFile.filter(
+      (memoryFile) => memoryFile.type == MemoryFileType.IMAGE, // 이미지 파일만 생성하도록 적용
+    ).map(async (memoryFile) => {
+      const thumbnailPath = await this.fileService.createThumbnail({
+        filePath: memoryFile.path,
+      });
 
-    memoryFile.thumbnailPath = thumbnailPath;
-
-    // 파일을 업데이트
-    await this.memoriesService.updateMemoryFileThumbnailPath({
-      memoryFile,
+      // 파일 업데이트
+      memoryFile.thumbnailPath = thumbnailPath;
+      await this.memoriesService.updateMemoryFileThumbnailPath({
+        memoryFile,
+      });
     });
+
+    await Promise.all(thumbnailPathsPromises);
   }
 
   /**
@@ -59,13 +81,7 @@ export class MemoriesFacade {
    */
   async create(dto: CreateDto) {
     const { sub, body } = dto;
-    const { fileIds, ...data } = body;
-
-    // 유효한 파일들인지 확인
-    await this.memoriesService.validateFileIds({
-      memberId: sub,
-      ids: fileIds,
-    });
+    const { fileKeys, ...data } = body;
 
     try {
       const newMemory = await this.prisma.$transaction(async (tx) => {
@@ -76,14 +92,20 @@ export class MemoriesFacade {
           ...data,
         });
 
-        // 파일들 업데이트
-        await this.memoriesService.linkMemoryFiles({
+        // 파일 생성
+        await this.memoriesService.createMemoryFiles({
           tx,
-          fileIds,
+          fileKeys,
+          memberId: sub,
           memoryId: newMemory.id,
         });
 
         return newMemory;
+      });
+
+      // 추억 생성 이벤트 발생
+      this.eventEmitter.emit(EVENT_NAMES.MEMORY_CREATED, {
+        memory: newMemory,
       });
 
       return newMemory;
@@ -158,13 +180,26 @@ export class MemoriesFacade {
 
       // 앨범에 속한 기억 삭제
       await this.albumsService.deleteMemoriesFromAlbumWithMemoryId({
+        tx,
         memoryId: id,
       });
     });
 
+    // 기억 삭제 이벤트 발행
+    this.eventEmitter.emit(EVENT_NAMES.MEMORY_DELETED, {
+      memoryFiles: memory.MemoryFile,
+    });
+  }
+
+  /**
+   * 파일 삭제
+   */
+  async deleteStorageFiles(dto: DeleteStorageFilesDto): Promise<void> {
+    const { memoryFiles } = dto;
+
     // 기억 파일들 삭제
     const filePaths = [];
-    memory.MemoryFile.forEach((file) => {
+    memoryFiles.forEach((file) => {
       filePaths.push(file.path);
 
       if (file.thumbnailPath != null) {
@@ -184,8 +219,13 @@ type UploadDto = {
   body: MemoriesUploadReqDto;
 };
 
+type GetUploadUrlDto = {
+  sub: number;
+  body: MemioresCreateUploadUrlReqDto;
+};
+
 type CreateThumbnailDto = {
-  memoryFile: MemoryFile;
+  memory: Memory;
 };
 
 type CreateDto = {
@@ -212,4 +252,8 @@ type UpdateDto = {
 type DeleteDto = {
   sub: number;
   id: number;
+};
+
+type DeleteStorageFilesDto = {
+  memoryFiles: MemoryFile[];
 };
