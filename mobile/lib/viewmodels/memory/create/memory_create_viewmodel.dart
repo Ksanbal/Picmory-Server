@@ -12,8 +12,6 @@ import 'package:picmory/common/tokens/colors_token.dart';
 import 'package:picmory/common/utils/show_loading.dart';
 import 'package:picmory/events/memory/create_event.dart';
 import 'package:picmory/main.dart';
-import 'package:picmory/models/api/memory/upload_model.dart';
-import 'package:picmory/models/response_model.dart';
 import 'package:picmory/repositories/api/memories_repository.dart';
 
 class MemoryCreateViewmodel extends ChangeNotifier {
@@ -189,26 +187,18 @@ class MemoryCreateViewmodel extends ChangeNotifier {
       }
 
       // 사진 & 영상 업로드 실행
-      final List<Future<ResponseModel<UploadModel>>> uploadFutures = [];
-
-      for (final image in downloadedImageFiles) {
-        uploadFutures.add(_memoriesRepository.upload(file: XFile(image.path)));
-      }
-
-      for (final image in _galleryImages) {
-        uploadFutures.add(_memoriesRepository.upload(file: image));
-      }
-
-      for (final video in _galleryVideos) {
-        uploadFutures.add(_memoriesRepository.upload(file: video));
-      }
+      final List<Future<String?>> uploadFutures = [
+        ...downloadedImageFiles.map((e) => uploadFile(XFile(e.path))),
+        ..._galleryImages.map(uploadFile),
+        ..._galleryVideos.map(uploadFile),
+      ];
 
       final results = await Future.wait(uploadFutures);
 
-      List<int> fileIds = [];
+      List<String> fileKeys = [];
       for (final result in results) {
         // 하나라도 오류가 있으면 오류 메세지 출력
-        if (result.success == false) {
+        if (result == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("사진이나 영상이 업로드 되지 않았어요 😢"),
@@ -218,13 +208,11 @@ class MemoryCreateViewmodel extends ChangeNotifier {
           return;
         }
 
-        if (result.data != null) {
-          fileIds.add(result.data!.id);
-        }
+        fileKeys.add(result);
       }
 
       final result = await _memoriesRepository.create(
-        fileIds: fileIds,
+        fileKeys: fileKeys,
         date: date,
         brandName: _crawledBrand ?? '',
       );
@@ -270,5 +258,21 @@ class MemoryCreateViewmodel extends ChangeNotifier {
       // 로딩 종료
       removeLoading();
     }
+  }
+
+  Future<String?> uploadFile(XFile file) async {
+    // 업로드 url 요청
+    final uploadUrl = await _memoriesRepository.createUploadUrl(
+      filename: file.path.split('/').last,
+    );
+    if (uploadUrl.success == false || uploadUrl.data == null) return null;
+
+    // 업로드
+    final uploadResult = await _memoriesRepository.upload(
+      url: uploadUrl.data!.url,
+      file: file,
+    );
+
+    return uploadResult.success ? uploadUrl.data!.key : null;
   }
 }
