@@ -59,7 +59,7 @@ export class MemoriesService {
 
     // 파일 타입
     let contentType = '';
-    switch (filename.split('.').pop()) {
+    switch (filename.split('.').pop().toLowerCase()) {
       case 'png':
         contentType = 'image/png';
         break;
