@@ -77,6 +77,10 @@ class AlbumsViewmodel extends ChangeNotifier {
     }
   }
 
+  goToMemory(BuildContext context, int memoryId) {
+    GoRouter.of(context).push('/memory/$memoryId');
+  }
+
   deleteMemoryFromAlbum(BuildContext context, int memoryId) async {
     final delete = await showConfirmDelete(
       context,
