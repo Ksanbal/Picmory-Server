@@ -18,6 +18,14 @@ export class MemoryFileRepository {
     });
   }
 
+  async createMany(dto: CreateManyDto) {
+    const { tx, memories } = dto;
+
+    return await tx.memoryFile.createMany({
+      data: memories,
+    });
+  }
+
   async update(dto: UpdateDto) {
     return await this.prisma.memoryFile.update({
       where: { id: dto.memoryFile.id },
@@ -87,6 +95,19 @@ type CreateDto = {
   type: MemoryFileType;
   originalName: string;
   size: number;
+  path: string;
+};
+
+type CreateManyDto = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
+  memories: CreateManyDtoMemory[];
+};
+
+type CreateManyDtoMemory = {
+  memberId: number;
+  memoryId: number;
+  type: MemoryFileType;
+  originalName: string;
   path: string;
 };
 

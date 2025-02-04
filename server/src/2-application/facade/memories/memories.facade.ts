@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Memory, MemoryFile } from '@prisma/client';
 import { MemoriesCreateReqDto } from 'src/1-presentation/dto/memories/request/create.dto';
 import { MemioresCreateUploadUrlReqDto } from 'src/1-presentation/dto/memories/request/get-upload-url.dto';
@@ -10,6 +11,7 @@ import { AlbumsService } from 'src/3-domain/service/albums/albums.service';
 import { FileService } from 'src/3-domain/service/file/file.service';
 import { MemoriesService } from 'src/3-domain/service/memories/memories.service';
 import { ERROR_MESSAGES } from 'src/lib/constants/error-messages';
+import { EVENT_NAMES } from 'src/lib/constants/event-names';
 import { PrismaService } from 'src/lib/database/prisma.service';
 import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 
@@ -20,6 +22,7 @@ export class MemoriesFacade {
     private readonly albumsService: AlbumsService,
     private readonly fileService: FileService,
     private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
@@ -72,13 +75,7 @@ export class MemoriesFacade {
    */
   async create(dto: CreateDto) {
     const { sub, body } = dto;
-    const { fileIds, ...data } = body;
-
-    // 유효한 파일들인지 확인
-    await this.memoriesService.validateFileIds({
-      memberId: sub,
-      ids: fileIds,
-    });
+    const { fileKeys, ...data } = body;
 
     try {
       const newMemory = await this.prisma.$transaction(async (tx) => {
@@ -89,14 +86,20 @@ export class MemoriesFacade {
           ...data,
         });
 
-        // 파일들 업데이트
-        await this.memoriesService.linkMemoryFiles({
+        // 파일 생성
+        await this.memoriesService.createMemoryFiles({
           tx,
-          fileIds,
+          fileKeys,
+          memberId: sub,
           memoryId: newMemory.id,
         });
 
         return newMemory;
+      });
+
+      // 추억 생성 이벤트 발생
+      this.eventEmitter.emit(EVENT_NAMES.MEMORY_CREATED, {
+        memory: newMemory,
       });
 
       return newMemory;

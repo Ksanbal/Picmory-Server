@@ -92,6 +92,32 @@ export class MemoriesService {
   }
 
   /**
+   * 파일 생성
+   */
+  async createMemoryFiles(dto: CreateMemoryFiles) {
+    const { tx, fileKeys, memberId, memoryId } = dto;
+
+    // 파일 정보 저장
+    await this.memoryFileRepository.createMany({
+      tx,
+      memories: fileKeys.map((key) => {
+        let type = MemoryFileType.IMAGE;
+        if (key.endsWith('.mp4') || key.endsWith('.mov')) {
+          type = MemoryFileType.VIDEO;
+        }
+
+        return {
+          memberId,
+          memoryId,
+          type,
+          originalName: key.split('/').pop() as string,
+          path: key,
+        };
+      }),
+    });
+  }
+
+  /**
    * 파일 정보 업데이트
    */
   async updateMemoryFileThumbnailPath(
@@ -251,6 +277,13 @@ type UploadDto = {
 type GetUploadDto = {
   sub: number;
   filename: string;
+};
+
+type CreateMemoryFiles = {
+  tx: Omit<PrismaClient, ITXClientDenyList>;
+  fileKeys: string[];
+  memberId: number;
+  memoryId: number;
 };
 
 type UpdateMemoryFileThumbnailPathDto = {

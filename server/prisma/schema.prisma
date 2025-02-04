@@ -34,14 +34,6 @@ model Member {
   @@map("member")
 }
 
-// // 소셜 로그인 제공자
-// enum UserProvider {
-//   APPLE
-//   GOOGLE
-
-//   @@map("user_provider")
-// }
-
 // JWT RefreshToken
 model RefreshToken {
   id        Int      @id @default(autoincrement())
@@ -83,7 +75,6 @@ model MemoryFile {
   memoryId      Int?      @map("memory_id")
   type          String
   originalName  String
-  size          Int
   path          String
   thumbnailPath String?   @map("thumbnail_uri")
 
@@ -91,12 +82,6 @@ model MemoryFile {
   @@index([memberId])
   @@map("memory_file")
 }
-
-// // 기억 파일 타입
-// enum MemoryFileType {
-//   IMAGE
-//   VIDEO
-// }
 
 // 앨범
 model Album {
