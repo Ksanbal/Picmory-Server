@@ -822,7 +822,16 @@ export class QrCrawlerService {
 
   /// Studio808
   private async studio808(url): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(url));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
     const qrcode = url.split('qrcode=')[1];
+    if (qrcode == undefined) {
+      throw new Error('qrcode not found');
+    }
 
     const photoUrls = [
       `https://mys.studio808.kr/api/download.php?qrcode=${qrcode}&type=P`,
