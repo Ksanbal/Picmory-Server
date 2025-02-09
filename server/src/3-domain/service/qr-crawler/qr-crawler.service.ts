@@ -48,7 +48,7 @@ export class QrCrawlerService {
     {
       // 포토 시그니처
       name: 'PHOTO SIGNATURE',
-      host: 'photoqr2.kr',
+      host: 'photoqr.kr',
     },
     {
       // 플랜비 스튜디오
@@ -356,7 +356,7 @@ export class QrCrawlerService {
     const photoUrls = [path + 'a.jpg'];
 
     // 영상 다운로드 링크
-    const videoUrls = [path + 'output.mp4'];
+    const videoUrls = [path + 'video.mp4'];
 
     return {
       brand: '',
