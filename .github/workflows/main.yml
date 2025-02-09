@@ -3,7 +3,7 @@ name: Deploy with Self-Hosted Runner
 on:
   pull_request:
     paths:
-      - 'server/**'
+      - "server/**"
     types: [closed]
     branches: [main]
 
@@ -20,13 +20,17 @@ jobs:
           git pull origin main
         working-directory: ${{ secrets.SOURCE_PATH }}
 
-      - name: Build and start Docker containers
+      - name: Install dependencies
         run: |
-          docker compose up --build -d
-        working-directory: ${{ secrets.SOURCE_PATH }}
+          yarn install
+        working-directory: ${{ secrets.SOURCE_PATH }}/server
 
-      - name: Prune Docker container, image, system
+      - name: Build
         run: |
-          docker container prune -f
-          docker image prune -f
-          docker system prune -f
+          yarn build
+        working-directory: ${{ secrets.SOURCE_PATH }}/server
+
+      - name: Reload server
+        run: |
+          yarn pm2:reload
+        working-directory: ${{ secrets.SOURCE_PATH }}/server

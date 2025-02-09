@@ -130,6 +130,11 @@ export class QrCrawlerService {
       name: 'Mirart Studio',
       host: 'mirart.me',
     },
+    {
+      // Studio808
+      name: 'Studio808',
+      host: 'studio808.kr',
+    },
   ];
 
   /**
@@ -217,6 +222,9 @@ export class QrCrawlerService {
           break;
         case 'Mirart Studio':
           result = await this.mirartStudio(url);
+          break;
+        case 'Studio808':
+          result = await this.studio808(url);
           break;
       }
 
@@ -804,6 +812,33 @@ export class QrCrawlerService {
 
       photoUrls.push(result[0]);
     }
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// Studio808
+  private async studio808(url): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(url));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
+    const qrcode = url.split('qrcode=')[1];
+    if (qrcode == undefined) {
+      throw new Error('qrcode not found');
+    }
+
+    const photoUrls = [
+      `https://mys.studio808.kr/api/download.php?qrcode=${qrcode}&type=P`,
+    ];
+    const videoUrls = [
+      `https://mys.studio808.kr/api/download.php?qrcode=${qrcode}&type=V`,
+    ];
 
     return {
       brand: '',
