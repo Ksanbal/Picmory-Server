@@ -12,8 +12,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { MemioresCreateUploadUrlReqDto } from 'src/1-presentation/dto/memories/request/get-upload-url.dto';
 import { MemoriesCreateResDto } from 'src/1-presentation/dto/memories/response/create.dto';
+import { MemoriesCreateUploadUrlResDto } from 'src/1-presentation/dto/memories/response/get-upload-url.dto';
 import { MemoriesListResDto } from 'src/1-presentation/dto/memories/response/list.dto';
 import { MemoriesRetrieveResDto } from 'src/1-presentation/dto/memories/response/retrieve.dto';
 import { MemoriesUploadResDto } from 'src/1-presentation/dto/memories/response/upload.dto';
@@ -61,7 +61,7 @@ export function CreateUploadUrlDocs() {
       summary: '파일 업로드 URL 생성',
     }),
     ApiCreatedResponse({
-      type: MemioresCreateUploadUrlReqDto,
+      type: MemoriesCreateUploadUrlResDto,
     }),
     ApiBadRequestResponse(),
   );

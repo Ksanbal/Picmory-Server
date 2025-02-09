@@ -16,14 +16,14 @@ class MemoryModel {
 class MemoryFileModel {
   String type;
   String originalName;
-  int size;
+  // int size;
   String path;
   String? thumbnailPath;
 
   MemoryFileModel.fromJson(Map<String, dynamic> json)
       : type = json['type'],
         originalName = json['originalName'],
-        size = json['size'],
+        // size = json['size'],
         path = json['path'],
         thumbnailPath = json['thumbnailPath'];
 }

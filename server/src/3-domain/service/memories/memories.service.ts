@@ -59,7 +59,7 @@ export class MemoriesService {
 
     // 파일 타입
     let contentType = '';
-    switch (filename.split('.').pop()) {
+    switch (filename.split('.').pop().toLowerCase()) {
       case 'png':
         contentType = 'image/png';
         break;
@@ -102,7 +102,8 @@ export class MemoriesService {
       tx,
       memories: fileKeys.map((key) => {
         let type = MemoryFileType.IMAGE;
-        if (key.endsWith('.mp4') || key.endsWith('.mov')) {
+        const ext = key.split('.').pop().toLowerCase();
+        if (ext == 'mp4' || ext == 'mov') {
           type = MemoryFileType.VIDEO;
         }
 

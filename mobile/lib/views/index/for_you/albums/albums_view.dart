@@ -69,6 +69,7 @@ class AlbumsView extends StatelessWidget {
                         final memory = vm.memories[index];
 
                         return InkWell(
+                          onTap: () => vm.goToMemory(context, memory.id),
                           onLongPress: () => vm.deleteMemoryFromAlbum(context, memory.id),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5),
