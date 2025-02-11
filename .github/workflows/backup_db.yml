@@ -2,7 +2,7 @@ name: Daily DB Backup to R2
 
 on:
   schedule:
-    - cron: '35 5 * * *'  # UTC 15:00 (KST 00:00)
+    - cron: '50 5 * * *'  # UTC 15:00 (KST 00:00)
 
 jobs:
   backup:
@@ -14,7 +14,8 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-        aws-region: apac
+        aws-region: auto
+        endpoint-url: ${{ secrets.R2_ENDPOINT }}
     
     - name: Upload to R2
       env:
