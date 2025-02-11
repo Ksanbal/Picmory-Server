@@ -22,8 +22,9 @@ jobs:
         r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
         r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         r2-bucket: ${{ secrets.R2_BUCKET }}
-        source-dir: /tmp
+        source-dir: /tmp/picmory_*.db
         destination-dir: backups
 
     - name: Clean up
+      if: always()
       run: rm /tmp/picmory_*.db
