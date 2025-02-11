@@ -2,30 +2,28 @@ name: Daily DB Backup to R2
 
 on:
   schedule:
-    - cron: '50 5 * * *'  # UTC 15:00 (KST 00:00)
+    - cron: '5 6 * * *'  # UTC 15:00 (KST 00:00)
 
 jobs:
   backup:
     runs-on: self-hosted
     
     steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-        aws-region: auto
-        endpoint-url: ${{ secrets.R2_ENDPOINT }}
-    
-    - name: Upload to R2
-      env:
-        R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-        R2_BUCKET: ${{ secrets.R2_BUCKET }}
+    - name: Create backup file
       run: |
         TIMESTAMP=$(date +%Y%m%d_%H%M%S)
         FILENAME="picmory_${TIMESTAMP}.db"
         cp ${{ secrets.DB_PATH }} /tmp/$FILENAME
-        aws s3 cp /tmp/$FILENAME s3://$R2_BUCKET/backup/$FILENAME \
-          --endpoint-url $R2_ENDPOINT \
-          --region auto
-        rm /tmp/$FILENAME
+
+    - name: Upload to R2
+      uses: ryand56/r2-upload-action@latest
+      with:
+        r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+        r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+        r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        r2-bucket: ${{ secrets.R2_BUCKET }}
+        source-dir: /tmp
+        destination-dir: backups
+
+    - name: Clean up
+      run: rm /tmp/picmory_*.db
