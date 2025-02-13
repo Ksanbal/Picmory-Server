@@ -1,0 +1,31 @@
+name: Daily DB Backup to R2
+
+on:
+  schedule:
+    - cron: '0 15 * * *'  # UTC 15:00 (KST 00:00)
+
+jobs:
+  backup:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Create backup file
+      run: |
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        FILENAME="picmory_${TIMESTAMP}.db"
+        mkdir /tmp/backup
+        cp ${{ secrets.DB_PATH }} /tmp/backup/$FILENAME
+
+    - name: Upload to R2
+      uses: ryand56/r2-upload-action@latest
+      with:
+        r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+        r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+        r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        r2-bucket: ${{ secrets.R2_BUCKET }}
+        source-dir: /tmp/backup
+        destination-dir: backups
+
+    - name: Clean up
+      if: always()
+      run: rm -rf /tmp/backup

@@ -23,14 +23,14 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install
-        working-directory: ${{ secrets.SOURCE_PATH }}/server
+        working-directory: ${{ secrets.SOURCE_PATH }}
 
       - name: Build
         run: |
           yarn build
-        working-directory: ${{ secrets.SOURCE_PATH }}/server
+        working-directory: ${{ secrets.SOURCE_PATH }}
 
       - name: Reload server
         run: |
           yarn pm2:reload
-        working-directory: ${{ secrets.SOURCE_PATH }}/server
+        working-directory: ${{ secrets.SOURCE_PATH }}
