@@ -293,17 +293,17 @@ export class QrCrawlerService {
 
     const aList = document.querySelectorAll('a');
 
+    const regex = /https:\/\/\w+\.monomansion\.net/;
+    const result = url.match(regex);
+    if (result == null) throw new Error();
+
     // 사진 다운로드 링크
     const photoHref = aList[0].getAttribute('href');
-    const photoUrls = [
-      `https://monomansion.net/api/${photoHref.split('./')[1]}`,
-    ];
+    const photoUrls = [`${result[0]}/api/${photoHref.split('./')[1]}`];
 
     // 영상 다운로드 링크
     const videoHref = aList[1].getAttribute('href');
-    const videoUrls = [
-      `https://monomansion.net/api/${videoHref.split('./')[1]}`,
-    ];
+    const videoUrls = [`${result[0]}/api/${videoHref.split('./')[1]}`];
 
     return {
       brand: '',
