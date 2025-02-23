@@ -135,6 +135,11 @@ export class QrCrawlerService {
       name: 'Studio808',
       host: 'studio808.kr',
     },
+    {
+      // SNAPAI
+      name: 'SNAPAI',
+      host: 'snapai-vive.com',
+    },
   ];
 
   /**
@@ -225,6 +230,9 @@ export class QrCrawlerService {
           break;
         case 'Studio808':
           result = await this.studio808(url);
+          break;
+        case 'SNAPAI':
+          result = await this.snapai(url);
           break;
       }
 
@@ -838,6 +846,33 @@ export class QrCrawlerService {
     ];
     const videoUrls = [
       `https://mys.studio808.kr/api/download.php?qrcode=${qrcode}&type=V`,
+    ];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// SNAPAI
+  private async snapai(url): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(url));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
+    const code = url.split('/').pop();
+    if (code == undefined) {
+      throw new Error('code not found');
+    }
+
+    const photoUrls = [
+      `http://qr.snapai-vive.com/static/temp/${code}/SNAPAI.jpg`
+    ];
+    const videoUrls = [
+      `http://qr.snapai-vive.com/static/temp/${code}/SNAPAI.mp4`
     ];
 
     return {
