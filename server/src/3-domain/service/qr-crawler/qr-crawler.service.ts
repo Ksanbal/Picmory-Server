@@ -140,6 +140,11 @@ export class QrCrawlerService {
       name: 'SNAPAI',
       host: 'snapai-vive.com',
     },
+    {
+      // SHOTUP
+      name: 'SHOTUP',
+      host: 'durishot.net',
+    },
   ];
 
   /**
@@ -233,6 +238,9 @@ export class QrCrawlerService {
           break;
         case 'SNAPAI':
           result = await this.snapai(url);
+          break;
+        case 'SHOTUP':
+          result = await this.shotup(url);
           break;
       }
 
@@ -869,10 +877,37 @@ export class QrCrawlerService {
     }
 
     const photoUrls = [
-      `http://qr.snapai-vive.com/static/temp/${code}/SNAPAI.jpg`
+      `http://qr.snapai-vive.com/static/temp/${code}/SNAPAI.jpg`,
     ];
     const videoUrls = [
-      `http://qr.snapai-vive.com/static/temp/${code}/SNAPAI.mp4`
+      `http://qr.snapai-vive.com/static/temp/${code}/SNAPAI.mp4`,
+    ];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// SHOTUP
+  private async shotup(url): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(url));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
+    const qrcode = url.split('qrcode=')[1];
+    if (qrcode == undefined) {
+      throw new Error('qrcode not found');
+    }
+
+    const photoUrls = [
+      `https://durishot.net/api/download.php?qrcode=${qrcode}&type=P`,
+    ];
+    const videoUrls = [
+      `https://durishot.net/api/download.php?qrcode=${qrcode}&type=V`,
     ];
 
     return {
