@@ -5,7 +5,7 @@ import { MemoryFileType } from 'src/lib/enums/memory-file-type.enum';
 export class MemoriesUploadReqDto {
   @ApiProperty({
     required: true,
-    type: MemoryFileType,
+    enum: MemoryFileType,
   })
   @IsEnum(MemoryFileType)
   type: MemoryFileType;
