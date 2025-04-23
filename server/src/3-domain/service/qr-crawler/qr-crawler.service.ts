@@ -100,6 +100,16 @@ export class QrCrawlerService {
       name: 'oldmoon',
       host: 'oldmoonstudio.co.kr',
     },
+    {
+      // 그믐달 셀프 스튜디오 2
+      name: 'OLDMOON',
+      host: '3.38.68.231',
+    },
+    {
+      // 그믐달 셀프 스튜디오 2
+      name: 'OLDMOON',
+      host: '43.200.194.205',
+    },
     // {
     //   // selpix
     //   name: 'Selpix',
@@ -214,6 +224,9 @@ export class QrCrawlerService {
           break;
         case 'oldmoon':
           result = await this.oldmoon(url);
+          break;
+        case 'OLDMOON':
+          result = await this.oldmoon2(url);
           break;
         // case 'Selpix':
         //   result = await this.selfix(url);
@@ -634,6 +647,33 @@ export class QrCrawlerService {
       'https://oldmoonstudio.co.kr/api' +
       aList[1].getAttribute('href').replace('./', '/');
     const videoUrls = [videoHref];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  // 그믐달 셀프 스튜디오 2
+  private async oldmoon2(url): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await fetch(url, {
+      method: 'GET',
+    });
+
+    if (res.status !== 200) {
+      throw new Error();
+    }
+
+    // url에서 path, id 추출
+    const [path, id] = url.split('/g4.php?id=');
+
+    // 사진 다운로드 링크
+    const photoUrls = [`${path}/take/${id}.jpg`];
+
+    // 영상 다운로드 링크
+    const videoUrls = [`${path}/take/${id}.mp4`];
 
     return {
       brand: '',
