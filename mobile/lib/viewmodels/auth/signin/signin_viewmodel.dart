@@ -134,8 +134,16 @@ class SigninViewmodel extends ChangeNotifier {
     String name,
     Map<String, dynamic> metadata,
   ) async {
-    final fcmToken = await messaging.getToken();
-    if (fcmToken == null) throw 'No FCM Token';
+    String? fcmToken;
+    try {
+      fcmToken = await messaging.getToken();
+    } catch (e) {
+      log(
+        e.toString(),
+        name: 'getFcmToken',
+        error: e,
+      );
+    }
 
     final res = await _authRepository.signin(
       provider: provider,
