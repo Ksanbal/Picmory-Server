@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { UserProvider } from 'src/lib/enums/user-provider.enum';
 
 export class AuthSigninReqDto {
@@ -19,6 +19,7 @@ export class AuthSigninReqDto {
   @ApiProperty({
     description: 'Firebase Cloud Messaging Token',
   })
+  @IsOptional()
   @IsString()
-  fcmToken: string;
+  fcmToken?: string;
 }
