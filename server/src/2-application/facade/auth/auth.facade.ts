@@ -25,7 +25,9 @@ export class AuthFacade {
     const token = await this.authService.createToken({ sub: member.id });
 
     // FCM Token 업데이트
-    await this.membersService.updateFcmToken({ member, fcmToken });
+    if (fcmToken) {
+      await this.membersService.updateFcmToken({ member, fcmToken });
+    }
 
     return token;
   }
