@@ -21,5 +21,5 @@ export class AuthSigninReqDto {
   })
   @IsOptional()
   @IsString()
-  fcmToken: string | null = null;
+  fcmToken?: string;
 }
