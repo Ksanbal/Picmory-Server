@@ -978,7 +978,6 @@ export class QrCrawlerService {
     // 이미지 링크 가져오기
     const img = document.querySelector('#imageToSave')
     const imgSrc = img.getAttribute('src');
-    const baseUrl = imgSrc.split('/').slice(0, -1).join('/');
 
     const photoUrls = [
       imgSrc,
