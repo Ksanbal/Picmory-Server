@@ -155,6 +155,11 @@ export class QrCrawlerService {
       name: 'SHOTUP',
       host: 'durishot.net',
     },
+    {
+      // munifilm
+      name: 'munifilm',
+      host: 'muinfilm.com',
+    },
   ];
 
   /**
@@ -254,6 +259,9 @@ export class QrCrawlerService {
           break;
         case 'SHOTUP':
           result = await this.shotup(url);
+          break;
+        case 'munifilm':
+          result = await this.munifilm(url);
           break;
       }
 
@@ -949,6 +957,32 @@ export class QrCrawlerService {
     const videoUrls = [
       `https://durishot.net/api/download.php?qrcode=${qrcode}&type=V`,
     ];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// munifilm
+  private async munifilm(url): Promise<BrandCrawl> {
+    const res = await fetch(url);
+    const html = await res.text();
+    const dom = new JSDOM('');
+    const document = new dom.window.DOMParser().parseFromString(
+      html,
+      'text/html',
+    );
+
+    // 이미지 링크 가져오기
+    const img = document.querySelector('#imageToSave')
+    const imgSrc = img.getAttribute('src');
+
+    const photoUrls = [
+      imgSrc,
+    ];
+    const videoUrls = [];
 
     return {
       brand: '',
