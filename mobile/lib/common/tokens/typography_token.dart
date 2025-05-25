@@ -33,7 +33,7 @@ abstract final class TypographyToken {
 
   static final TextStyle textMd = TextStyle(
     fontWeight: FontWeight.w400,
-    fontSize: SizeToken.ml,
+    fontSize: 18.0,
     letterSpacing: 0.4,
     color: ColorsToken.black,
   );
