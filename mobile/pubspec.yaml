@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   animate_do: ^3.3.3
+  app_badge_plus: ^1.2.3
   chewie: ^1.7.5
   custom_refresh_indicator: ^4.0.1
   dio: ^5.4.0

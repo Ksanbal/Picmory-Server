@@ -8,7 +8,7 @@ class SplashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = Provider.of<SplashViewmodel>(context, listen: false);
-    vm.checkAuthNRoute(context);
+    vm.init(context);
 
     return const Scaffold();
   }
