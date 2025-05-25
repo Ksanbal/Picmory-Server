@@ -30,7 +30,7 @@ class AppReviewViewmodel extends ChangeNotifier {
   // 로컬에 저장된 추억 생성 횟수를 가져옵니다.
   Future<void> _loadMemoryCount() async {
     final countStr = await _storageRepository.read(StorageKey.memoryCreationCount);
-    _memoryCreationCount = countStr != null ? int.parse(countStr) : 0;
+    _memoryCreationCount = countStr != null ? (int.tryParse(countStr) ?? 0) : 0;
 
     log('_loadMemoryCount: $_memoryCreationCount');
   }
@@ -70,7 +70,7 @@ class AppReviewViewmodel extends ChangeNotifier {
       },
     );
 
-    // 1초 대기
+    // 페이지 이동 및 결과 확인을 위해 2초 대기
     await Future.delayed(const Duration(milliseconds: 2000));
 
     final result = await showDialog<bool>(
