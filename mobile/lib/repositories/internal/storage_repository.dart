@@ -16,16 +16,16 @@ class StorageRepository {
 
   /// 추가
   write(String key, String value) async {
-    await storage.write(key: key.toString(), value: value);
+    await storage.write(key: key, value: value);
   }
 
   /// 읽기
   read(String key) async {
-    return await storage.read(key: key.toString());
+    return await storage.read(key: key);
   }
 
   /// 삭제
   delete(String key) async {
-    await storage.delete(key: key.toString());
+    await storage.delete(key: key);
   }
 }
