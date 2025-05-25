@@ -8,6 +8,7 @@ import 'package:picmory/common/components/common/card_comp.dart';
 import 'package:picmory/common/components/common/form_comp.dart';
 import 'package:picmory/common/components/common/icon_button_comp.dart';
 import 'package:picmory/common/components/common/messaging_md_comp.dart';
+import 'package:picmory/common/components/common/modal_comp.dart';
 import 'package:picmory/common/components/common/tooltip_comp.dart';
 import 'package:picmory/common/components/common/primary_button_comp.dart';
 import 'package:picmory/common/components/common/scaffold_comp.dart';
@@ -165,6 +166,35 @@ class _ComponentsViewState extends State<ComponentsView> {
           TooltipComp(
             text: "가장 최근에 로그인한 계정입니다",
             direction: MessagingSmDirection.up,
+          ),
+          Gap(10),
+          IconButtonComp(
+            onPressed: () {
+              log("다이알로그 노출");
+              showDialog(
+                context: context,
+                builder: (context) => ModalComp(
+                  title: "타이틀 영역",
+                  subtitle: "서브 타이틀",
+                  imageSource: NetworkImage("https://picsum.photos/300/200"),
+                  body: "소중한 순간들을 추억함에 담아두세요",
+                  confirmText: "확인",
+                  cancelText: "취소",
+                  onConfirm: () {
+                    log("확인 버튼 클릭");
+                    Navigator.of(context).pop();
+                  },
+                  onCancel: () {
+                    log("취소 버튼 클릭");
+                    Navigator.of(context).pop();
+                  },
+                ),
+              );
+            },
+            icon: IconsToken(
+              color: ColorsToken.white,
+            ).videocameraAddLinear,
+            backgroundColor: Colors.black,
           ),
           Gap(10),
         ],

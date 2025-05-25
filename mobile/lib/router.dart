@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:picmory/viewmodels/app_review_viewmodel.dart';
 import 'package:picmory/viewmodels/auth/signin/signin_viewmodel.dart';
 import 'package:picmory/viewmodels/index/for_you/albums/albums_viewmodel.dart';
 import 'package:picmory/viewmodels/index/for_you/for_you_viewmodel.dart';
@@ -71,6 +72,9 @@ final router = GoRouter(
           ),
           ChangeNotifierProvider(
             create: (_) => ForYouViewmodel(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => AppReviewViewmodel(context: context),
           ),
         ],
         child: IndexView(),
