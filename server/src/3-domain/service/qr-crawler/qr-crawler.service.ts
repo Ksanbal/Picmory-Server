@@ -171,7 +171,17 @@ export class QrCrawlerService {
    * 지원하는 브랜드 리스트 조회
    */
   getBrands(): Brand[] {
-    return this.brands;
+    // name을 소문자로 변환하여 중복 제거
+    const seen = new Set<string>();
+    const deduped: Brand[] = [];
+    for (const brand of this.brands) {
+      const lower = brand.name.toLowerCase();
+      if (!seen.has(lower)) {
+        seen.add(lower);
+        deduped.push(brand);
+      }
+    }
+    return deduped;
   }
 
   /**
