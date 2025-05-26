@@ -160,6 +160,11 @@ export class QrCrawlerService {
       name: 'munifilm',
       host: 'muinfilm.com',
     },
+    {
+      // munifilm
+      name: 'GOOD PHOTO SHOP',
+      host: 'selfphotostudio.kr',
+    },
   ];
 
   /**
@@ -262,6 +267,9 @@ export class QrCrawlerService {
           break;
         case 'munifilm':
           result = await this.munifilm(url);
+          break;
+        case 'GOOD PHOTO SHOP':
+          result = await this.goodPhotoShop(url);
           break;
       }
 
@@ -976,13 +984,35 @@ export class QrCrawlerService {
     );
 
     // 이미지 링크 가져오기
-    const img = document.querySelector('#imageToSave')
+    const img = document.querySelector('#imageToSave');
     const imgSrc = img.getAttribute('src');
 
-    const photoUrls = [
-      imgSrc,
-    ];
+    const photoUrls = [imgSrc];
     const videoUrls = [];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  /// GOOD PHOTO SHOP
+  private async goodPhotoShop(url): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(url));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
+    const code = url.split('/').pop();
+    const filePath = 'https://selfphotostudio.kr/talk/download/file/';
+
+    const photoUrls = [
+      filePath + code + '_color.png',
+      filePath + code + '_greyscale.png',
+    ];
+    const videoUrls = [filePath + code + '_timelapse.mp4'];
 
     return {
       brand: '',
