@@ -53,7 +53,7 @@ export class QrCrawlerService {
     {
       // 플랜비 스튜디오
       name: 'PLAN.B STUDIO',
-      host: '3.37.14.138',
+      host: 'pixpixlink.com',
     },
     {
       // 비비드 뮤지엄
@@ -430,10 +430,14 @@ export class QrCrawlerService {
       throw new Error();
     }
 
+    const regex = /http:\/\/\w+\.pixpixlink\.com/;
+    const result = url.match(regex);
+    if (result == null) throw new Error();
+
     const id = url.split('id=')[1];
 
-    const photoUrls = [`http://3.37.14.138/take/${id}.jpg`];
-    const videoUrls = [`http://3.37.14.138/take/${id}.mp4`];
+    const photoUrls = [`${result[0]}/take/${id}.jpg`];
+    const videoUrls = [`${result[0]}/take/${id}.mp4`];
 
     return {
       brand: '',
