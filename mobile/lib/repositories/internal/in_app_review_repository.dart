@@ -10,7 +10,7 @@ class InAppReviewRepository {
   Future<void> requestReview() async {
     try {
       if (await inAppReview.isAvailable()) {
-        inAppReview.requestReview();
+        await inAppReview.requestReview();
       } else {
         // 스토어 링크로 이동
         if (Platform.isIOS) {
