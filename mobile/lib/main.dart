@@ -27,7 +27,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await remoteConfig.fetchAndActivate();
+
+  try {
+    await remoteConfig.fetchAndActivate();
+
+    await remoteConfig.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(minutes: 1),
+      minimumFetchInterval: const Duration(hours: 1),
+    ));
+  } catch (e) {
+    log('Error setting Remote Config settings: $e');
+  }
 
   FlutterError.onError = (errorDetails) {
     crashlytics.recordFlutterFatalError(errorDetails);
@@ -37,11 +47,6 @@ void main() async {
     crashlytics.recordError(error, stack, fatal: true);
     return true;
   };
-
-  await remoteConfig.setConfigSettings(RemoteConfigSettings(
-    fetchTimeout: const Duration(minutes: 1),
-    minimumFetchInterval: const Duration(hours: 1),
-  ));
 
   // FCM 설정
   settingFCM();

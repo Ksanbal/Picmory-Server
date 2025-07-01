@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:picmory/common/components/index/index_bottom_navigation_bar.dart';
+import 'package:picmory/viewmodels/app_review_viewmodel.dart';
 import 'package:picmory/viewmodels/index/index_viewmodel.dart';
 import 'package:picmory/views/index/for_you/for_you_view.dart';
 import 'package:picmory/views/index/home/home_view.dart';
@@ -19,6 +20,8 @@ class IndexView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<AppReviewViewmodel>(context, listen: false);
+
     return Scaffold(
       body: Consumer<IndexViewmodel>(
         builder: (_, vm, __) {

@@ -16,7 +16,7 @@ class AuthRepository {
   Future<ResponseModel<AccessTokenModel>> signin({
     required String provider,
     required String providerId,
-    required String fcmToken,
+    required String? fcmToken,
   }) async {
     try {
       final res = await _dio.post(
