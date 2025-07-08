@@ -1054,12 +1054,15 @@ export class QrCrawlerService {
     const url = new URL(urlStr);
 
     const qrcode = url.searchParams.get('qrcode');
+    if (qrcode == null) {
+      throw new Error('qrcode not found');
+    }
 
     const imageUrl = `https://kiosk.youngchive.com/api/download.php?qrcode=${qrcode}&type=P`;
     const videoUrl = `https://kiosk.youngchive.com/api/download.php?qrcode=${qrcode}&type=V`;
 
     // 유효한 url인지 확인
-    const imgRes = await firstValueFrom(this.httpService.get(imageUrl));
+    const imgRes = await firstValueFrom(this.httpService.head(imageUrl));
 
     const contentLength = Number(imgRes.headers['content-length']);
     if (imgRes.status !== 200 || !contentLength) {
