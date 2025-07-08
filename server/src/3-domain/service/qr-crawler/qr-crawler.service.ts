@@ -161,9 +161,14 @@ export class QrCrawlerService {
       host: 'muinfilm.com',
     },
     {
-      // munifilm
+      // GOOD PHOTO SHOP
       name: 'GOOD PHOTO SHOP',
       host: 'selfphotostudio.kr',
+    },
+    {
+      // youngchive
+      name: 'youngchive',
+      host: 'youngchive.com',
     },
   ];
 
@@ -280,6 +285,9 @@ export class QrCrawlerService {
           break;
         case 'GOOD PHOTO SHOP':
           result = await this.goodPhotoShop(url);
+          break;
+        case 'youngchive':
+          result = await this.youngchive(url);
           break;
       }
 
@@ -1032,6 +1040,39 @@ export class QrCrawlerService {
       brand: '',
       photoUrls,
       videoUrls,
+    };
+  }
+
+  /// youngchive
+  private async youngchive(urlStr: string): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(urlStr));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
+    const url = new URL(urlStr);
+
+    const qrcode = url.searchParams.get('qrcode');
+    if (qrcode == null) {
+      throw new Error('qrcode not found');
+    }
+
+    const imageUrl = `https://kiosk.youngchive.com/api/download.php?qrcode=${qrcode}&type=P`;
+    const videoUrl = `https://kiosk.youngchive.com/api/download.php?qrcode=${qrcode}&type=V`;
+
+    // 유효한 url인지 확인
+    const imgRes = await firstValueFrom(this.httpService.head(imageUrl));
+
+    const contentLength = Number(imgRes.headers['content-length']);
+    if (imgRes.status !== 200 || !contentLength) {
+      throw new Error('invalid url or empty file');
+    }
+
+    return {
+      brand: '',
+      photoUrls: [imageUrl],
+      videoUrls: [videoUrl],
     };
   }
 }
