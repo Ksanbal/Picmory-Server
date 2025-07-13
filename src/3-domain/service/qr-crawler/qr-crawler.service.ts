@@ -1061,13 +1061,13 @@ export class QrCrawlerService {
     const imageUrl = `https://kiosk.youngchive.com/api/download.php?qrcode=${qrcode}&type=P`;
     const videoUrl = `https://kiosk.youngchive.com/api/download.php?qrcode=${qrcode}&type=V`;
 
-    // 유효한 url인지 확인
-    const imgRes = await firstValueFrom(this.httpService.head(imageUrl));
+    // // 유효한 url인지 확인
+    // const imgRes = await firstValueFrom(this.httpService.head(imageUrl));
 
-    const contentLength = Number(imgRes.headers['content-length']);
-    if (imgRes.status !== 200 || !contentLength) {
-      throw new Error('invalid url or empty file');
-    }
+    // const contentLength = Number(imgRes.headers['content-length']);
+    // if (imgRes.status !== 200 || !contentLength) {
+    //   throw new Error('invalid url or empty file');
+    // }
 
     return {
       brand: '',
