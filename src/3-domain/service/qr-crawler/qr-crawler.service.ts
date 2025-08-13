@@ -171,6 +171,11 @@ export class QrCrawlerService {
       name: 'youngchive',
       host: 'youngchive.com',
     },
+    {
+      // 포토하임
+      name: 'photo heim',
+      host: 'selfphotobox.com',
+    },
   ];
 
   /**
@@ -291,6 +296,9 @@ export class QrCrawlerService {
           break;
         case 'youngchive':
           result = await this.youngchive(url);
+          break;
+        case 'photo heim':
+          result = await this.photoHeim(url);
           break;
       }
 
@@ -1088,6 +1096,33 @@ export class QrCrawlerService {
       brand: '',
       photoUrls: [imageUrl],
       videoUrls: [videoUrl],
+    };
+  }
+
+  // 포토하임
+  private async photoHeim(url: string): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(url));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
+    const qrcode = url.split('qrcode=')[1];
+    if (qrcode == undefined) {
+      throw new Error('qrcode not found');
+    }
+
+    const photoUrls = [
+      `https://selfphotobox.com/api/download.php?qrcode=${qrcode}&type=P`,
+    ];
+    const videoUrls = [
+      `https://selfphotobox.com/api/download.php?qrcode=${qrcode}&type=V`,
+    ];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
     };
   }
 }
