@@ -4,6 +4,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { QrCrawlerCrawlResDto } from 'src/1-presentation/dto/qr-crawler/response/crawl.dto';
 import { QrCrawlerGetBrandsResDto } from 'src/1-presentation/dto/qr-crawler/response/get-brands.dto';
@@ -32,6 +33,7 @@ export function CrawlQrDocs() {
       type: QrCrawlerCrawlResDto,
     }),
     ApiBadRequestResponse(),
+    ApiUnprocessableEntityResponse(),
   );
 }
 

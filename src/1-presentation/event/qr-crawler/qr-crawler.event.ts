@@ -9,7 +9,12 @@ export class QrCrawlerEventHandler {
   constructor(private readonly qrCrawlerFacade: QrCrawlerFacade) {}
 
   @OnEvent(EVENT_NAMES.QR_CRAWLER_FAILED, { async: true })
-  async handleCrawlFailed(dto: QrCrawlerCrawlFailedDto) {
+  async handleBrandNotFound(dto: QrCrawlerCrawlFailedDto) {
     await this.qrCrawlerFacade.notifyCrawlFailed({ url: dto.url });
+  }
+
+  @OnEvent(EVENT_NAMES.QR_CRAWLER_BRAND_NOT_FOUND, { async: true })
+  async handleCrawlFailed(dto: QrCrawlerCrawlFailedDto) {
+    await this.qrCrawlerFacade.notifyBrandNotFound({ url: dto.url });
   }
 }

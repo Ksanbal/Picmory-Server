@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import puppeteer from 'puppeteer';
 import { Brand } from 'src/3-domain/model/qr-cralwer/brand.model';
@@ -199,10 +200,12 @@ export class QrCrawlerService {
     const brand = this.brands.find((brand) => url.includes(brand.host));
     if (brand == undefined) {
       // 파일 생성 이벤트 발행
-      this.eventEmitter.emit(EVENT_NAMES.QR_CRAWLER_FAILED, {
+      this.eventEmitter.emit(EVENT_NAMES.QR_CRAWLER_BRAND_NOT_FOUND, {
         url,
       });
-      throw new BadRequestException(ERROR_MESSAGES.QR_CRAWLER_NOT_SUPPORTED);
+      throw new UnprocessableEntityException(
+        ERROR_MESSAGES.QR_CRAWLER_NOT_SUPPORTED,
+      );
     }
 
     try {
@@ -323,8 +326,20 @@ export class QrCrawlerService {
 
     const result = await this.webhookClient.send({
       title: '🔥 크롤링 실패했어요!',
-      content: `지원하지 않는 브랜드거나, 실행중 오류가 있었을 수도 있어요\n${url}`,
+      content: `실행중 오류가 있었을 수도 있어요\n${url}`,
       color: WebhookColor.NEGATIVE,
+    });
+
+    if (!result) console.error('Webhook 전송 실패');
+  }
+
+  async notifyBrandNotFound(dto: NotifyBrandNotFoundDto): Promise<void> {
+    const { url } = dto;
+
+    const result = await this.webhookClient.send({
+      title: '🔍 새로운 브랜드에요!',
+      content: `뉴비가 나타났다!! 새로운 브랜드에요!!\n${url}`,
+      color: WebhookColor.PRIMARY,
     });
 
     if (!result) console.error('Webhook 전송 실패');
@@ -1082,5 +1097,9 @@ type CrawlQrDto = {
 };
 
 type NotifyCrawlFailedDto = {
+  url: string;
+};
+
+type NotifyBrandNotFoundDto = {
   url: string;
 };

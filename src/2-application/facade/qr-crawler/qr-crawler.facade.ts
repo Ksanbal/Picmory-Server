@@ -41,6 +41,17 @@ export class QrCrawlerFacade {
       url,
     });
   }
+
+  /**
+   * 새로운 브랜드 크롤링시 디스코드 webhook으로 알림
+   */
+  async notifyBrandNotFound(dto: NotifyBrandNotFoundDto): Promise<void> {
+    const { url } = dto;
+
+    await this.qrCrawlerService.notifyBrandNotFound({
+      url,
+    });
+  }
 }
 
 type CrawlQrDto = {
@@ -48,5 +59,9 @@ type CrawlQrDto = {
 };
 
 type NotifyCrawlFailedDto = {
+  url: string;
+};
+
+type NotifyBrandNotFoundDto = {
   url: string;
 };
