@@ -111,6 +111,11 @@ export class QrCrawlerService {
       name: 'OLDMOON',
       host: '43.200.194.205',
     },
+    {
+      // 그믐달 셀프 스튜디오 3
+      name: 'OLDMOON',
+      host: 't.pixpixlink.com',
+    },
     // {
     //   // selpix
     //   name: 'Selpix',
@@ -201,8 +206,11 @@ export class QrCrawlerService {
   async crawlQr(dto: CrawlQrDto): Promise<BrandCrawl> {
     const { url } = dto;
 
+    const parsedUrl = new URL(url);
+
     // 지원하는 브랜드인지 확인
-    const brand = this.brands.find((brand) => url.includes(brand.host));
+    const brand = this.brands.find((brand) => brand.host === parsedUrl.host);
+
     if (brand == undefined) {
       // 파일 생성 이벤트 발행
       this.eventEmitter.emit(EVENT_NAMES.QR_CRAWLER_BRAND_NOT_FOUND, {
@@ -727,14 +735,16 @@ export class QrCrawlerService {
       throw new Error();
     }
 
-    // url에서 path, id 추출
-    const [path, id] = url.split('/g4.php?id=');
+    const parsedUrl = new URL(url);
+    const host = parsedUrl.host;
+    const d = parsedUrl.searchParams.get('d');
+    const i = parsedUrl.searchParams.get('i');
 
     // 사진 다운로드 링크
-    const photoUrls = [`${path}/take/${id}.jpg`];
+    const photoUrls = [`https://${host}/t/${d}/${i}.jpg`];
 
     // 영상 다운로드 링크
-    const videoUrls = [`${path}/take/${id}.mp4`];
+    const videoUrls = [`https://${host}/t/${d}/${i}.mp4`];
 
     return {
       brand: '',
