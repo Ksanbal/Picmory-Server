@@ -206,10 +206,10 @@ export class QrCrawlerService {
   async crawlQr(dto: CrawlQrDto): Promise<BrandCrawl> {
     const { url } = dto;
 
-    const parsedUrl = new URL(url);
+    const mainDomain = this.getMainDomain(url);
 
     // 지원하는 브랜드인지 확인
-    const brand = this.brands.find((brand) => brand.host === parsedUrl.host);
+    const brand = this.brands.find((brand) => brand.host === mainDomain);
 
     if (brand == undefined) {
       // 파일 생성 이벤트 발행
@@ -319,6 +319,33 @@ export class QrCrawlerService {
         url,
       });
       throw new ConflictException(ERROR_MESSAGES.QR_CRAWLER_UNKOWN_ERROR);
+    }
+  }
+
+  private getMainDomain(url: string): string {
+    try {
+      const urlObj = new URL(url);
+      const hostname = urlObj.hostname;
+      const parts = hostname.split('.');
+
+      if (parts.length < 2) {
+        return hostname;
+      }
+
+      // 한국 도메인 (.co.kr, .ac.kr 등) 처리
+      if (
+        parts.length >= 3 &&
+        parts[parts.length - 2] === 'co' &&
+        parts[parts.length - 1] === 'kr'
+      ) {
+        return parts.slice(-3).join('.');
+      }
+
+      // 일반적인 경우 (domain.tld)
+      return parts.slice(-2).join('.');
+    } catch (error) {
+      console.error('Invalid URL:', error);
+      return null;
     }
   }
 
