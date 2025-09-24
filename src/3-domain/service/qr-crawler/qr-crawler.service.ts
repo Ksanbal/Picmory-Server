@@ -34,7 +34,7 @@ export class QrCrawlerService {
     {
       // 데모용
       name: 'Picmory',
-      host: 'm.site.naver.com/1AsT',
+      host: 'naver.com',
     },
     {
       // 모노맨션
@@ -49,7 +49,7 @@ export class QrCrawlerService {
     {
       // 포토 시그니처
       name: 'PHOTO SIGNATURE',
-      host: 'photoqr',
+      host: 'photoqr', // TODO
     },
     {
       // 플랜비 스튜디오
@@ -64,12 +64,12 @@ export class QrCrawlerService {
     {
       // 인생네컷
       name: '인생네컷',
-      host: 'api.life4cut.net',
+      host: 'life4cut.net',
     },
     {
       // 포토그레이
       name: 'PHOTOGRAY',
-      host: 'pgshort.aprd.io',
+      host: 'aprd.io',
     },
     {
       // 포토에이스
@@ -79,12 +79,12 @@ export class QrCrawlerService {
     {
       // 포토이즘
       name: 'photoism',
-      host: 'qr.seobuk.kr',
+      host: 'seobuk.kr',
     },
     {
       // 픽닷
       name: 'picdot',
-      host: 'qr.picdot.co.kr',
+      host: 'picdot.co.kr',
     },
     {
       // 폴라 스튜디오
@@ -94,7 +94,7 @@ export class QrCrawlerService {
     {
       // 돈룩업
       name: "DON'T LXXK UP",
-      host: 'x.dontlxxkup.kr',
+      host: 'dontlxxkup.kr',
     },
     {
       // 그믐달 셀프 스튜디오
@@ -114,7 +114,7 @@ export class QrCrawlerService {
     {
       // 그믐달 셀프 스튜디오 3
       name: 'OLDMOON',
-      host: 't.pixpixlink.com',
+      host: 'pixpixlink.com',
     },
     // {
     //   // selpix
@@ -139,7 +139,7 @@ export class QrCrawlerService {
     {
       // PhotoHani
       name: 'PhotoHani',
-      host: 'photo.cellbig.net',
+      host: 'cellbig.net',
     },
     {
       // Mirart Studio
@@ -326,6 +326,14 @@ export class QrCrawlerService {
     try {
       const urlObj = new URL(url);
       const hostname = urlObj.hostname;
+
+      // ip인 경우 바로 반환
+      const ipv4Regex =
+        /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      if (ipv4Regex.test(hostname)) {
+        return hostname;
+      }
+
       const parts = hostname.split('.');
 
       if (parts.length < 2) {
