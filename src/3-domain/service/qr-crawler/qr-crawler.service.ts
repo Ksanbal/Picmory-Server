@@ -162,8 +162,8 @@ export class QrCrawlerService {
       host: 'durishot.net',
     },
     {
-      // munifilm
-      name: 'munifilm',
+      // muinfilm
+      name: 'muinfilm',
       host: 'muinfilm.com',
     },
     {
@@ -296,8 +296,8 @@ export class QrCrawlerService {
         case 'SHOTUP':
           result = await this.shotup(url);
           break;
-        case 'munifilm':
-          result = await this.munifilm(url);
+        case 'muinfilm':
+          result = await this.muinfilm(url);
           break;
         case 'GOOD PHOTO SHOP':
           result = await this.goodPhotoShop(url);
@@ -1063,25 +1063,44 @@ export class QrCrawlerService {
     };
   }
 
-  /// munifilm
-  private async munifilm(url): Promise<BrandCrawl> {
-    const res = await fetch(url);
-    const html = await res.text();
-    const dom = new JSDOM('');
-    const document = new dom.window.DOMParser().parseFromString(
-      html,
-      'text/html',
-    );
+  /// muinfilm
+  private async muinfilm(url): Promise<BrandCrawl> {
+    const browser = await this.getBrowser();
+    const page = await browser.newPage();
 
-    // 이미지 링크 가져오기
-    const img = document.querySelector('#imageToSave');
-    const imgSrc = img.getAttribute('src');
+    await page.goto(url, {
+      waitUntil: 'networkidle2',
+    });
 
-    const photoUrls = [imgSrc];
+    const photoUrls = [];
     const videoUrls = [];
 
+    const imageSrc = await page.evaluate(() => {
+      const imageElement = document.getElementById(
+        'imageToSave',
+      ) as HTMLImageElement;
+      return imageElement ? imageElement.src : null;
+    });
+
+    if (imageSrc) {
+      photoUrls.push(imageSrc);
+    }
+
+    // const videoSrc = await page.evaluate(() => {
+    //   const buttonInfo = Array.from(document.querySelectorAll(
+    //     'button',
+    //   ));
+
+    //   // 두번째 버튼이 비디오 다운로드
+    //   const videoButton = buttonInfo[1];
+    //   videoButton.click();
+    // });
+
+    await page.close();
+    await browser.close();
+
     return {
-      brand: '',
+      brand: 'muinfilm',
       photoUrls,
       videoUrls,
     };
