@@ -181,6 +181,11 @@ export class QrCrawlerService {
       name: 'photo heim',
       host: 'selfphotobox.com',
     },
+    {
+      // 포토아이브
+      name: 'photoive',
+      host: 'photoive.kr',
+    },
   ];
 
   /**
@@ -307,6 +312,9 @@ export class QrCrawlerService {
           break;
         case 'photo heim':
           result = await this.photoHeim(url);
+          break;
+        case 'photoive':
+          result = await this.photoive(url);
           break;
       }
 
@@ -1181,6 +1189,33 @@ export class QrCrawlerService {
     ];
     const videoUrls = [
       `https://selfphotobox.com/api/download.php?qrcode=${qrcode}&type=V`,
+    ];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  // 포토아이브
+  private async photoive(url: string): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(url));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
+    const qrcode = url.split('qrcode=')[1];
+    if (qrcode == undefined) {
+      throw new Error('qrcode not found');
+    }
+
+    const photoUrls = [
+      `https://photoive.kr/api/download.php?qrcode=${qrcode}&type=P`,
+    ];
+    const videoUrls = [
+      `https://photoive.kr/api/download.php?qrcode=${qrcode}&type=V`,
     ];
 
     return {
