@@ -191,6 +191,11 @@ export class QrCrawlerService {
       name: 'photoive',
       host: 'photoive.kr',
     },
+    {
+      // 아날로그 포토
+      name: 'Analog Photo',
+      host: 'analogphoto.co.kr',
+    },
   ];
 
   /**
@@ -320,6 +325,9 @@ export class QrCrawlerService {
           break;
         case 'photoive':
           result = await this.photoive(url);
+          break;
+        case 'Analog Photo':
+          result = await this.analogPhoto(url);
           break;
       }
 
@@ -1231,6 +1239,33 @@ export class QrCrawlerService {
     }
 
     const qrcode = url.split('qrcode=')[1];
+    if (qrcode == undefined) {
+      throw new Error('qrcode not found');
+    }
+
+    const photoUrls = [
+      `https://photoive.kr/api/download.php?qrcode=${qrcode}&type=P`,
+    ];
+    const videoUrls = [
+      `https://photoive.kr/api/download.php?qrcode=${qrcode}&type=V`,
+    ];
+
+    return {
+      brand: '',
+      photoUrls,
+      videoUrls,
+    };
+  }
+
+  // 아날로그 포토
+  private async analogPhoto(urlStr: string): Promise<BrandCrawl> {
+    // 유효한 url인지 확인
+    const res = await firstValueFrom(this.httpService.get(urlStr));
+    if (res.status != 200) {
+      throw new Error('invalid url');
+    }
+
+    const qrcode = urlStr.split('qrcode=')[1];
     if (qrcode == undefined) {
       throw new Error('qrcode not found');
     }
