@@ -42,6 +42,11 @@ export class QrCrawlerService {
       host: 'monomansion.net',
     },
     {
+      // 모노맨션
+      name: 'Mono mansion',
+      host: 'mono-mansion.com',
+    },
+    {
       // 하루필름
       name: 'HARUFILM',
       host: 'mx2.co.kr',
@@ -419,7 +424,8 @@ export class QrCrawlerService {
   }
 
   /// 모노맨션 다운로드 링크
-  private async monomansion(url): Promise<BrandCrawl> {
+  private async monomansion(urlStr: string): Promise<BrandCrawl> {
+    const url = new URL(urlStr);
     const res = await fetch(url);
     const html = await res.text();
     const dom = new JSDOM('');
@@ -428,19 +434,37 @@ export class QrCrawlerService {
       'text/html',
     );
 
-    const aList = document.querySelectorAll('a');
+    const photoUrls = [];
+    const videoUrls = [];
 
-    const regex = /https:\/\/\w+\.monomansion\.net/;
-    const result = url.match(regex);
-    if (result == null) throw new Error();
+    if (url.hostname == 'monomansion.net') {
+      const aList = document.querySelectorAll('a');
 
-    // 사진 다운로드 링크
-    const photoHref = aList[0].getAttribute('href');
-    const photoUrls = [`${result[0]}/api/${photoHref.split('./')[1]}`];
+      const regex = /https:\/\/\w+\.monomansion\.net/;
+      const result = urlStr.match(regex);
+      if (result == null) throw new Error();
 
-    // 영상 다운로드 링크
-    const videoHref = aList[1].getAttribute('href');
-    const videoUrls = [`${result[0]}/api/${videoHref.split('./')[1]}`];
+      // 사진 다운로드 링크
+      const photoHref = aList[0].getAttribute('href');
+      photoUrls.push(`${result[0]}/api/${photoHref.split('./')[1]}`);
+
+      // 영상 다운로드 링크
+      const videoHref = aList[1].getAttribute('href');
+      videoUrls.push(`${result[0]}/api/${videoHref.split('./')[1]}`);
+    } else if (url.hostname == 'qr.mono-mansion.com') {
+      const aList = document.querySelectorAll('a');
+      const buttonList = document.querySelectorAll('button');
+
+      // 사진 다운로드 링크
+      const photoUrl = aList[0].getAttribute('href');
+      photoUrls.push(photoUrl);
+
+      // 영상 다운로드 링크
+      buttonList.forEach((button) => {
+        const dataUrl = button.getAttribute('data-url');
+        videoUrls.push(dataUrl);
+      });
+    }
 
     return {
       brand: '',
